@@ -73,7 +73,7 @@ return new class extends Migration
             $table->foreignId('user_id')
                 ->after('product_id')->constrained('users');
             $table->primary(['product_id', 'user_id']);
-            $table->removeColumn('dummy');
+            $table->dropColumn('dummy');
         });
     }
 };
