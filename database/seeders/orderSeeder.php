@@ -22,6 +22,7 @@ class orderSeeder extends Seeder
 
         foreach ($users as $user) {
             for ($i = 0; $i < random_int(0, 5); $i++) {
+                $total = random_int(2000, 5000);
                 DB::table('orders')->insert(
                     [
                         'user_id' => $user->id,
@@ -29,9 +30,11 @@ class orderSeeder extends Seeder
                         'wilaya' => $faker->word(),
                         'address' => $faker->address(),
                         'shipment' => $faker->numberBetween(400, 1300),
+                        'total' => $total,
                         'number' => $faker->phoneNumber(),
                         'name' => $faker->name(),
-                        'email' => $faker->email()
+                        'email' => $faker->email(),
+                        'track_code' => [null, $faker->text(30)][random_int(0, 1)]
                     ]
                 );
             }
@@ -39,25 +42,15 @@ class orderSeeder extends Seeder
 
         $orders = DB::table('orders')->get();
         foreach ($orders as $order) {
-            // $random = random_int(0, 1);
-            // if ($random) {
-            // $record = $product_color->random();
-            // DB::table('order_product_color')->insert(
-            //     [
-            //         'order_id' => $order->id,
-            //         'product_id' => $record->product_id,
-            //         'color_id' => $record->color_id,
-            //         'quantity' => random_int(1, 3)
-            //     ]
-            // );
-            // } else {
             foreach ($product_color->random(random_int(1, 3)) as $record) {
+                $rand = random_int(1, 3);
                 DB::table('order_product_color')->insert(
                     [
                         'order_id' => $order->id,
                         'product_id' => $record->product_id,
                         'color_id' => $record->color_id,
-                        'quantity' => random_int(1, 3)
+                        'quantity' => $rand,
+                        'total' => random_int(1000, 5000) * $rand
                     ]
                 );
             }

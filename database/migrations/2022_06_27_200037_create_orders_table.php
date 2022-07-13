@@ -19,9 +19,11 @@ return new class extends Migration
             $table->string('address');
             $table->string('wilaya');
             $table->unsignedInteger('shipment');
+            $table->unsignedInteger('total');
             $table->string('number');
             $table->string('name')->index();
             $table->string('email');
+            $table->string('track_code')->nullable();
             $table->timestamps();
         });
     }

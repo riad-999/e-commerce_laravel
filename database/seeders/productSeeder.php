@@ -31,11 +31,15 @@ class productSeeder extends Seeder
                 ]
             );
         }
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 25; $i++) {
+            $value2 = [0, 0, 0, 1][random_int(0, 3)] ? $faker->hexColor() : null;
+            $value3 = [0, 1][random_int(0, 1)] ? $faker->hexColor() : null;
             DB::table('colors')->insert(
                 [
                     'name' => $faker->unique()->word(),
-                    'value' => $faker->hexColor()
+                    'value1' => $faker->hexColor(),
+                    'value2' => $value2,
+                    'value3' => $value2 ? $value3 : null
                 ]
             );
         }
@@ -54,6 +58,7 @@ class productSeeder extends Seeder
                             'category_id' => $category->id,
                             'name' => $faker->text(16),
                             'price' => $price,
+                            'description' => $faker->text(300),
                             'promo' => $promo,
                         ]
                     );

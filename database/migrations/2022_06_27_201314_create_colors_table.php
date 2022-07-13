@@ -15,7 +15,9 @@ return new class extends Migration
     {
         Schema::create('colors', function (Blueprint $table) {
             $table->id();
-            $table->string('value')->unique();
+            $table->string('value1');
+            $table->string('value2')->nullable();
+            $table->string('value3')->nullable();
             $table->string('name')->unique();
         });
     }

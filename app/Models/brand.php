@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\DB;
 
 class Brand
 {
-    // public function products()
-    // {
-    //     return $this->hasMany(Product::class);
-    // }
+    static public function all()
+    {
+        $brands = DB::table('brands')
+            ->get();
+        return $brands->first() ? $brands : null;
+    }
 }

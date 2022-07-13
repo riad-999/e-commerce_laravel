@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('name')->index();
             $table->unsignedInteger('price');
             $table->unsignedInteger('promo')->nullable()->index();
+            $table->text('description')->fulltext();
             $table->boolean('archived')->default(0);
             $table->timestamps();
         });

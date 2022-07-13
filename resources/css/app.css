@@ -54,7 +54,10 @@ body {
     button {
         cursor:pointer;
     }
-
+    img {
+        object-fit: cover;
+    }
+    
     @media screen and (min-width: 1024px) {
     
         h1 {

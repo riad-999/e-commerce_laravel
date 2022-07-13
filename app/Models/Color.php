@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
-class Color extends Model
+class Color
 {
-    use HasFactory;
-
-    public function products()
+    static public function all()
     {
-        return $this->belongsToMany(Product::class);
+
+        $colors = DB::table('colors')
+            ->get();
+        return $colors->first() ? $colors : null;
     }
 }

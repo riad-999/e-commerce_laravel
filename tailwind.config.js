@@ -3,6 +3,7 @@ module.exports = {
   content: [
     "./resources/**/*.blade.php",
     "./resources/**/*.js",
+    "./public/js/*.js"
   ],
   theme: {
     extend: {
@@ -29,7 +30,9 @@ module.exports = {
         '20vh': '40vh',
         '80vh': '80vh',
         '70vh': '70vh',
-        '90' : '90%'
+        '90' : '90%',
+        '100p': '100px',
+        '30p' : '25px'
       },
        gridTemplateColumns: {
         'color': 'repeat( auto-fit, 30px)',
