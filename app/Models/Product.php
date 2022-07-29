@@ -8,15 +8,11 @@ class Product
 {
     public static function all($request = null, $admin = false, $orderby = 'latest')
     {
-        // filters.
-        $name = 'se';
-        $cats = json_decode('["voluptatem", "et"]');
-        $brands = json_decode('["dolore", "illo"]');
-        $promo = true;
-        // $id = $admin ? 5 : null;
-        $id = 5;
-        // getting all products according to filters.
-        if ($id) {
+        $currentPage = 1;
+        $lastPage = 1;
+        $nextPage = 1;
+        $previousPage = 1;
+        if ($id = $request->input('id')) {
             $products = DB::table('products')
                 ->join('brands', 'brand_id', '=', 'brands.id')
                 ->join('categories', 'category_id', '=', 'categories.id')
@@ -24,28 +20,34 @@ class Product
                 ->where('products.id', '=', $id)
                 ->orderByDesc('products.id')->get();
         } else {
-            $products = DB::table('products')
+            $pagination = DB::table('products')
                 ->join('brands', 'brand_id', '=', 'brands.id')
                 ->join('categories', 'category_id', '=', 'categories.id')
                 ->select(['products.*', 'brands.name as brand', 'categories.name as category'])
-                ->when(!$admin, function ($query) {
+                ->when(!$admin, function ($query) use ($request) {
                     $query->where('archived', '=', 0);
                 })
-                ->when($name, function ($query, $name) {
+                ->when($request->has('archived'), function ($query) {
+                    $query->where('archived', '=', 1);
+                })
+                ->when($request->input('name'), function ($query, $name) {
                     $query->where('products.name', 'like', "%$name%");
                 })
-                ->when($cats, function ($query, $cats) {
-                    $query->whereIn('categories.name', $cats);
+                ->when($request->input('categories'), function ($query, $cats) {
+                    $query->whereIn('categories.name', json_decode($cats));
                 })
-                ->when($brands, function ($query, $brands) {
-                    $query->whereIn('brands.name', $brands);
+                ->when($request->input('brands'), function ($query, $brands) {
+                    $query->whereIn('brands.name', json_decode($brands));
                 })
-                ->when($promo, function ($query) {
+                ->when($request->has('promo'), function ($query) {
                     $query->whereNotNull('promo');
                 })
-                ->orderByDesc('products.id')->paginate(30);
-            $products = $products->items();
-            $products = collect($products);
+                ->orderByDesc('products.id')->paginate(20);
+            $currentPage = $pagination->currentPage();
+            $lastPage = $pagination->lastPage();
+            $nextPage = $currentPage >= $lastPage ? $lastPage : $currentPage + 1;
+            $previousPage = $currentPage <= 1 ? 1 : $currentPage - 1;
+            $products = collect($pagination->items());
         }
         // getting products colors.
         $ids = [];
@@ -54,7 +56,11 @@ class Product
         }
         $colors = DB::table('color_product')
             ->join('colors', 'color_id', '=', 'colors.id')
-            ->select(['color_id', 'product_id', 'name', 'value', 'main_image'])
+            ->select([
+                'color_id', 'product_id',
+                'name', 'value1', 'value2',
+                'value3', 'main_image'
+            ])
             ->whereIn('product_id', $ids)
             ->where('quantity', '>', 0)->get();
         // associating each product with its colors
@@ -66,11 +72,16 @@ class Product
             }
             return $product;
         });
-        dd($products);
-        return $products;
+        return (object)[
+            'products' => $products,
+            'currentPage' => $currentPage,
+            'lastPage' => $lastPage,
+            'nextPage' => $nextPage,
+            'previousPage' => $previousPage
+        ];
     }
 
-    public static function get($id)
+    public static function get($id, $withColors = false, $withReviews = false, $withCount = false)
     {
         $product = DB::table('products')
             ->join('brands', 'brand_id', '=', 'brands.id')
@@ -85,43 +96,58 @@ class Product
         if (!$product)
             return null;
         // product colors.
-        $colors = DB::table('color_product')
-            ->join('colors', 'color_id', '=', 'colors.id')
-            ->select(['id', 'main_image', 'value'])
-            ->where('product_id', '=', $id)
-            ->get();
-        // geting product images for each color.
-        $color_ids = [];
-        foreach ($colors as $color) {
-            array_push($color_ids, $color->id);
-        }
-        $images = DB::table('products_images')
-            ->select(['color_id', 'url'])->where('product_id', '=', $id)
-            ->whereIn('color_id', $color_ids)->get();
-        // associating images to product colors
-        $colors = $colors->map(function ($color) use ($images) {
-            $color->images = [];
-            foreach ($images as $image) {
-                if ($image->color_id == $color->id) {
-                    array_push($color->images, $image);
-                }
+        if ($withColors) {
+            $colors = DB::table('color_product')
+                ->join('colors', 'color_id', '=', 'colors.id')
+                ->select(['id', 'color_id', 'name', 'quantity', 'main_image', 'value1', 'value2', 'value3'])
+                ->where('product_id', '=', $id)
+                ->get();
+            // geting product images for each color.
+            $color_ids = [];
+            foreach ($colors as $color) {
+                array_push($color_ids, $color->id);
             }
-            return $color;
-        });
-        $product->colors = $colors;
-        // getting product reviews.
-        $reviews = DB::table('reviews')
-            ->join('users', 'user_id', '=', 'users.id')
-            ->select(['users.name as name', 'score', 'feedback', 'reviews.created_at as date'])
-            ->where('product_id', '=', $id)->get();
-        $product->reviews = $reviews;
-        // counting product orders
-        $solds = DB::table('order_product_color')
-            ->selectRaw('sum(quantity) as solds')
-            ->where('product_id', '=', $id)
-            ->get()->first()->solds;
-        $product->solds = $solds;
+            $images = DB::table('products_images')
+                ->select(['color_id', 'image'])->where('product_id', '=', $id)
+                ->whereIn('color_id', $color_ids)->get();
+            // associating images to product colors
+            $colors = $colors->map(function ($color) use ($images) {
+                $color->images = [];
+                foreach ($images as $image) {
+                    if ($image->color_id == $color->id) {
+                        array_push($color->images, $image);
+                    }
+                }
+                return $color;
+            });
+            $product->colors = $colors;
+        }
+        if ($withReviews) {
+            // getting product reviews.
+            $reviews = DB::table('reviews')
+                ->join('users', 'user_id', '=', 'users.id')
+                ->select(['users.name as name', 'score', 'feedback', 'reviews.created_at as date'])
+                ->where('product_id', '=', $id)->get();
+            $product->reviews = $reviews;
+        }
+        if ($withCount) {
+            // counting product orders
+            $solds = DB::table('order_product_color')
+                ->selectRaw('sum(quantity) as solds')
+                ->where('product_id', '=', $id)
+                ->get()->first()->solds;
+            $product->solds = $solds;
+        }
 
         return $product;
+    }
+    // public static function getProducts($ids)
+    // {
+    //     $products = DB::table('products')
+    //         ->whereIn('id', $ids)->get();
+    //     return $products;
+    // }
+    public function store($product)
+    {
     }
 }

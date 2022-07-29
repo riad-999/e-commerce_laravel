@@ -15,16 +15,16 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('state')->default('in process')->index();
+            $table->string('state')->index();
             $table->string('address');
-            $table->string('wilaya');
+            $table->string('wilaya')->index();
+            $table->string('shipment_type');
             $table->unsignedInteger('shipment');
-            $table->unsignedInteger('total');
             $table->string('number');
             $table->string('name')->index();
-            $table->string('email');
+            $table->text('note')->nullable();
             $table->string('track_code')->nullable();
-            $table->timestamps();
+            $table->timestamp('created_at')->index();
         });
     }
 

@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -16,12 +15,14 @@ return new class extends Migration
     {
         Schema::table('products', function (Blueprint $table) {
             $table->foreignId('category_id')->after('id')
-                ->constrained('categories');
+                ->constrained('categories')->restrictOnDelete()
+                ->cascadeOnUpdate();
         });
 
         Schema::table('products', function (Blueprint $table) {
             $table->foreignId('brand_id')->after('id')
-                ->constrained('brands');
+                ->constrained('brands')->restrictOnDelete()
+                ->cascadeOnUpdate();
         });
 
         Schema::table('orders', function (Blueprint $table) {
@@ -41,7 +42,7 @@ return new class extends Migration
             $table->foreignId('product_id')
                 ->first()->constrained('products');
             $table->foreignId('color_id')->after('product_id')
-                ->constrained('colors');
+                ->constrained('colors')->cascadeOnUpdate()->restrictOnDelete();
             $table->primary(['product_id', 'color_id']);
         });
 
@@ -57,7 +58,7 @@ return new class extends Migration
 
         Schema::table('order_product_color', function (Blueprint $table) {
             $table->foreignId('order_id')
-                ->first()->constrained('orders');
+                ->first()->constrained('orders')->cascadeOnDelete();
             $table->unsignedBigInteger('product_id')
                 ->after('order_id');
             $table->unsignedBigInteger('color_id')

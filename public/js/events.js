@@ -1,20 +1,31 @@
 const imagesInputs = document.querySelectorAll('.main-image, .other-images');
 const dropdownLables = document.querySelectorAll('.color-label');
 const dropdowns = document.querySelectorAll('.dropdown-content');
+const edits = document.querySelectorAll('.edit');
+const removes = document.querySelectorAll('.remove');
+const closeAlert = document.getElementById('alert-close');
+const openModalBtns = document.querySelectorAll('.open-modal');
+const closeModalBtns = document.querySelectorAll('.close-modal');
+const tabs = document.querySelectorAll('.tab');
+const wilayaSelect = document.getElementById('wilaya');
 
 const imageSelectionHandler = (event) => {
     const input = event.currentTarget;
     if(input.classList.contains('main-image')) {
-        const oldImage = input.nextElementSibling;
+        const oldImage = input.parentElement.nextElementSibling;
+        console.log(oldImage);
         if(oldImage && oldImage.classList.contains('main-Image'))
+        {
             oldImage.remove();
+            console.log('pihs pish');
+        }
         const url = URL.createObjectURL(input.files[0]);
         const image = document.createElement('img');
         image.src = url;
         image.width = '260';
         image.classList.add('mb-8');
         image.classList.add('main-Image')
-        input.after(image);
+        input.parentElement.after(image);
     }
     else {
         const input = event.currentTarget;
@@ -26,8 +37,7 @@ const imageSelectionHandler = (event) => {
             image.classList.add('block');
             return image;
         });
-        const oldContainer = input.nextElementSibling;
-        console.log(oldContainer);
+        const oldContainer = input.parentElement.nextElementSibling;
         if(oldContainer && oldContainer.classList.contains('container'))
             oldContainer.remove();
         const container = document.createElement('div');
@@ -35,16 +45,17 @@ const imageSelectionHandler = (event) => {
             className => container.classList.add(className)
         );
         images.forEach(image => container.append(image));
-        input.after(container);
+        input.parentElement.after(container);
     }
 }
 const dropdwonToggleHandler = event => {
-    const dropdown = event.currentTarget.nextElementSibling;
+    const dropdown = event.currentTarget.parentElement.lastElementChild;
     dropdown.classList.toggle('!invisible');
 };
 const colorSelectHandler = event => {
     const btn = event.target.closest('.color-item');
-    const label = event.currentTarget.previousElementSibling;
+    const label = event.currentTarget.parentElement
+    .children[1];
     if(!btn)
         return;
     const id = btn.dataset.id;
@@ -53,7 +64,104 @@ const colorSelectHandler = event => {
     btn.parentElement.classList.toggle('!invisible');
     label.innerHTML = btn.innerHTML;
 };
-
+const editHandler = event => {
+    const id = event.currentTarget.dataset.id;
+    const name = event.currentTarget.dataset.name;
+    if(id) {
+        const input = document.getElementById(id);
+        input.classList.remove('cursor-not-allowed');
+        input.classList.remove('opacity-50');
+        input.disabled = false;
+    }
+    if(name) {
+        const inputs = document.querySelectorAll(`input[name=${name}]`);
+        inputs.forEach(input => {
+            input.disabled = false;
+            // const div = input.closest('.radio-container');
+            // if(div)
+            //     div.classList.toggle('opacity-50');
+        });
+    }
+    if(event.currentTarget.dataset.dropdown) {
+        const label = event.currentTarget.previousElementSibling;
+        label.classList.remove('opacity-50');
+        label.classList.remove('!cursor-not-allowed');
+        label.classList.remove('pointer-events-none');
+    }
+}
+const removeHandler = event => {
+    id = event.currentTarget.dataset.id;
+    const input = document.getElementById(id);
+    input.classList.remove('cursor-not-allowed');
+    input.classList.remove('opacity-50');
+    input.disabled = false;
+    input.value = '';
+    if(input.type == 'color') {
+        console.log('pish');
+        input.value = '#010101';
+    }
+}
+const closeAlertHandler = event => {
+    const btn = event.currentTarget;
+    const alert = btn.closest('.Alert');
+    alert.classList.remove('opacity-100');
+    alert.classList.add('invisible');
+} 
+const openModal = event => {
+    const id = event.currentTarget.dataset.id;
+    const modal = document.getElementById(id);
+    modal.classList.remove('opacity-0');
+    modal.classList.remove('invisible');
+    if(modal.dataset.form)
+        modal.firstElementChild.action = 
+            event.currentTarget.dataset.route;
+}
+const closeModal = () => {
+    const id = event.currentTarget.dataset.id;
+    const modal = document.getElementById(id);
+    modal.classList.add('opacity-0');
+    modal.classList.add('invisible');
+}
+const tabHanlder = event => {
+    const tabParent = event.currentTarget.parentElement;
+    Array.prototype.slice.call( tabParent.children ).forEach(
+        tab => tab.classList.remove('tab-active')
+    );
+    event.currentTarget.classList.add('tab-active');
+    const id = event.currentTarget.dataset.id;
+    const element = document.getElementById(id);
+    const children = element.parentElement.children;
+    const array = Array.prototype.slice.call( children );
+    array.forEach(child => {
+        if(child.dataset.tabcontent) {
+            if(child.id == id) {
+                child.style.height = 'auto';
+                child.classList.remove('overflow-hidden');
+            }   
+            else {
+                child.style.height = '0';
+                child.classList.add('overflow-hidden');
+            } 
+        } 
+    });
+}
+const windowLoadHandler = () => {
+    const colorInputs = document.querySelectorAll('input[type="color"]');
+    colorInputs.forEach(input => input.value = '#010101');
+    colorInputs.forEach(input => console.log(input.value))
+}
+const wilayaSelectHandler = event => {
+    const value = event.currentTarget.value;
+    const radio = document.querySelector('input[value="au bureau"]');
+    const radio_ = document.querySelector('input[value="à domicile"]');
+    wilaya = Wilayas.find(item => item.name == value);
+    if(!wilaya.desk){
+        radio.disabled = true;
+        radio_.checked = true;
+    } else {
+        radio.disabled = false;
+    }
+}
 // const addColor_image = (event) => {
 //     const LIST = ['amd','msi','asus'];
 //     color_imageCount++;
@@ -114,17 +222,48 @@ const colorSelectHandler = event => {
 //     last.before(container);
 // }
 
-if(imagesInputs)
+if(imagesInputs.length)
     imagesInputs.forEach(input => 
         input.addEventListener('change',imageSelectionHandler)
     );
-if(dropdownLables) {
+if(dropdownLables.length) {
     dropdownLables.forEach(label => 
         label.addEventListener('click', dropdwonToggleHandler)
     );
 }
-if(dropdowns) {
+if(dropdowns.length) {
     dropdowns.forEach(dropdown => 
         dropdown.addEventListener('click', colorSelectHandler)
     );
 }
+if(edits.length) {
+    edits.forEach(edit => edit.addEventListener('click',editHandler));
+}
+if(removes.length) {
+    removes.forEach(remove => remove.addEventListener('click',removeHandler));
+}
+if(closeAlert) {
+    closeAlert.addEventListener('click',closeAlertHandler);
+}
+if(openModalBtns.length) {
+    openModalBtns.forEach(
+        btn => btn.addEventListener('click',openModal)
+    );
+}
+if(closeModalBtns.length) {
+    closeModalBtns.forEach(
+        btn => btn.addEventListener('click',closeModal)
+    );
+}
+if(tabs.length) {
+    tabs.forEach(tab => tab.addEventListener('click',tabHanlder));
+}
+if(wilayaSelect){
+    wilayaSelect.addEventListener('change',wilayaSelectHandler);
+}
+// window.addEventListener('DOMContentLoaded', windowLoadHandler);
+
+
+// const input = document.getElementById('date');
+// input.addEventListener('change',
+//     event => console.log(event.currentTarget.value));

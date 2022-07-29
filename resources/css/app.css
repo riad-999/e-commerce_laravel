@@ -57,7 +57,10 @@ body {
     img {
         object-fit: cover;
     }
-    
+    input[type=checkbox] {
+        transform: scale(1.25);
+    }
+
     @media screen and (min-width: 1024px) {
     
         h1 {

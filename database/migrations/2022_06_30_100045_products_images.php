@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('products_images', function (Blueprint $table) {
             $table->id();
-            $table->string('url', 255);
+            $table->string('image', 255);
         });
     }
 

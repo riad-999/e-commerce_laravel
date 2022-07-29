@@ -60,6 +60,10 @@ class productSeeder extends Seeder
                             'price' => $price,
                             'description' => $faker->text(300),
                             'promo' => $promo,
+                            'created_at' => $faker->dateTimeBetween(
+                                '2021-08-21 04:41:09',
+                                now()
+                            )
                         ]
                     );
                 }
@@ -89,7 +93,7 @@ class productSeeder extends Seeder
                     [
                         'product_id' => $record->product_id,
                         'color_id' => $record->color_id,
-                        'url' => $faker->imageUrl()
+                        'image' => $faker->imageUrl()
                     ]
                 );
             }

@@ -18,8 +18,8 @@ class Order
                 $join->on('order_product_color.color_id', '=', 'color_product.color_id');
             })
             ->select([
-                'order_id', 'order_product_color.product_id',
-                'products.name as pname', 'colors.name as cname',
+                'order_id', 'order_product_color.product_id', 'order_product_color.color_id',
+                'products.name as pname', 'color_product.quantity as pcquantity', 'order_product_color.price', 'colors.name as cname',
                 'order_product_color.quantity', 'total', 'main_image'
             ])
             ->whereIn('order_id', $orders_ids)->get();
@@ -37,32 +37,56 @@ class Order
         return $orders;
     }
 
-    static public function all($request = null)
+    static public function all($request)
     {
-        $id = null;
-        $name = null;
-        $state = null;
-        if ($id)
+        if ($id = $request->input('id'))
             return
                 DB::table('orders')
                 ->where('id', '=', $id)->get();
 
-        $orders = DB::table('orders')
-            ->when($name, function ($query, $name) {
+        $pagination = DB::table('orders')
+            ->when($request->input('name'), function ($query, $name) {
                 $query->where('name', 'like', "%$name%");
             })
-            ->when($state, function ($query, $state) {
-                $query->where('state', '=', $state);
+            ->when($request->input('state'), function ($query, $state) {
+                if ($state != 'tous')
+                    $query->where('state', '=', $state);
             })
-            ->orderByDesc('id')->paginate(20)->items();
-        dd(collect($orders));
-        return collect($orders);
+            ->when(!$request->input('state'), function ($query) {
+                $query->where('state', '=', 'en traitment');
+            })
+            ->when($request->input('wilaya'), function ($query, $wilaya) {
+                $query->where('wilaya', '=', $wilaya);
+            })
+            ->when($request->input('date'), function ($query, $date) {
+                $query->whereDate('created_at', '=', $date);
+            })
+            ->orderByDesc('id')->paginate(20);
+
+        $currentPage = $pagination->currentPage();
+        $lastPage = $pagination->lastPage();
+        return (object)[
+            'orders' => collect($pagination->items()),
+            'currentPage' => $currentPage,
+            'lastPage' => $lastPage,
+            'nextPage' => $currentPage >= $lastPage ? $lastPage : $currentPage + 1,
+            'previousPage' => $currentPage <= 1 ? 1 : $currentPage - 1
+        ];
     }
 
-    static public function getOrderWithDetails($order)
+    static public function get($id)
+    {
+        $order = DB::table('orders')
+            ->where('id', '=', $id)->get()->first();
+        return $order;
+    }
+
+    static public function getOrderWithDetails($id)
     {
         $orders = DB::table('orders')
-            ->where('id', '=', $order->id)->get();
+            ->where('id', '=', $id)->get();
+        if (!$orders->first())
+            return null;
         $order = self::addProductsToOrders($orders)
             ->first();
         return $order;
@@ -109,6 +133,35 @@ class Order
             //     array_push($order->products, $item);
             // }
         }
+    }
+    public static function update_products($id, $products)
+    {
+        foreach ($products as $product) {
+            DB::table('order_product_color')
+                ->where('order_id', '=', $id)
+                ->where('product_id', '=', $product->product_id)
+                ->where('color_id', '=', $product->color_id)
+                ->update(['quantity' => $product->quantity]);
+        }
+    }
+    public static function update($id, $data)
+    {
+        DB::table('orders')
+            ->where('id', '=', $id)
+            ->update($data);
+    }
+    public static function delete($id)
+    {
+        DB::table('orders')->where('id', '=', $id)
+            ->delete();
+    }
+    public static function delete_product($id, $product_id, $color_id)
+    {
+        DB::table('order_product_color')
+            ->where('order_id', '=', $id)
+            ->where('product_id', '=', $product_id)
+            ->where('color_id', '=', $color_id)
+            ->delete();
     }
     // public function user()
     // {

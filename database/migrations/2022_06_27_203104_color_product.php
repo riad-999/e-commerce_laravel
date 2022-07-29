@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('color_product', function (Blueprint $table) {
             $table->unsignedInteger('quantity');
-            $table->string('main_image', 255);
+            $table->string('main_image', 127);
         });
     }
 

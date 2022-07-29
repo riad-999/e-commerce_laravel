@@ -9,6 +9,26 @@ class Category
     static public function all()
     {
         $categories = DB::table('categories')->get();
-        return $categories->first() ? $categories : null;
+        return $categories;
+    }
+    static public function get($id)
+    {
+        $category = DB::table('categories')
+            ->where('id', '=', $id)->get()->first();
+        return $category;
+    }
+    static public function store($data)
+    {
+        DB::table('categories')->insert($data);
+    }
+    static public function update($fields, $id)
+    {
+        DB::table('categories')->where('id', '=', $id)
+            ->update($fields);
+    }
+    static public function delete($id)
+    {
+        DB::table('categories')->where('id', '=', $id)
+            ->delete();
     }
 }
