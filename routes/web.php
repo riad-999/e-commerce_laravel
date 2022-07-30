@@ -1,5 +1,5 @@
 <?php
-/// comms
+
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ColorController;
