@@ -11,15 +11,15 @@
 
 @if($link) 
     <a {{ $attributes->merge([
-        'class' => "btn border-none py-2 rounded-none
+        'class' => "btn border-none py-1
         px-4 $color $border 
         hover:opacity-60 normal-case",
         'href' => $link
     ])}}>{{$slot}}</a>
 @else
     <button {{ $attributes->merge([
-        'class' => "btn border-none py-2 
-        px-4 $color $border rounded-none
+        'class' => "btn border-none py-1
+        px-4 $color $border
         hover:opacity-60 normal-case"
     ])}}>
         {{ $slot }}

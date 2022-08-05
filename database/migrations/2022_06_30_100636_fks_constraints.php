@@ -40,9 +40,9 @@ return new class extends Migration
         Schema::table('color_product', function (Blueprint $table) {
 
             $table->foreignId('product_id')
-                ->first()->constrained('products');
+                ->first()->constrained('products')->cascadeOnDelete();
             $table->foreignId('color_id')->after('product_id')
-                ->constrained('colors')->cascadeOnUpdate()->restrictOnDelete();
+                ->constrained('colors')->cascadeOnUpdate();
             $table->primary(['product_id', 'color_id']);
         });
 
@@ -53,7 +53,8 @@ return new class extends Migration
                 ->after('product_id');
             $table->foreign(['product_id', 'color_id'])
                 ->references(['product_id', 'color_id'])
-                ->on('color_product');
+                ->on('color_product')->cascadeOnUpdate()
+                ->cascadeOnDelete();
         });
 
         Schema::table('order_product_color', function (Blueprint $table) {
@@ -66,7 +67,7 @@ return new class extends Migration
             $table->primary(['order_id', 'product_id', 'color_id']);
             $table->foreign(['product_id', 'color_id'])
                 ->references(['product_id', 'color_id'])
-                ->on('color_product');
+                ->on('color_product')->cascadeOnUpdate();
         });
 
         Schema::table('saves', function (Blueprint $table) {

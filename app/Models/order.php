@@ -20,10 +20,9 @@ class Order
             ->select([
                 'order_id', 'order_product_color.product_id', 'order_product_color.color_id',
                 'products.name as pname', 'color_product.quantity as pcquantity', 'order_product_color.price', 'colors.name as cname',
-                'order_product_color.quantity', 'total', 'main_image'
+                'order_product_color.quantity', 'main_image'
             ])
             ->whereIn('order_id', $orders_ids)->get();
-        // dd($products_colors);
         // associating each order with product-color combinations.
         foreach ($orders as $order) {
             $order->products = [];
@@ -99,40 +98,7 @@ class Order
             ->where('user_id', '=', $id)
             ->orderByDesc('id')->get();
         $orders = self::addProductsToOrders($orders);
-        return $orders; {
-            // associating products to each order.
-            // assuming initialy the product doesn't exits in the order.
-            // $exists = false;
-            // foreach ($order->products as $product) {
-            //     if ($product->id != $record->product_id)
-            //         continue;
-            //     $exists = true;
-            //     // product exits => append the color.
-            //     $color = (object) [
-            //         "name" => $record->cname,
-            //         "quanity" => $record->quantity,
-            //         'total' => $record->total
-            //     ];
-            //     array_push($product->colors, $color);
-            //     break;
-            // }
-            // // if product not exists in the list append it
-            // if (!$exists) {
-            //     $item =
-            //         (object) [
-            //             "id" => $record->product_id,
-            //             "name" => $record->pname,
-            //             "colors" => [
-            //                 (object) [
-            //                     "name" => $record->cname,
-            //                     "quanity" => $record->quantity,
-            //                     'total' => $record->total
-            //                 ]
-            //             ]
-            //         ];
-            //     array_push($order->products, $item);
-            // }
-        }
+        return $orders;
     }
     public static function update_products($id, $products)
     {
@@ -163,13 +129,4 @@ class Order
             ->where('color_id', '=', $color_id)
             ->delete();
     }
-    // public function user()
-    // {
-    //     return $this->belongsTo(User::class);
-    // }
-
-    // public function products()
-    // {
-    //     return $this->belongsToMany(Product::class);
-    // }
 }

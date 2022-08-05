@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class Product
 {
-    public static function all($request = null, $admin = false, $orderby = 'latest')
+    public static function all($request)
     {
         $currentPage = 1;
         $lastPage = 1;
@@ -17,6 +18,7 @@ class Product
                 ->join('brands', 'brand_id', '=', 'brands.id')
                 ->join('categories', 'category_id', '=', 'categories.id')
                 ->select(['products.*', 'brands.name as brand', 'categories.name as category'])
+                ->where('deleted', '=', 0)
                 ->where('products.id', '=', $id)
                 ->orderByDesc('products.id')->get();
         } else {
@@ -24,12 +26,13 @@ class Product
                 ->join('brands', 'brand_id', '=', 'brands.id')
                 ->join('categories', 'category_id', '=', 'categories.id')
                 ->select(['products.*', 'brands.name as brand', 'categories.name as category'])
-                ->when(!$admin, function ($query) use ($request) {
-                    $query->where('archived', '=', 0);
-                })
-                ->when($request->has('archived'), function ($query) {
-                    $query->where('archived', '=', 1);
-                })
+                // ->when(!$admin, function ($query) use ($request) {
+                //     $query->where('deleted', '=', 0);
+                // })
+                // ->when($request->has('archived'), function ($query) {
+                //     $query->where('archived', '=', 1);
+                // })
+                ->where('deleted', '=', 0)
                 ->when($request->input('name'), function ($query, $name) {
                     $query->where('products.name', 'like', "%$name%");
                 })
@@ -92,6 +95,7 @@ class Product
                     'categories.name as category'
                 ]
             )
+            ->where('deleted', '=', 0)
             ->where('products.id', '=', $id)->get()->first();
         if (!$product)
             return null;
@@ -99,7 +103,8 @@ class Product
         if ($withColors) {
             $colors = DB::table('color_product')
                 ->join('colors', 'color_id', '=', 'colors.id')
-                ->select(['id', 'color_id', 'name', 'quantity', 'main_image', 'value1', 'value2', 'value3'])
+                ->select(['id', 'color_id', 'name', 'quantity', 'deleted', 'main_image', 'value1', 'value2', 'value3'])
+                ->where('deleted', '=', 0)
                 ->where('product_id', '=', $id)
                 ->get();
             // geting product images for each color.
@@ -141,13 +146,85 @@ class Product
 
         return $product;
     }
-    // public static function getProducts($ids)
-    // {
-    //     $products = DB::table('products')
-    //         ->whereIn('id', $ids)->get();
-    //     return $products;
-    // }
-    public function store($product)
+    public static function store_color($data, $images)
     {
+        DB::table('color_product')->insert($data);
+        if (!$images)
+            return;
+        foreach ($images as $image) {
+            DB::table('products_images')->insert([
+                'product_id' => $data['product_id'],
+                'color_id' => $data['color_id'],
+                'image' => $image
+            ]);
+        }
+    }
+    public static function update($id, $data)
+    {
+        DB::table('products')->where('id', '=', $id)
+            ->update($data);
+    }
+    public static function update_colors($id, $data)
+    {
+        foreach ($data as $item) {
+            DB::table('color_product')
+                ->where('color_id', '=', $item->id)
+                ->where('product_id', '=', $id)
+                ->update($item->data);
+            if (!$item->images)
+                continue;
+            DB::table('products_images')
+                ->where('color_id', '=', $item->data['color_id'])
+                ->where('product_id', '=', $id)
+                ->delete();
+            foreach ($item->images as $image) {
+                DB::table('products_images')
+                    ->insert([
+                        'product_id' => $id,
+                        'color_id' => $item->data['color_id'],
+                        'image' => $image
+                    ]);
+            }
+        }
+    }
+    public static function delete($id)
+    {
+        $product = self::get($id, true);
+        $orders = DB::table('order_product_color')
+            ->where('product_id', '=', $id)->get();
+        if (!$orders->first()) {
+            DB::table('products')->where('id', '=', $id)
+                ->delete();
+            foreach ($product->colors as $color) {
+                self::delete_color($id, $color->id, $color);
+            }
+        } else {
+            DB::table('products')->where('id', '=', $id)
+                ->update(['deleted' => 1]);
+            foreach ($product->colors as $color) {
+                if (!$color->deleted)
+                    self::delete_color($id, $color->id, $color);
+            }
+        }
+    }
+    public static function delete_color($product_id, $color_id, $color)
+    {
+        $orders = DB::table('order_product_color')
+            ->where('product_id', '=', $product_id)
+            ->where('color_id', '=', $color_id)->get();
+        if (!$orders->first()) {
+            DB::table('color_product')->where('product_id', '=', $product_id)
+                ->where('color_id', '=', $color_id)->delete();
+            Storage::delete("public/uploads/$color->main_image");
+            foreach ($color->images as $image) {
+                Storage::delete("public/uploads/$image->image");
+            }
+        } else {
+            DB::table('color_product')->where('product_id', '=', $product_id)
+                ->where('color_id', '=', $color_id)->update(['deleted' => 1]);
+            foreach ($color->images as $image) {
+                Storage::delete("public/uploads/$image->image");
+            }
+        }
     }
 }

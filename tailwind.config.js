@@ -8,7 +8,7 @@ module.exports = {
   theme: {
     extend: {
       screens: {
-      tablet: {'min': '820px'},
+      tablet: {'min': '640px'},
       desk : {'min': '1280px'},
       },
       colors: {
@@ -45,7 +45,7 @@ module.exports = {
         '30p' : '25px',
         '15%': '15%',
         '80%': '80%',
-        '700p': '700px'
+        '700p': '700px',
       },
        gridTemplateColumns: {
         'color': 'repeat( auto-fit, 30px)',

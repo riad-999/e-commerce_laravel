@@ -41,7 +41,7 @@ class orderSeeder extends Seeder
                         // 'total' => $total,
                         'number' => $faker->phoneNumber(),
                         'name' => $faker->name(),
-                        // 'email' => $faker->email(),
+                        'email' => $faker->email(),
                         'note' => $faker->text(),
                         // 'admin_note' => $faker->text(),
                         'track_code' => [null, $faker->bothify("??##?#?#?#?##?")][random_int(0, 1)],

@@ -5,7 +5,6 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
-use App\Models\Product;
 use App\Models\Review;
 
 use Illuminate\Support\Facades\Route;
@@ -25,9 +24,6 @@ Route::get('/', function () {
     return view('home');
 })->name('home');
 // products
-Route::get('/products', function () {
-    Product::all();
-})->name('products');
 Route::get('/products/initial-create', [ProductController::class, 'initial_create'])
     ->name('initial-create-product');
 Route::get('/products/create', [ProductController::class, 'create'])
@@ -36,14 +32,24 @@ Route::post('/products/initial-store', [ProductController::class, 'initial_store
     ->name('initial-store-product');
 Route::post('/products/store', [ProductController::class, 'store'])
     ->name('store-product');
-Route::get('/products/show/{id}', [ProductController::class, 'show'])
+Route::get('/products/{id}/show', [ProductController::class, 'show'])
+    ->whereNumber('id')->name('product');
+Route::get('/products/{id}/edit/', [ProductController::class, 'edit'])
     ->whereNumber('id')->name('edit-product');
-Route::get('/products/edit/{id}', [ProductController::class, 'edit'])
-    ->whereNumber('id')->name('edit-product');
-Route::get('/products/edit/{id}/colors', [ProductController::class, 'edit_colors'])
+Route::get('/products/{id}/colors/edit', [ProductController::class, 'edit_colors'])
     ->whereNumber('id')->name('edit-product-colors');
+Route::patch('/products/{id}', [ProductController::class, 'update'])
+    ->whereNumber('id')->name("update-product");
+Route::patch('/products/{id}/colors', [ProductController::class, 'update_colors'])
+    ->whereNumber('id')->name("update-product-colors");
+Route::post('/products/{id}/colors', [ProductController::class, 'store_color'])
+    ->whereNumber('id')->name("store-product-color");
 Route::get('/products/edit/{id}/promo', [ProductController::class, 'edit_promo'])
     ->whereNumber('id')->name('edit-product-promo');
+Route::delete('/products/{id}', [ProductController::class, 'destroy'])
+    ->whereNumber('id')->name('delete-product');
+Route::delete('/products/{product_id}/color/{color_id}', [ProductController::class, 'destroy_color'])
+    ->whereNumber(['product_id', 'color_id'])->name('delete-product-color');
 
 // product
 Route::get('/products', [ProductController::class, 'admin_index'])
@@ -107,7 +113,3 @@ Route::delete(
 Route::get('/reviews', function () {
     Review::filter(9, 2);
 });
-
-// Route::get('/brands', function () {
-//     Color::all();
-// });

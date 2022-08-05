@@ -11,13 +11,15 @@
         <link href="{{ asset('css/app.css') }}" rel="stylesheet">
         <script src="https://kit.fontawesome.com/1ef1b3e9cf.js" crossorigin="anonymous"></script>
     </head>
-    <body {{$attributes->merge(['class' => 'font-body text-gray-600 relative'])}}>
-        <x-ui-elements.navbar/>
-        <x-ui-elements.sidebar/>
+    <body {{$attributes->merge(['class' => 'font-body text-gray-600 relative bg-gray-100'])}}>
+        {{-- <x-ui-elements.navbar /> --}}
         <x-interactive.alert />
-        {{ $slot }}
+        <div class="desk:grid grid-cols-6 gap-8">
+            <x-ui-elements.admin-sidebar />
+            <main class="col-span-5 pt-8">
+                {{$slot}}
+            </main>
+        </div>
     </body>
 </html>
 <script src="/js/events.js"></script>
-{{-- <script src="https://unpkg.com/swiper/swiper-bundle.js"></script>
-<script src="/js/swiper.js"></script> --}}

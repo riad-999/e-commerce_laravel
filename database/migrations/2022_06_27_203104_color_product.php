@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('color_product', function (Blueprint $table) {
             $table->unsignedInteger('quantity');
+            $table->boolean('deleted')->default(0);
             $table->string('main_image', 127);
         });
     }

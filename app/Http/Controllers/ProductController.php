@@ -6,8 +6,10 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Color;
 use App\Models\Product;
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -134,7 +136,7 @@ class ProductController extends Controller
             $rules["color$i"] = ['required', 'exists:colors,id'];
             $rules["quantity$i"] = ['required', 'numeric', "gt:0"];
             $rules["main-image$i"] = ['required', 'image', 'mimes:jpg,jpeg,png,webp,svg,gif'];
-            $rules["other-images$i"] = ['required'];
+            // $rules["other-images$i"] = ['required'];
             $rules["other-images$i.*"] = ['image', 'mimes:jpg,jpeg,png,webp,svg,gif'];
         }
         $validated = $request->validate($rules);
@@ -214,7 +216,7 @@ class ProductController extends Controller
             'value' => $category->id
         ]);
 
-        return view('product-edit', [
+        return view('admin.edit-product', [
             'product' => $product,
             'brands' => $brands,
             'categories' => $categories,
@@ -224,37 +226,12 @@ class ProductController extends Controller
     public function edit_colors($id)
     {
         $product = Product::get($id, true);
-        $colors = Color::all()->map(
-            function ($color) {
-                $cols = [$color->value1];
-                if ($color->value2)
-                    array_push($cols, $color->value2);
-                if ($color->value3)
-                    array_push($cols, $color->value3);
-                return
-                    (object)[
-                        'id' => $color->id,
-                        'name' => $color->name,
-                        'colors' => $cols,
-                    ];
-            }
-        );
-        // foreach ($colors as $color) {
-        //     if ($color_ids->contains($color->id))
-        //         array_push($product_colors, $color);
-        // }
-        foreach ($product->colors as $color) {
-            $cols = [$color->value1];
-            if ($color->value2)
-                array_push($cols, $color->value2);
-            if ($color->value3)
-                array_push($cols, $color->value3);
-            $color->colors = $cols;
-        }
-        return view('product-edit-colors', [
+        if (!$product)
+            return redirect('/404');
+        $colors = Color::all();
+        return view('admin.edit-product-colors', [
             'count' => count($product->colors),
             'product' => $product,
-            // 'product_colors' => $product_colors,
             'colors' => $colors
         ]);
     }
@@ -265,18 +242,138 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $id)
     {
+        $inputs = ['name', 'description', 'price', 'brand_id', 'category_id'];
+        $data = [];
+        foreach ($inputs as $input) {
+            if ($request->input($input))
+                $data[$input] = $request->input($input);
+        }
+        if (!count($data))
+            return back();
+        Product::update($id, $data);
+        return back()->with([
+            'alert' => (object)[
+                'type' => 'success',
+                'message' => "le produit est modifié"
+            ]
+        ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Product $product)
+    public function update_colors(Request $request, $id)
     {
-        //
+        $product = Product::get($id, true);
+        $data = [];
+        $ids = [];
+        foreach ($product->colors as $color) {
+            array_push($ids, $request->input("$color->name"));
+        }
+        $counts = array_count_values($ids);
+        foreach ($counts as $item) {
+            if ($item > 1) {
+                return back()->with([
+                    'alert' => (object)[
+                        'type' => 'error',
+                        'message' => "il y a une redandance dans les coleurs"
+                    ]
+                ]);
+            }
+        }
+        foreach ($product->colors as $color) {
+            $object = (object)['id' => $color->id];
+            $object->images = null;
+            if ($color_id = $request->input("$color->name")) {
+                $object->data['color_id'] = $color_id;
+            }
+            if ($quantity = $request->input("quantity-$color->name")) {
+                $object->data['quantity'] = $quantity;
+            }
+            if ($request->file("main-image-$color->name")) {
+                $path = $request->file("main-image-$color->name")->store('public/uploads');
+                $object->data['main_image'] = basename($path);
+                Storage::delete("public/uploads/$color->main_image");
+            }
+            if ($request->file("other-images-$color->name")) {
+                $object->images = [];
+                foreach ($request->file("other-images-$color->name") as $file) {
+                    $path = $file->store('public/uploads');
+                    array_push($object->images, basename($path));
+                    foreach ($color->images as $image) {
+                        Storage::delete("public/uploads/$image->image");
+                    }
+                }
+            }
+            array_push($data, $object);
+        }
+        Product::update_colors($id, $data);
+        return back()->with([
+            'alert' => (object)[
+                'type' => 'success',
+                'message' => "les coleurs sont modifié"
+            ]
+        ]);
+    }
+    public function store_color(Request $request, $id)
+    {
+        $request->validate([
+            'quantity' => ['required', 'numeric', 'gt:0'],
+            'color' => [
+                'required', 'exists:colors,id',
+                Rule::unique('color_product', 'color_id')->where('product_id', $id)
+            ],
+            'main-image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp,svg,gif'],
+            'other-images.*' => ['image', 'mimes:jpg,jpeg,png,webp,svg,gif']
+        ]);
+        $name = basename($request->file('main-image')->store('public/uploads'));
+        $images = null;
+        if ($request->file('other-images')) {
+            $images = [];
+            foreach ($request->file('other-images') as $file) {
+                array_push($images, basename($file->store('public/uploads')));
+            }
+        }
+        Product::store_color([
+            'quantity' => $request->input('quantity'),
+            'color_id' => $request->input('color'),
+            'product_id' => $id,
+            'main_image' => $name
+        ], $images);
+
+        return back()->with([
+            'alert' => (object)[
+                'type' => 'success',
+                'message' => "la coleur est crée"
+            ]
+        ]);
+    }
+
+    public function destroy($id)
+    {
+        Product::delete($id);
+        return back()->with([
+            'alert' => (object)[
+                'type' => 'success',
+                'message' => "le produit est supprimé"
+            ]
+        ]);
+    }
+
+    public function destroy_color($product_id, $color_id)
+    {
+        $product = Product::get($product_id, true);
+        $color = null;
+        foreach ($product->colors as $clr) {
+            if ($clr->id == $color_id) {
+                $color = $clr;
+            }
+        }
+        Product::delete_color($product_id, $color_id, $color);
+        return back()->with([
+            'alert' => (object)[
+                'type' => 'success',
+                'message' => "la coleur est supprimé"
+            ]
+        ]);
     }
 }

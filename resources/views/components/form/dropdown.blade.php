@@ -4,11 +4,11 @@
     $dsb = $disabled ? '!cursor-not-allowed opacity-50 pointer-events-none' : '';    
 @endphp
 
-<div class="dropdown">
+<div {{$attributes->merge(['class' => 'dropdown'])}}>
     <input type="hidden" class="color" id="{{$name}}" name="{{$name}}"
      value="{{ $selected ? $selected->id : null }}" {{ $disabled ? 'disabled' : null }}/>
 
-    <label tabindex="0" class="btn color-label mb-4 capitalize 
+    <label tabindex="0" class="btn color-label capitalize 
     {{$dsb}}" >
         @if($selected === null) 
             séléctioner la coleur  <i class="fa-solid fa-angle-down ml-2"></i>

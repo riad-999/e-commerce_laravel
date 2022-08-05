@@ -61,7 +61,7 @@ class productSeeder extends Seeder
                             'description' => $faker->text(300),
                             'promo' => $promo,
                             'created_at' => $faker->dateTimeBetween(
-                                '2021-08-21 04:41:09',
+                                '2021-12-06 23:07:01',
                                 now()
                             )
                         ]

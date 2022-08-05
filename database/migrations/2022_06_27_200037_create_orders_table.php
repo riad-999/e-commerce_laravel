@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('number');
             $table->string('name')->index();
             $table->text('note')->nullable();
+            $table->string('email');
             $table->string('track_code')->nullable();
             $table->timestamp('created_at')->index();
         });

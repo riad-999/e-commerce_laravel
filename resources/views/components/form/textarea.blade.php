@@ -8,7 +8,7 @@
 
 <div class="{{$mrg}}">
     @if($label)
-        <label class="inline-block mb-2 font-semibold" for={{ $name }}>
+        <label class="inline-block mb-2 font-semibold text-sm" for={{ $name }}>
             {{$label}}
         </label>
     @endif
@@ -18,6 +18,6 @@
     <textarea {{ $disabled ? 'disabled' : '' }} {{ $attributes->merge([
         'class' => "block h-[120px] p-1 bg-gray-300 border border-gray-500 border-solid round $dsb",
         'id' => $name]
-    ) }}>{{$content}}</textarea>
+    ) }} spellcheck="false" >{{$content}}</textarea>
     <x-form.error name={{$name}} />
 </div>

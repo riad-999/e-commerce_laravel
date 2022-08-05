@@ -5,7 +5,7 @@
 @endphp
 <div class="{{ $margin }}">
     @if($label)
-        <label class="block font-semibold" for={{ $name }}>
+        <label class="block font-semibold text-sm" for={{ $name }}>
             {{$label}}
             @if($edit)
                 <x-form.edit class="{{$label ? 'ml-2' : ''}}" data-id="{{$name}}"/>
@@ -16,7 +16,7 @@
         </label>
     @endif
     <input {{ $disabled ? 'disabled' : '' }} {{ $attributes->merge([
-        'class' => "p-1 bg-gray-300 border border-gray-500 border-solid round $dsb",
+        'class' => "p-1 bg-gray-300 border border-gray-100 border-solid rounded-md $dsb",
         'id' => $name]
     ) }}/>
     <x-form.error name={{$name}} />

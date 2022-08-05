@@ -41,7 +41,7 @@
                     label="note" />
                     <div>
                         <x-interactive.btn :link="route('edit-order-products',$order->id)" class="mb-8" :white="true">produits</x-interactive.btn>
-                        <x-interactive.btn :link="route('order',$order->id)" class="mb-8" :white="true">ordre</x-interactive.btn>
+                        <x-interactive.btn :link="route('order',$order->id)" class="mb-8" :white="true">commande</x-interactive.btn>
                     </div>
                 </div>
             </div>

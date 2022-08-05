@@ -80,11 +80,11 @@
                         <div class="desk:hidden">
                             <span>{{$product->price}}Da x {{$product->quantity}}</span>
                             <br/>
-                            <span>total:</span> {{$product->total}}Da
+                            <span>total:</span> totalDa
                         </div>
                         <div class="hidden desk:block">{{$product->price}}Da</div>
                         <div class="hidden desk:block">{{$product->quantity}}</div>
-                        <div class="hidden desk:block">{{$product->total}}Da</div>
+                        <div class="hidden desk:block">totalDa</div>
                     </article>
                 @endforeach
             </section>

@@ -9,7 +9,7 @@
 
 <div class="{{$mrgn}} select-container">
     @if($label)
-        <label class="mb-2 inline-block font-semibold" for="{{ $name }}">
+        <label class="mb-2 inline-block font-semibold text-sm" for="{{ $name }}">
             {{$label}}
         </label>
     @endif

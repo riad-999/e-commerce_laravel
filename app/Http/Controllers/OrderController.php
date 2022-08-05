@@ -176,7 +176,12 @@ class OrderController extends Controller
         $errors = [];
         $data = [];
         foreach ($order->products as $product) {
-            $quantity = $request->input("$product->product_id-$product->order_id");
+            if ($product->quantity == 0) {
+                return back()->withErrors([
+                    "$product->product_id-$product->order_id" => "la quantité ne doit pas ètre 0"
+                ]);
+            }
+            $quantity = $request->input("$product->product_id-$product->color_id");
             if ($quantity > $product->pcquantity)
                 array_push($errors, "il rest juste $product->pcquantity du $product->pname");
             array_push($data, (object) [
@@ -193,7 +198,12 @@ class OrderController extends Controller
                 ]
             ])->withInput();
         Order::update_products($order->id, $data);
-        return redirect()->route('edit-order-products', $order->id);
+        return redirect()->back()->with([
+            'alert' => (object)[
+                'type' => 'success',
+                'message' => "la commande est modifié"
+            ]
+        ]);;
     }
     public function delete($id)
     {
