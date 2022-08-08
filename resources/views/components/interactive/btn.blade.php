@@ -1,7 +1,7 @@
 @props(['link' => null,'white' => false])
 
 @php
-    $color = 'bg-black text-white hover:bg-black';
+    $color = 'bg-secondary text-white hover:bg-black';
     $border = '';
     if($white) {
         $color = 'bg-transparent text-black';
@@ -12,14 +12,14 @@
 @if($link) 
     <a {{ $attributes->merge([
         'class' => "btn border-none py-1
-        px-4 $color $border 
+        px-4 $color $border rounded-none
         hover:opacity-60 normal-case",
         'href' => $link
     ])}}>{{$slot}}</a>
 @else
     <button {{ $attributes->merge([
         'class' => "btn border-none py-1
-        px-4 $color $border
+        px-4 $color $border rounded-none
         hover:opacity-60 normal-case"
     ])}}>
         {{ $slot }}

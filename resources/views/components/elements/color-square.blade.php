@@ -23,7 +23,9 @@
         }
     @endphp
 
-    <div {{ $attributes->merge(['class' => "w-8 h-8 inline-grid $grid"]) }}>
+    <div {{ $attributes->merge([
+        'class' => "w-[25px] h-[25px] inline-grid $grid border border-solid border-border"
+    ]) }}>
         @foreach ($cols as $col)
             <div style="background-color: {{ $col }}"></div>
         @endforeach

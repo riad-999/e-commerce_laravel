@@ -35,11 +35,33 @@ class ProductController extends Controller
             'id' => $request->input('id'),
             'name' => $request->input('name'),
             'promo' => $request->input('promo'),
-            'archived' => $request->input('archived')
         ]);
     }
     public function index(Request $request)
     {
+        $order = $request->input('order') ? $request->input('order') : 'solds';
+        $paginate = Product::index($request, $order);
+        $query = $request->query();
+        $query['page'] = $paginate->nextPage;
+        $nextUrl = $request->fullUrlWithQuery($query);
+        $query['page'] = $paginate->previousPage;
+        $prevUrl = $request->fullUrlWithQuery($query);
+        return view('products', [
+            'Brands' => Brand::all(),
+            'Categories' => Category::all(),
+            'products' => $paginate->products,
+            'currentPage' => $paginate->currentPage,
+            'lastPage' => $paginate->lastPage,
+            'nextUrl' => $nextUrl,
+            'prevUrl' => $prevUrl,
+            'total' => $paginate->total,
+            'search' => $request->input('search'),
+            'promo' => $request->input('promo'),
+            'price' => $request->input('price'),
+            'categories' => $request->input('categories'),
+            'brands' => $request->input('brands'),
+            'sort' => $order
+        ]);
     }
 
     /**

@@ -75,12 +75,13 @@ class productSeeder extends Seeder
         foreach ($products as $product) {
             $random_colors = $colors->random(random_int(1, 6));
             foreach ($random_colors as $color) {
+                $rand = random_int(1, 30000);
                 DB::table('color_product')->insert(
                     [
                         'product_id' => $product->id,
                         'color_id' => $color->id,
                         'quantity' => random_int(30, 100),
-                        'main_image' => $faker->imageUrl()
+                        'main_image' => "https://picsum.photos/640/480?random=$rand"
                     ]
                 );
             }
@@ -89,11 +90,12 @@ class productSeeder extends Seeder
         $product_color = DB::table('color_product')->get();
         foreach ($product_color as $record) {
             for ($i = 0; $i < random_int(3, 8); $i++) {
+                $rand = random_int(1, 30000);
                 DB::table('products_images')->insert(
                     [
                         'product_id' => $record->product_id,
                         'color_id' => $record->color_id,
-                        'image' => $faker->imageUrl()
+                        'image' => "https://picsum.photos/640/480?random=$rand"
                     ]
                 );
             }

@@ -48,13 +48,14 @@ module.exports = {
         '700p': '700px',
       },
        gridTemplateColumns: {
-        'color': 'repeat( auto-fit, 30px)',
-        'color-xl': 'repeat( auto-fit, 30px)',
+        'color': 'repeat( auto-fit, 25px)',
         'admin1' : '50px repeat(5,1fr)'
       }, 
       gridTemplateRows: {
-        'color': 'repeat( auto-fit, 30px)',
-        'color-xl': 'repeat( auto-fit, 30px)',
+        'color': 'repeat( auto-fit, 20px)',
+      },
+      transitionProperty: {
+        'height': 'height',
       }
     },
   },

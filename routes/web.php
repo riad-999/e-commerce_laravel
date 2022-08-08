@@ -51,9 +51,10 @@ Route::delete('/products/{id}', [ProductController::class, 'destroy'])
 Route::delete('/products/{product_id}/color/{color_id}', [ProductController::class, 'destroy_color'])
     ->whereNumber(['product_id', 'color_id'])->name('delete-product-color');
 
-// product
-Route::get('/products', [ProductController::class, 'admin_index'])
+Route::get('/admin-products', [ProductController::class, 'admin_index'])
     ->name('admin-products');
+Route::get('/products', [ProductController::class, 'index'])
+    ->name('products');
 // category
 Route::get('/categories', [CategoryController::class, 'index'])
     ->name('categories');

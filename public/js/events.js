@@ -8,6 +8,13 @@ const openModalBtns = document.querySelectorAll('.open-modal');
 const closeModalBtns = document.querySelectorAll('.close-modal');
 const tabs = document.querySelectorAll('.tab');
 const wilayaSelect = document.getElementById('wilaya');
+const filterDropdowns = document.querySelectorAll('.filter-dropdown');
+const productsContainer = document.querySelector('.products-container');
+const prices = document.querySelectorAll('.price');
+const checksContainers = document.querySelectorAll('.checks-container');
+const openSideFilters = document.getElementById('open-side-filters');
+const closeSideFilters = document.getElementById('close-side-filters');
+let checkFlag = false;
 
 const imageSelectionHandler = (event) => {
     const input = event.currentTarget;
@@ -162,6 +169,57 @@ const wilayaSelectHandler = event => {
         radio.disabled = false;
     }
 }
+const toggleFilterDropdownHandler = (event) => {
+    const id = event.currentTarget.dataset.id;
+    const content = document.getElementById(id);
+    const height = content.clientHeight;
+    if(!content.parentElement.clientHeight) {
+        content.parentElement.style.height = `${height}px`;
+    }
+    else {
+        content.parentElement.style.height = `0px`;
+    }
+}
+const colorChnageHandler = (event) => {
+    if(event.currentTarget.classList.contains('color-square') ||
+    event.target.closest('.color-square')) {
+        const square = event.target.closest('.color-square');
+        const {id,src} = square.dataset;
+        const img = document.getElementById(id);
+        img.src = src;
+    }
+}
+const priceChangeHandler = (event) => {
+    const id = event.currentTarget.dataset.id;
+    const price = document.getElementById(id);
+    price.textContent = `${event.currentTarget.value}Da`;
+}
+const checkHandler = (event) => {
+    checkFlag = !checkFlag;
+    if(!checkFlag)
+        return;
+    const check = event.target.closest('.check');
+    if(!check)
+        return;
+    const {id,value} = check.dataset;
+    const input = document.getElementById(id);
+    const values = JSON.parse(input.value)
+    const index = values.indexOf(value);
+    if (index === -1) {
+        values.push(value);
+    } else {
+        values.splice(index, 1);
+    }
+    input.value = JSON.stringify(values);
+}
+const openSideFiltersHandler = () => {
+    const sidebar = document.getElementById('side-filters');
+    sidebar.classList.remove('translate-x-[-100%]');
+}
+const closeSideFiltersHandler = () => {
+    const sidebar = document.getElementById('side-filters');
+    sidebar.classList.add('translate-x-[-100%]');
+}
 // const addColor_image = (event) => {
 //     const LIST = ['amd','msi','asus'];
 //     color_imageCount++;
@@ -260,6 +318,26 @@ if(tabs.length) {
 }
 if(wilayaSelect){
     wilayaSelect.addEventListener('change',wilayaSelectHandler);
+}
+if(filterDropdowns.length) {
+    filterDropdowns.forEach(
+        item => item.addEventListener('click',toggleFilterDropdownHandler)
+    );
+}
+if(productsContainer) {
+    productsContainer.addEventListener('click',colorChnageHandler);
+}
+if(prices.length) {
+    prices.forEach(item => item.addEventListener('input',priceChangeHandler));
+}
+if(checksContainers.length) {
+    checksContainers.forEach(item => item.addEventListener('click',checkHandler));
+}
+if(openSideFilters) {
+    openSideFilters.addEventListener('click',openSideFiltersHandler);
+}
+if(closeSideFilters) {
+    closeSideFilters.addEventListener('click',closeSideFiltersHandler);
 }
 // window.addEventListener('DOMContentLoaded', windowLoadHandler);
 
