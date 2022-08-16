@@ -8,23 +8,28 @@ const openModalBtns = document.querySelectorAll('.open-modal');
 const closeModalBtns = document.querySelectorAll('.close-modal');
 const tabs = document.querySelectorAll('.tab');
 const wilayaSelect = document.getElementById('wilaya');
-const filterDropdowns = document.querySelectorAll('.filter-dropdown');
 const productsContainer = document.querySelector('.products-container');
 const prices = document.querySelectorAll('.price');
-const checksContainers = document.querySelectorAll('.checks-container');
+const checksContainers = document.querySelectorAll('.checks-container'); 
 const openSideFilters = document.getElementById('open-side-filters');
 const closeSideFilters = document.getElementById('close-side-filters');
+const colorsContainer = document.getElementById('colors-container');
+const toggleDropDowns = document.querySelectorAll('.toggle-drop-down');
+const addToCartBtn = document.getElementById('add-to-cart');
+const cartFroms = document.querySelectorAll('.cart-form');
+const qteInput = document.getElementById('quantity');
+const sideCart = document.getElementById('side-cart');
+const closeSideCartBtn = document.getElementById('close-side-cart');
+const updateQuantityInputs = document.querySelectorAll('.update-quantity');
 let checkFlag = false;
 
 const imageSelectionHandler = (event) => {
     const input = event.currentTarget;
     if(input.classList.contains('main-image')) {
         const oldImage = input.parentElement.nextElementSibling;
-        console.log(oldImage);
         if(oldImage && oldImage.classList.contains('main-Image'))
         {
             oldImage.remove();
-            console.log('pihs pish');
         }
         const url = URL.createObjectURL(input.files[0]);
         const image = document.createElement('img');
@@ -104,7 +109,6 @@ const removeHandler = event => {
     input.disabled = false;
     input.value = '';
     if(input.type == 'color') {
-        console.log('pish');
         input.value = '#010101';
     }
 }
@@ -117,7 +121,7 @@ const closeAlertHandler = event => {
 const openModal = event => {
     const id = event.currentTarget.dataset.id;
     const modal = document.getElementById(id);
-    modal.classList.remove('opacity-0');
+    modal.style.opacity = '1';
     modal.classList.remove('invisible');
     if(modal.dataset.form)
         modal.firstElementChild.action = 
@@ -126,7 +130,7 @@ const openModal = event => {
 const closeModal = () => {
     const id = event.currentTarget.dataset.id;
     const modal = document.getElementById(id);
-    modal.classList.add('opacity-0');
+    modal.style.opacity = '0';
     modal.classList.add('invisible');
 }
 const tabHanlder = event => {
@@ -152,11 +156,6 @@ const tabHanlder = event => {
         } 
     });
 }
-const windowLoadHandler = () => {
-    const colorInputs = document.querySelectorAll('input[type="color"]');
-    colorInputs.forEach(input => input.value = '#010101');
-    colorInputs.forEach(input => console.log(input.value))
-}
 const wilayaSelectHandler = event => {
     const value = event.currentTarget.value;
     const radio = document.querySelector('input[value="au bureau"]');
@@ -169,31 +168,71 @@ const wilayaSelectHandler = event => {
         radio.disabled = false;
     }
 }
-const toggleFilterDropdownHandler = (event) => {
-    const id = event.currentTarget.dataset.id;
-    const content = document.getElementById(id);
-    const height = content.clientHeight;
-    if(!content.parentElement.clientHeight) {
-        content.parentElement.style.height = `${height}px`;
-    }
-    else {
-        content.parentElement.style.height = `0px`;
-    }
-}
-const colorChnageHandler = (event) => {
-    if(event.currentTarget.classList.contains('color-square') ||
-    event.target.closest('.color-square')) {
+const colorChangeHandler = (event) => {
+    if(event.target.closest('.color-square')) {
         const square = event.target.closest('.color-square');
         const {id,src} = square.dataset;
         const img = document.getElementById(id);
         img.src = src;
+        const container = square.closest('.colors-container');
+        square.classList.add('outline-secondary');
+        square.classList.add('outline-2');
+        square.classList.add('outline');
+        const list = container.children;
+        for (let i = 0; i < list.length; i++) {
+            if(list[i] != square) {
+                list[i].classList.remove('outline-secondary');
+                list[i].classList.remove('outline-2');
+                list[i].classList.remove('outline');
+            }
+        }
+        
     }
 }
-const priceChangeHandler = (event) => {
-    const id = event.currentTarget.dataset.id;
-    const price = document.getElementById(id);
-    price.textContent = `${event.currentTarget.value}Da`;
+const singleProductColorChangeHandler = (event) => {
+    if(!event.target.closest('.color-square')) 
+        return;
+    const square = event.target.closest('.color-square');
+    let {id,images,quantity,color,product} = square.dataset;
+    const imagesContainer = document.getElementById(id);
+    const imageElements = imagesContainer.children;
+    for (let i = 0; i < imageElements.length; i++) {
+        imageElements[i].remove();
+    }
+    images = JSON.parse(images);
+    images.forEach(image => {
+        const img = document.createElement("img");
+        img.src = image;
+        img.classList.add('swiper-slide');
+        img.classList.add('block');
+        img.classList.add('desk:px-12')
+        imagesContainer.append(img);
+    });
+    const container = square.closest('.colors-container');
+    square.classList.add('outline-secondary');
+    square.classList.add('outline-2');
+    square.classList.add('outline');
+    const list = container.children;
+    for (let i = 0; i < list.length; i++) {
+        if(list[i] != square) {
+            list[i].classList.remove('outline-secondary');
+            list[i].classList.remove('outline-2');
+            list[i].classList.remove('outline');
+        }
+    }
+    const leftQauntity = document.querySelectorAll('.left-quantity');
+    leftQauntity.forEach(item => item.textContent = `${quantity} disponible`);
+    const cart = document.getElementById('add-to-cart');
+    cart.dataset.color = color;
+    cart.dataset.product = product;
+    cart.dataset.image = images[0];
+    qteInput.max = quantity;
 }
+// const priceChangeHandler = (event) => {
+//     const id = event.currentTarget.dataset.id;
+//     const price = document.getElementById(id);
+//     price.textContent = `${event.currentTarget.value}Da`;
+// }
 const checkHandler = (event) => {
     checkFlag = !checkFlag;
     if(!checkFlag)
@@ -219,6 +258,77 @@ const openSideFiltersHandler = () => {
 const closeSideFiltersHandler = () => {
     const sidebar = document.getElementById('side-filters');
     sidebar.classList.add('translate-x-[-100%]');
+}
+const toggleDropDownHandler = (event) => {
+    const {id} = event.currentTarget.dataset;
+    const showBtn = document.querySelector(`#${event.currentTarget.id} .show`);
+    const colseBtn = document.querySelector(`#${event.currentTarget.id} .close`);
+    showBtn.classList.toggle('!hidden');
+    colseBtn.classList.toggle('!hidden');
+    const dropdown = document.getElementById(id);
+    const height = dropdown.clientHeight;
+    if(dropdown.parentElement.clientHeight) 
+         dropdown.parentElement.style.height = `0px`;
+    else
+        dropdown.parentElement.style.height = `${height}px`;
+}
+const addToCartHanlder = event => {
+    const img = document.getElementById('cart-image');
+    const input = document.getElementById('color_id');
+    const {color,image} = event.currentTarget.dataset;
+    img.src = image;
+    input.value = color;
+}
+const windowLoadHandler = () => {
+    if(sideCart) {
+        setInterval(() => {
+            sideCart.classList.add('translate-x-0');
+        }, 500);
+    }
+    countdown();
+}
+const closeSideCart = () => {
+    sideCart.classList.add('!translate-x-full');
+}
+const updateQuantityHandler = async event => {
+    if(!event.currentTarget.classList.contains('update-quantity'))
+        return;
+    const id = event.currentTarget.id;
+    const {id:input_id, max, product_id, color_id} = event.currentTarget.dataset;
+    const flag = event.target.dataset.flag;
+    const input = document.getElementById(input_id);
+    const quantity = flag ==='increase' ? parseInt(input.value) + 1 
+    : parseInt(input.value) - 1;
+    if(quantity > max || quantity == 0) 
+        return;
+    event.currentTarget.classList.add('opacity-50')
+    event.currentTarget.classList.add('pointer-events-none');
+    let subTotal = null;
+    try {
+        const res = await axios.patch(`${serverEndPoint}/cart`, {
+            product_id, color_id, quantity
+        });
+        subTotal = res.data.sub_total;
+    } catch(error) {
+        console.log(error);
+        if(error.response && error.response.status > 400 && error.response.status < 500) {
+            // auth error
+        }
+        else if(error.request) {
+            // no response received 
+        }
+        else {
+            // redirect to error page
+        }
+    }
+
+    const currentT = document.getElementById(id);
+    currentT.classList.remove('opacity-50')
+    currentT.classList.remove('pointer-events-none');
+    input.value = quantity;
+    document.querySelectorAll(`div[data-id="${input_id}"] .quantity`)
+    .forEach(item => item.textContent = quantity);
+    document.getElementById('sub-total').textContent = `${subTotal} Da`;
 }
 // const addColor_image = (event) => {
 //     const LIST = ['amd','msi','asus'];
@@ -280,6 +390,34 @@ const closeSideFiltersHandler = () => {
 //     last.before(container);
 // }
 
+const countdown = () => {
+    if(!document.getElementById('countdown'))
+        return;
+    const second = 1000;
+    const minute = second * 60;
+    const hour = minute * 60;
+    const day = hour * 24;
+    // const countDown = new Date('09/02/2022').getTime();
+    let x = setInterval(() => {
+        const now = new Date().getTime();
+        const distance = countDown - now;
+
+        document.getElementById("days").innerText = Math.floor(distance / (day)),
+        document.getElementById("hours").innerText = Math.floor((distance % (day)) / (hour)),
+        document.getElementById("minutes").innerText = Math.floor((distance % (hour)) / (minute)),
+        document.getElementById("seconds").innerText = Math.floor((distance % (minute)) / second);
+
+        //do something later when date is reached
+        if (distance < 0) {
+            document.getElementById('countdown').remove();
+            document.getElementById('promo').remove();
+            document.getElementById('price').classList.remove('line-through');
+            clearInterval(x);
+        }
+        //seconds
+    },1000);
+}
+
 if(imagesInputs.length)
     imagesInputs.forEach(input => 
         input.addEventListener('change',imageSelectionHandler)
@@ -319,16 +457,8 @@ if(tabs.length) {
 if(wilayaSelect){
     wilayaSelect.addEventListener('change',wilayaSelectHandler);
 }
-if(filterDropdowns.length) {
-    filterDropdowns.forEach(
-        item => item.addEventListener('click',toggleFilterDropdownHandler)
-    );
-}
 if(productsContainer) {
-    productsContainer.addEventListener('click',colorChnageHandler);
-}
-if(prices.length) {
-    prices.forEach(item => item.addEventListener('input',priceChangeHandler));
+    productsContainer.addEventListener('click',colorChangeHandler);
 }
 if(checksContainers.length) {
     checksContainers.forEach(item => item.addEventListener('click',checkHandler));
@@ -339,9 +469,25 @@ if(openSideFilters) {
 if(closeSideFilters) {
     closeSideFilters.addEventListener('click',closeSideFiltersHandler);
 }
-// window.addEventListener('DOMContentLoaded', windowLoadHandler);
-
-
-// const input = document.getElementById('date');
-// input.addEventListener('change',
-//     event => console.log(event.currentTarget.value));
+if(colorsContainer) {
+    colorsContainer.addEventListener('click',singleProductColorChangeHandler);
+}
+if(toggleDropDowns.length) {
+    toggleDropDowns.forEach(item => item.addEventListener('click',toggleDropDownHandler));
+}
+if(addToCartBtn) {
+    addToCartBtn.addEventListener('click',addToCartHanlder);
+}
+if(closeSideCartBtn) {
+    closeSideCartBtn.addEventListener('click',closeSideCart);
+}
+if(updateQuantityInputs.length) {
+    updateQuantityInputs.forEach(item => item.addEventListener('click',updateQuantityHandler));
+}
+// if(cartFroms.length) {
+//     cartFroms.forEach(item => item.addEventListener('submit',cartFormSubmitHandler)); 
+// }
+// if(qteInput) {
+//     qteInput.addEventListener('input',quantityChangeHandler);
+// }
+window.addEventListener('DOMContentLoaded',windowLoadHandler);

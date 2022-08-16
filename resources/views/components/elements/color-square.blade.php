@@ -22,7 +22,6 @@
             array_push($cols,$color->value3);
         }
     @endphp
-
     <div {{ $attributes->merge([
         'class' => "w-[25px] h-[25px] inline-grid $grid border border-solid border-border"
     ]) }}>

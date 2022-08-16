@@ -1,7 +1,7 @@
 @props(['product'])
 
 <article>
-    <a href="#" class="block">
+    <a href="{{route('show-product',$product->id)}}" class="block">
         <img class="w-full object-cover border-b border-solid border-gray-400 mb-4" 
         src="{{$product->colors[0]->main_image}}" id='{{"img-$product->id"}}' alt="product image" />
     </a>
@@ -13,14 +13,14 @@
             <div class="font-extralight text-trinary ">{{$product->promo}}Da</div>
         @endif
     </div>
-    <div class="grid grid-cols-color gap-2 mt-4">
+    <div class="grid grid-cols-color gap-2 mt-4 colors-container">
         @foreach($product->colors as $color)
             @if($loop->index == 3)  
-                <a href="" class="flex justify-center items-center border border-solid border-border text-sm">...</a>
+                <a href="{{route('show-product',$product->id)}}" class="flex justify-center items-center border border-solid border-border text-sm">...</a>
                 @break
             @else
                 <x-elements.color-square :color="$color" 
-                class="cursor-pointer color-square" 
+                class="cursor-pointer color-square {{$loop->index == 0 ? 'outline outline-secondary outline-2' : ''}}" 
                 data-src="{{$color->main_image}}" data-id='{{"img-$product->id"}}'/>
             @endif
         @endforeach

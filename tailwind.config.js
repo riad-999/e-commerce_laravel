@@ -49,14 +49,24 @@ module.exports = {
       },
        gridTemplateColumns: {
         'color': 'repeat( auto-fit, 25px)',
-        'admin1' : '50px repeat(5,1fr)'
+        'admin1' : '50px repeat(5,1fr)',
+        'product-images': '50px 1fr'
       }, 
       gridTemplateRows: {
         'color': 'repeat( auto-fit, 20px)',
       },
       transitionProperty: {
         'height': 'height',
-      }
+      },
+      // keyframes: {
+      //    side_bar: {
+      //     // '0%': { transform: 'translateX(100%)' },
+      //     '100%': { transform: 'translateX(0)' },
+      //   }
+      // },
+      // animation: {
+      //   side_bar: 'side_bar 0.3s 3s',
+      // }
     },
   },
   plugins: [require("daisyui")],

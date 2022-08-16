@@ -17,7 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('name')->index();
             $table->unsignedInteger('price');
-            $table->unsignedInteger('promo')->nullable()->index();
+            $table->unsignedInteger('promo')->nullable();
+            $table->date('expires')->nullable();
             $table->text('description')->fulltext();
             $table->boolean('deleted')->default(0);
             $table->timestamp('created_at');

@@ -22,4 +22,5 @@
         </div>
     </body>
 </html>
+<script src="/js/utils.js"></script>
 <script src="/js/events.js"></script>

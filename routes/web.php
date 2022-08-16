@@ -1,10 +1,13 @@
 <?php
 
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
+use App\Models\Cart;
+use App\Models\Product;
 use App\Models\Review;
 
 use Illuminate\Support\Facades\Route;
@@ -55,6 +58,17 @@ Route::get('/admin-products', [ProductController::class, 'admin_index'])
     ->name('admin-products');
 Route::get('/products', [ProductController::class, 'index'])
     ->name('products');
+Route::get('/products/{id}', [ProductController::class, 'show'])
+    ->whereNumber(['id'])->name('show-product');
+//cart 
+Route::post('/cart', [CartController::class, 'add'])
+    ->name('add-to-cart');
+Route::get('/cart', [CartController::class, 'show'])
+    ->name('cart');
+Route::patch('/cart', [CartController::class, 'update_item_quantity'])
+    ->middleware(\App\Http\Middleware\Cors::class);
+Route::delete('/cart', [CartController::class, 'delete_item'])
+    ->name('delete-cart-item');
 // category
 Route::get('/categories', [CategoryController::class, 'index'])
     ->name('categories');

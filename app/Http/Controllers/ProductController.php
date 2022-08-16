@@ -8,6 +8,7 @@ use App\Models\Color;
 use App\Models\Product;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -39,7 +40,14 @@ class ProductController extends Controller
     }
     public function index(Request $request)
     {
-        $order = $request->input('order') ? $request->input('order') : 'solds';
+        if ($request->input('order'))
+            $order = $request->input('order');
+        elseif ($request->session()->get('order'))
+            $order = $request->session()->get('order');
+        else
+            $order = 'solds';
+        $request->session()->put('order', $order);
+
         $paginate = Product::index($request, $order);
         $query = $request->query();
         $query['page'] = $paginate->nextPage;
@@ -115,6 +123,19 @@ class ProductController extends Controller
         ]);
     }
 
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Product  $product
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Request $request, $id)
+    {
+        $product =  Product::get($id, true, true, true);
+        return view('show-product', [
+            'product' => $product
+        ]);
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -204,17 +225,6 @@ class ProductController extends Controller
             $request->session()->forget($item);
         }
         return redirect(route('initial-create-product'));
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        $product =  Product::get($id, true, true, true);
     }
 
     /**

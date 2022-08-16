@@ -1,85 +1,5 @@
 <x-ui-elements.layout>
-    <form class="mx-auto px-4 max-w-[1600px] mt-16" autocomplete="off">
-        {{-- <aside id="side-filters" class="fixed w-[300px] top-0 left-0 bottom-0 max-h-[100vh]  overflow-auto
-        translate-x-[-100%] bg-white shadow-md z-[100] transition py-12 px-4 desk:hidden">
-            <button class="absolute top-2 right-4 p-2 text-xl text-secondary" 
-            type="button" id="close-side-filters">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-            <div class="flex justify-between items-center gap-2 mb-8 border-b border-solid border-border">
-                <input type="search" value="{{$search}}"
-                class="py-2 pl-2 w-full
-                focus:outline-none" name="search"
-                placeholder="chercher..."/>
-            </div>
-            <div class="flex items-center gap-4 mb-4">
-                <input type="checkbox" id="promo" name="promo" value="true"
-                class="translate-x-1 cursor-pointer accent-black" {{$promo ? 'checked' : ''}} />
-                <label for="promo" class="cursor-pointer select-none">Promo</label>
-            </div>
-            <div class="mb-4">
-                <x-form.input type="number" name="price" class="w-full"
-                value="{{$price ? $price : 0}}" min="0" label="prix max (Da)" />
-            </div>
-            <div class="border-b border-border border-solid py-2">
-                <button type="button" class="flex justify-between w-full py-2 filter-dropdown" data-id="brand">
-                    <span class="inline-block">Markes</span>
-                    <span class="inline-block"><i class="fa-solid fa-angle-down"></i></span>
-                </button>
-                <div class="h-0 overflow-hidden transition-height duration-300">
-                    <div id="brand" class="pl-2 checks-container">
-                        <input type="hidden" name="brands" id="brands" value="{{$brands ? $brands : '[]'}}" />
-                        @foreach($Brands as $brand)
-                            @php
-                                $checked = '';
-                                if($brands && in_array("$brand->id", json_decode($brands)))
-                                    $checked = 'checked';
-                            @endphp
-                            <div class="flex items-center check" data-id="brands" data-value="{{$brand->id}}">
-                                <input type="checkbox" id="{{$brand->name}}" {{$checked}}
-                                value="{{$brand->id}}" class="translate-x-1 cursor-pointer accent-black" />
-                                <label for="{{$brand->name}}" class="cursor-pointer select-none ml-2 py-2">
-                                    {{$brand->name}}
-                                </label>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-            <div class="border-b border-border border-solid py-2">
-                <button type="button" class="flex justify-between w-full py-2 filter-dropdown" data-id="category">
-                    <span class="inline-block">Types</span>
-                    <span class="inline-block"><i class="fa-solid fa-angle-down"></i></span>
-                </button>
-                <div class="h-0 overflow-hidden transition-height duration-300">
-                    <div id="category" class="pl-2 checks-container">
-                        <input type="hidden" name="categories" id="categories" value="{{$categories ? $categories : '[]'}}" />
-                        @foreach($Categories as $category)
-                            @php
-                                $checked = '';
-                                if($categories && in_array("$category->id", json_decode($categories)))
-                                    $checked = 'checked';
-                            @endphp
-                            <div class="flex items-center check" data-id="categories" data-value="{{$category->id}}">
-                                <input type="checkbox" id="{{$category->name}}" {{$checked}}
-                                value="{{$category->id}}" class="translate-x-1 cursor-pointer accent-black" />
-                                <label for="{{$category->name}}" class="cursor-pointer select-none ml-2 py-2">
-                                    {{$category->name}}
-                                </label>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-            <div class="mt-12">
-                <x-interactive.btn class="w-full mb-2 shadow-md" type="submit">
-                    Chercher <i class="fa-solid fa-magnifying-glass ml-2 block"></i>
-                </x-interactive.btn>
-                <x-interactive.btn class="w-full" type="reset" :link="route('products')" :white="true">
-                    Réinitialiser
-                </x-interactive.btn>
-            </div>
-        </aside> --}}
+    <form class="mx-auto px-4 max-w-[1400px] mt-16" autocomplete="off">
         <section class="desk:grid grid-cols-5 items-start gap-12">
              <aside id="side-filters" class="fixed w-[300px] top-0 left-0 bottom-0 max-h-[100vh] overflow-auto
             translate-x-[-100%] bg-white shadow-md z-[100] transition py-4 px-4 
@@ -111,37 +31,13 @@
                     value="{{$price ? $price : 0}}" min="0" label="prix max (Da)" />
                 </div>
                 <div class="border-b border-border border-solid py-2">
-                    <button type="button" class="flex justify-between w-full py-2 filter-dropdown" data-id="desk-brand">
-                        <span class="inline-block">Markes</span>
-                        <span class="inline-block"><i class="fa-solid fa-angle-down"></i></span>
-                    </button>
-                    <div class="h-0 overflow-hidden transition-height duration-300">
-                        <div id="desk-brand" class="pl-2 checks-container">
-                            <input type="hidden" name="brands" id="desk-brands" value="{{$brands ? $brands : '[]'}}" />
-                            @foreach($Brands as $brand)
-                                @php
-                                    $checked = '';
-                                    if($brands && in_array("$brand->id", json_decode($brands)))
-                                        $checked = 'checked';
-                                @endphp
-                                <div class="flex items-center check" data-id="desk-brands" data-value="{{$brand->id}}">
-                                    <input type="checkbox" id="{{$brand->name}}" {{$checked}}
-                                    value="{{$brand->id}}" class="translate-x-1 cursor-pointer accent-black" />
-                                    <label for="{{$brand->name}}" class="cursor-pointer select-none ml-2 py-2">
-                                        {{$brand->name}}
-                                    </label>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-                <div class="border-b border-border border-solid py-2">
-                    <button type="button" class="flex justify-between w-full py-2 filter-dropdown" data-id="desk-category">
+                    <button type="button" class="flex justify-between w-full py-2 toggle-drop-down" id="toggle-categories" data-id="desk-category">
                         <span class="inline-block">Types</span>
-                        <span class="inline-block"><i class="fa-solid fa-angle-down"></i></span>
+                        <i class="fa-solid fa-angle-down show"></i>
+                        <i class="fa-solid fa-angle-up close !hidden"></i>
                     </button>
                     <div class="h-0 overflow-hidden transition-height duration-300">
-                        <div id="desk-category" class="pl-2 checks-container">
+                        <div id="desk-category" class="pl-2">
                             <input type="hidden" name="categories" id="desk-categories" value="{{$categories ? $categories : '[]'}}" />
                             @foreach($Categories as $category)
                                 @php
@@ -154,6 +50,32 @@
                                     value="{{$category->id}}" class="translate-x-1 cursor-pointer accent-black" />
                                     <label for="{{$category->name}}" class="cursor-pointer select-none ml-2 py-2">
                                         {{$category->name}}
+                                    </label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+                <div class="border-b border-border border-solid py-2">
+                    <button type="button" class="flex justify-between w-full py-2 toggle-drop-down" id="toggle-brands" data-id="desk-brand">
+                        <span class="inline-block">Markes</span>
+                        <i class="fa-solid fa-angle-down show"></i>
+                        <i class="fa-solid fa-angle-up close !hidden"></i>
+                    </button>
+                    <div class="h-0 overflow-hidden transition-height duration-300">
+                        <div id="desk-brand" class="pl-2">
+                            <input type="hidden" name="brands" id="desk-brands" value="{{$brands ? $brands : '[]'}}" />
+                            @foreach($Brands as $brand)
+                                @php
+                                    $checked = '';
+                                    if($brands && in_array("$brand->id", json_decode($brands)))
+                                        $checked = 'checked';
+                                @endphp
+                                <div class="flex items-center check" data-id="desk-brands" data-value="{{$brand->id}}">
+                                    <input type="checkbox" id="{{$brand->name}}" {{$checked}}
+                                    value="{{$brand->id}}" class="translate-x-1 cursor-pointer accent-black" />
+                                    <label for="{{$brand->name}}" class="cursor-pointer select-none ml-2 py-2">
+                                        {{$brand->name}}
                                     </label>
                                 </div>
                             @endforeach

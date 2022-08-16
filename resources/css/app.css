@@ -22,7 +22,8 @@ body {
     h2,
     h3,
     h4,
-    h5 {
+    h5,
+    h6 {
         color: #171514;
         font-family: 'Playfair Display', serif;
         font-weight: 400;
@@ -46,6 +47,10 @@ body {
 
     h5 {
         font-size: 1.25rem;
+    }
+
+    h6 {
+        font-size: 1rem;
     }
 
     small {
@@ -87,4 +92,12 @@ body {
             font-size: 0.707rem;
         }
     }
+}
+
+.swiper-pagination-bullet {
+    background-color: #171514 !important;
+    opacity: 1 !important;
+}
+.swiper-pagination-bullet-active {
+    background-color: #FF9C8C!important;
 }

@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
+use DateTime;
 use Faker\Factory as Faker;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Seeder;
@@ -52,6 +54,14 @@ class productSeeder extends Seeder
                     $price = $faker->numberBetween(1000, 5000);
                     $rand = random_int(0, 1);
                     $promo = $rand ? $price - $price * random_int(1, 5) * 10 / 100 : null;
+                    $expires = null;
+                    if ($promo) {
+                        if (random_int(0, 2)) {
+                            $date = $faker->dateTimeBetween('+1 hour', '+3 day')->format('Y-m-d');
+                            $date = new DateTime($date);
+                            $expires = $date->format('Y-m-d');
+                        }
+                    }
                     DB::table('products')->insert(
                         [
                             'brand_id' => $brand->id,
@@ -60,8 +70,9 @@ class productSeeder extends Seeder
                             'price' => $price,
                             'description' => $faker->text(300),
                             'promo' => $promo,
+                            'expires' => $expires,
                             'created_at' => $faker->dateTimeBetween(
-                                '2021-12-06 23:07:01',
+                                $faker->dateTimeBetween('-1 year')->format('Y-m-d H:i:s'),
                                 now()
                             )
                         ]

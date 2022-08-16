@@ -76,7 +76,6 @@ class Product
         $nextPage = 1;
         $previousPage = 1;
         $total = 0;
-
         $brands = $request->input('brands');
         $categories = $request->input('categories');
         $pagination = null;
@@ -101,20 +100,28 @@ class Product
                     $query->whereIn('brand_id', $brands);
                 }
             )
-            ->when($request->input('price'), function ($query, $price) {
-                $query->where(function ($query) use ($price) {
-                    $query->where(function ($query) use ($price) {
-                        $query->where('price', '<=', $price);
-                        $query->whereNull('promo');
-                    })->orWhere(function ($query) use ($price) {
-                        $query->where('promo', '<=', $price);
-                        $query->whereNotNull('promo');
-                    });
-                });
-            })
             ->when($request->has('promo'), function ($query) {
                 $query->whereNotNull('promo');
             })
+            ->when(
+                $request->input('price') &&
+                    $request->input('price') != '0' ? $request->input('price') : null,
+                function ($query, $price) use ($request) {
+                    if ($request->has('promo')) {
+                        $query->where('promo', '<=', $price);
+                    } else {
+                        $query->where(function ($query) use ($price) {
+                            $query->where(function ($query) use ($price) {
+                                $query->whereNull('promo');
+                                $query->where('price', '<=', $price);
+                            })->orWhere(function ($query) use ($price) {
+                                $query->whereNotNull('promo');
+                                $query->where('promo', '<=', $price);
+                            });
+                        });
+                    }
+                }
+            )
             ->groupBy('products.id')->having('sum', '>', 0);
         if ($order == 'solds') {
             $query = DB::table('order_product_color')
@@ -127,11 +134,11 @@ class Product
         }
         if ($order == 'price-desc') {
             $query = $query
-                ->orderByRaw('COALESCE(promo, products.price) DESC');
+                ->orderByRaw("COALESCE(promo,price) DESC");
         }
         if ($order == 'price-asc') {
             $query = $query
-                ->orderByRaw('COALESCE(promo, products.price) ASC');
+                ->orderByRaw("COALESCE(promo,price) ASC");
         }
         if ($order == 'recent') {
             $query = $query
@@ -170,7 +177,6 @@ class Product
             }
             return $product;
         });
-
         return (object)[
             'products' => $products,
             'currentPage' => $currentPage,
@@ -202,6 +208,7 @@ class Product
                 ->join('colors', 'color_id', '=', 'colors.id')
                 ->select(['id', 'color_id', 'name', 'quantity', 'deleted', 'main_image', 'value1', 'value2', 'value3'])
                 ->where('deleted', '=', 0)
+                ->where('quantity', '>', 0)
                 ->where('product_id', '=', $id)
                 ->get();
             // geting product images for each color.
@@ -226,11 +233,20 @@ class Product
         }
         if ($withReviews) {
             // getting product reviews.
+            $reviews = [];
+            $score = null;
             $reviews = DB::table('reviews')
                 ->join('users', 'user_id', '=', 'users.id')
                 ->select(['users.name as name', 'score', 'feedback', 'reviews.created_at as date'])
-                ->where('product_id', '=', $id)->get();
+                ->where('product_id', '=', $id)->orderByDesc('score')->get();
             $product->reviews = $reviews;
+            if (count($reviews)) {
+                $sum = 0;
+                foreach ($reviews as $item)
+                    $sum += $item->score;
+                $score = $sum / count($reviews);
+            }
+            $product->score = $score;
         }
         if ($withCount) {
             // counting product orders

@@ -7,7 +7,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>{{ $title }}</title>
-
+        <link rel="stylesheet" 
+        href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css"/>
         <link href="{{ asset('css/app.css') }}" rel="stylesheet">
         <script src="https://kit.fontawesome.com/1ef1b3e9cf.js" crossorigin="anonymous"></script>
     </head>
@@ -18,6 +19,8 @@
         {{ $slot }}
     </body>
 </html>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="/js/utils.js"></script>
 <script src="/js/events.js"></script>
-{{-- <script src="https://unpkg.com/swiper/swiper-bundle.js"></script>
-<script src="/js/swiper.js"></script> --}}
+<script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+<script src="/js/swiper.js"></script>
