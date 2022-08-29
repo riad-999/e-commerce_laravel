@@ -111,5 +111,22 @@ class productSeeder extends Seeder
                 );
             }
         }
+        $codes = [];
+        for ($i = 1; $i <= 3; $i++) {
+            $id = DB::table('promo_codes')->insertGetId([
+                'code' => strtoupper($faker->word()),
+                'expires' => now()->addDays(random_int(4, 7))->format('Y-m-d')
+            ]);
+            array_push($codes, $id);
+            $products_ids = $products->random(random_int(5, 30))
+                ->map(fn ($item) => $item->id);
+            foreach ($products_ids as $pid) {
+                DB::table('product_promo')->insert([
+                    'product_id' => $pid,
+                    'promo_code_id' => $id,
+                    'cut' => random_int(1, 10) * 5
+                ]);
+            }
+        }
     }
 }

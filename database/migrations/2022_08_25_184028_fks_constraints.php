@@ -28,6 +28,9 @@ return new class extends Migration
         Schema::table('orders', function (Blueprint $table) {
             $table->foreignId('user_id')->nullable()->after('id')
                 ->constrained('users');
+            $table->unsignedInteger('wilaya_id')->after('user_id');
+            $table->foreign('wilaya_id')->references('id')
+                ->on('wilayas');
         });
 
         Schema::table('reviews', function (Blueprint $table) {
@@ -70,13 +73,41 @@ return new class extends Migration
                 ->on('color_product')->cascadeOnUpdate();
         });
 
+        Schema::table('product_promo', function (Blueprint $table) {
+            $table->foreignId('product_id')
+                ->first()->constrained('products')
+                ->cascadeOnDelete();
+            $table->foreignId('promo_code_id')
+                ->after('product_id')->constrained('promo_codes')
+                ->cascadeOnDelete();
+            $table->primary(['product_id', 'promo_code_id']);
+        });
+
+        Schema::table('promo_user', function (Blueprint $table) {
+            $table->foreignId('user_id')
+                ->first()->constrained('users')
+                ->cascadeOnDelete();
+            $table->foreignId('promo_code_id')
+                ->after('user_id')->constrained('promo_codes')
+                ->cascadeOnDelete();
+            $table->dropColumn('dummy');
+        });
+
         Schema::table('saves', function (Blueprint $table) {
             $table->foreignId('product_id')->first()
-                ->constrained('products');
+                ->constrained('products')->cascadeOnDelete();
             $table->foreignId('user_id')
-                ->after('product_id')->constrained('users');
+                ->after('product_id')->constrained('users')
+                ->cascadeOnDelete();
             $table->primary(['product_id', 'user_id']);
             $table->dropColumn('dummy');
+        });
+
+        Schema::table('users_addresses', function (Blueprint $table) {
+            $table->foreignId('user_id')->after('id')
+                ->constrained('users')->cascadeOnDelete();
+            $table->unsignedInteger('wilaya_id');
+            $table->foreign('wilaya_id')->references('id')->on('wilayas');
         });
     }
 };

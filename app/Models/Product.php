@@ -28,7 +28,6 @@ class Product
                 ->join('brands', 'brand_id', '=', 'brands.id')
                 ->join('categories', 'category_id', '=', 'categories.id')
                 ->select(['products.*', 'brands.name as brand', 'categories.name as category'])
-                ->selectRaw('sum(quantity) as sum')
                 ->where('products.deleted', '=', 0)
                 ->when($request->input('name'), function ($query, $name) {
                     $query->where('products.name', 'like', "%$name%");

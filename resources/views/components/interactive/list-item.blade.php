@@ -1,3 +1,7 @@
-<li {{ $attributes->class(['px-4','py-4','text-center']) }}>
-    <h5 class="font-body font-semibold capitalize">{{ $slot }}</h5>
+@props(['url'])
+
+<li {{$attributes->merge(['class' => 'p-2 text-center'])}}>
+    <a href="{{$url}}" class="block">
+        <div class="text-black font-semibold text-xl">{{ $slot }}</div>
+    </a>
 </li>

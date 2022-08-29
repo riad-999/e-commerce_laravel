@@ -1,3 +1,5 @@
+const { camelCase } = require('lodash');
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -47,10 +49,15 @@ module.exports = {
         '80%': '80%',
         '700p': '700px',
       },
+      maxWidth: {
+        'admin-content': 'calc(1600px - 2rem)',
+      },
        gridTemplateColumns: {
         'color': 'repeat( auto-fit, 25px)',
         'admin1' : '50px repeat(5,1fr)',
-        'product-images': '50px 1fr'
+        'product-images': '50px 1fr',
+        'product-promo': '100px 1fr',
+        'promo-code-products': '3fr 2fr 1fr'
       }, 
       gridTemplateRows: {
         'color': 'repeat( auto-fit, 20px)',

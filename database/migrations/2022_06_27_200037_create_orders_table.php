@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('state')->index();
             $table->string('address');
-            $table->string('wilaya')->index();
+            // $table->string('wilaya')->index();
             $table->string('shipment_type');
             $table->unsignedInteger('shipment');
             $table->string('number');

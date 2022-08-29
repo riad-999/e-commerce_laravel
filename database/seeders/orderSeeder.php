@@ -24,7 +24,6 @@ class orderSeeder extends Seeder
                 storage_path() . "/app/wilayas.json"
             )
         );
-
         foreach ($users as $user) {
             for ($i = 0; $i < random_int(0, 5); $i++) {
                 // $total = random_int(2000, 5000);
@@ -34,7 +33,7 @@ class orderSeeder extends Seeder
                     [
                         'user_id' => $user->id,
                         'state' => ['en traitment', 'en route', 'livré'][random_int(0, 2)],
-                        'wilaya' => $wilaya->name,
+                        'wilaya_id' => $wilaya->code,
                         'address' => $faker->address(),
                         'shipment' => $faker->numberBetween(400, 1300),
                         'shipment_type' => $desk ? ['à domicile', 'au bureau'][random_int(0, 1)] : 'à domicile',

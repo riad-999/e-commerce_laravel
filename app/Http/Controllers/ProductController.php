@@ -8,7 +8,6 @@ use App\Models\Color;
 use App\Models\Product;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -343,6 +342,32 @@ class ProductController extends Controller
             'alert' => (object)[
                 'type' => 'success',
                 'message' => "les coleurs sont modifié"
+            ]
+        ]);
+    }
+    public function edit_promo($id)
+    {
+        $product = Product::get($id);
+        if (!$product)
+            return redirect('/404');
+        return view('admin.edit-promo', [
+            'product' => $product
+        ]);
+    }
+    public function update_promo(Request $request, $id)
+    {
+        if ($request->input('promo') == '0') {
+            Product::update($id, ['promo' => null, 'expires' => null]);
+        } else {
+            Product::update($id, [
+                'promo' => $request->input('promo'),
+                'expires' => $request->input('expires')
+            ]);
+        }
+        return back()->with([
+            'alert' => (object)[
+                'type' => 'success',
+                'message' => "le promo est modifié"
             ]
         ]);
     }

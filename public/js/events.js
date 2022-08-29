@@ -21,6 +21,13 @@ const qteInput = document.getElementById('quantity');
 const sideCart = document.getElementById('side-cart');
 const closeSideCartBtn = document.getElementById('close-side-cart');
 const updateQuantityInputs = document.querySelectorAll('.update-quantity');
+const openSidebar = document.getElementById('open-sidebar');
+const closeSidebar = document.getElementById('close-sidebar');
+const openAdminbar = document.getElementById('open-adminbar');
+const closeAdminbar = document.getElementById('close-adminbar');
+const radios = document.querySelectorAll('input[data-radio="true"]');
+const promoCodeProductsSection = document.getElementById('add-promo-code');
+const cutSelect = document.getElementById('cut-select');
 let checkFlag = false;
 
 const imageSelectionHandler = (event) => {
@@ -108,6 +115,9 @@ const removeHandler = event => {
     input.classList.remove('opacity-50');
     input.disabled = false;
     input.value = '';
+    if(input.type == 'number') {
+        input.value = '0';
+    }
     if(input.type == 'color') {
         input.value = '#010101';
     }
@@ -115,7 +125,7 @@ const removeHandler = event => {
 const closeAlertHandler = event => {
     const btn = event.currentTarget;
     const alert = btn.closest('.Alert');
-    alert.classList.remove('opacity-100');
+    alert.classList.remove('!opacity-100');
     alert.classList.add('invisible');
 } 
 const openModal = event => {
@@ -123,9 +133,16 @@ const openModal = event => {
     const modal = document.getElementById(id);
     modal.style.opacity = '1';
     modal.classList.remove('invisible');
-    if(modal.dataset.form)
-        modal.firstElementChild.action = 
-            event.currentTarget.dataset.route;
+    if(modal.dataset.form) {
+        const childs = modal.firstElementChild.children;
+        for(let i = 0; i < childs.length; i++) {
+            if(childs[i].tagName == 'FORM') {
+                childs[i].action = 
+                    event.currentTarget.dataset.route;
+                    break;
+            }
+        }
+    }
 }
 const closeModal = () => {
     const id = event.currentTarget.dataset.id;
@@ -330,6 +347,84 @@ const updateQuantityHandler = async event => {
     .forEach(item => item.textContent = quantity);
     document.getElementById('sub-total').textContent = `${subTotal} Da`;
 }
+const sidebarToggleHandler = () => 
+    document.getElementById('sidebar').classList.toggle('!translate-x-full');
+const adminbarToggleHandler = () => {
+    document.getElementById('adminbar').classList.toggle('translate-x-full');
+}
+const radiosChangeHandler = event => {
+    console.log('fired');
+    const {id,active} = event.currentTarget.dataset;
+    const element = document.getElementById(id);
+    const customSection = document.getElementById('custom-section');
+    if(active) {
+        element.disabled = false;
+        if(customSection) {
+            customSection.classList.add('opacity-40');
+            customSection.classList.add('pointer-events-none');
+        }
+    } else {
+        element.disabled = true;
+        if(customSection) {
+            customSection.classList.remove('opacity-40');
+            customSection.classList.remove('pointer-events-none');
+        }
+    }
+}
+const cutSelectInputHandler = async event => {
+    const value = event.currentTarget.value;
+    const url = `${serverEndPoint}/set-session`;
+    try {
+        await axios.post(url, {
+            key: 'selected_cut',
+            value: value
+        });
+    } catch(error) {
+        console.log(error);
+        if(error.response && error.response.status > 400 && error.response.status < 500) {
+            // auth error
+        }
+        else if(error.request) {
+            // no response received 
+        }
+        else {
+            // redirect to error page
+        }
+    }
+}
+const addPromoCodeToProductHandler = async event => {
+    if(
+        !event.target.dataset.add &&
+        !event.target.closest('button')    
+    )
+        return;
+    const btn = event.target.dataset.add ? event.target : event.target.closest('button');
+    btn.classList.add('opacity-50');
+    btn.classList.add('pointer-events-none');
+    const {code, product} = btn.dataset;
+    const cut = document.getElementById('cut-select').value;
+    const url = `${serverEndPoint}/promo-codes/${code}/assocations`
+    try {
+        await axios.post(url, {
+            product,
+            cut
+        });
+    } catch(error) {
+        console.log(error);
+        if(error.response && error.response.status > 400 && error.response.status < 500) {
+            // auth error
+        }
+        else if(error.request) {
+            // no response received 
+        }
+        else {
+            // redirect to error page
+        }
+    }
+    btn.textContent = `${cut}%`;
+    btn.classList.remove('opacity-50');
+    btn.classList.remove('pointer-events-none');
+}
 // const addColor_image = (event) => {
 //     const LIST = ['amd','msi','asus'];
 //     color_imageCount++;
@@ -483,6 +578,23 @@ if(closeSideCartBtn) {
 }
 if(updateQuantityInputs.length) {
     updateQuantityInputs.forEach(item => item.addEventListener('click',updateQuantityHandler));
+}
+if(openSidebar && closeSidebar) {
+    openSidebar.addEventListener('click',sidebarToggleHandler);
+    closeSidebar.addEventListener('click',sidebarToggleHandler);
+}
+if(openAdminbar && closeAdminbar) {
+    openAdminbar.addEventListener('click',adminbarToggleHandler);
+    closeAdminbar.addEventListener('click',adminbarToggleHandler);
+}
+if(radios.length) {
+    radios.forEach(item => item.addEventListener('change', radiosChangeHandler));
+}
+if(promoCodeProductsSection) {
+    promoCodeProductsSection.addEventListener('click',addPromoCodeToProductHandler);
+}
+if(cutSelect) {
+    cutSelect.addEventListener('input',cutSelectInputHandler);
 }
 // if(cartFroms.length) {
 //     cartFroms.forEach(item => item.addEventListener('submit',cartFormSubmitHandler)); 

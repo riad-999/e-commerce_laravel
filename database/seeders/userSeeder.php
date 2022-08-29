@@ -17,8 +17,52 @@ class userSeeder extends Seeder
 
     public function run()
     {
+        $wilayas = json_decode(
+            file_get_contents(
+                storage_path() . "/app/wilayas.json"
+            )
+        );
         $faker = Faker::create();
-        User::factory(300)->create();
+        $now = now();
+        foreach ($wilayas as $wilaya) {
+            DB::table('wilayas')->insert([
+                'id' => $wilaya->code,
+                'name' => $wilaya->name,
+                'home_shipment' => str_replace('da', '', $wilaya->home),
+                'desk_shipment' => $wilaya->desk ? str_replace('da', '', $wilaya->desk) : null,
+                'duration' => $wilaya->duration
+            ]);
+        }
+        for ($i = 1; $i <= 300; $i++) {
+            $id = DB::table('users')->insertGetId([
+                'name' => $faker->name(),
+                'password' => bcrypt('laravel_user'),
+                'email' => $faker->email(),
+                'created_at' => $now,
+                'updated_at' => $now
+            ]);
+            DB::table('users_addresses')->insert([
+                'user_id' => $id,
+                'wilaya_id' => $wilayas[random_int(0, 49)]->code,
+                'address' => $faker->address(),
+                'number' => $faker->numerify('##########'),
+            ]);
+        }
+        DB::table('users')->insert([
+            'name' => 'riad felih',
+            'password' => bcrypt('capcom'),
+            'email' => 'felihriad5@gmail.com',
+            'created_at' => $now,
+            'updated_at' => $now
+        ]);
+        DB::table('users')->insert([
+            'name' => 'admin',
+            'password' => bcrypt('admin147'),
+            'email' => 'felihriad4@gmail.com',
+            'is_admin' => true,
+            'created_at' => $now,
+            'updated_at' => $now
+        ]);
         $users = User::all();
         $products = DB::table('products')->get();
         foreach ($users as $user) {

@@ -12,15 +12,19 @@
         <script src="https://kit.fontawesome.com/1ef1b3e9cf.js" crossorigin="anonymous"></script>
     </head>
     <body {{$attributes->merge(['class' => 'font-body text-gray-600 relative bg-gray-100'])}}>
-        {{-- <x-ui-elements.navbar /> --}}
         <x-interactive.alert />
-        <div class="desk:grid grid-cols-6 gap-8">
+        <div class="desk:flex">
             <x-ui-elements.admin-sidebar />
-            <main class="col-span-5 pt-8">
-                {{$slot}}
+            <x-ui-elements.sidebar/>
+            <main class="w-full">
+                <x-ui-elements.admin-navbar />
+                <div class="desk:ml-4">
+                    {{$slot}}
+                </div> 
             </main>
         </div>
     </body>
 </html>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="/js/utils.js"></script>
 <script src="/js/events.js"></script>
