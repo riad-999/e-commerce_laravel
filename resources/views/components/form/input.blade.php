@@ -16,7 +16,7 @@
         </label>
     @endif
     <input {{ $disabled ? 'disabled' : '' }} {{ $attributes->merge([
-        'class' => "p-2 border border-gray-200 border-solid $dsb",
+        'class' => "p-2 border border-gray-400 border-solid $dsb",
         'id' => $name]
     ) }}/>
     <x-form.error name={{$name}} />

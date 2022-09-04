@@ -12,16 +12,9 @@ class UserController extends Controller
 {
     public function create()
     {
-        $wilayas = Wilaya::all([
-            'id as code', 'name',
-            'home_shipment as home',
-            'desk_shipment as desk',
-            'duration'
-        ]);
-
-        $wilayas = collect($wilayas)->map(
+        $wilayas = Wilaya::all()->map(
             fn ($item) => (object) [
-                'name' => "$item->code $item->name",
+                'name' => "$item->id $item->name",
                 'value' => $item->name
             ]
         );

@@ -63,7 +63,7 @@ Route::get('/admin-products', [ProductController::class, 'admin_index'])
 Route::get('/products', [ProductController::class, 'index'])
     ->name('products');
 Route::get('/products/{id}', [ProductController::class, 'show'])
-    ->whereNumber(['id'])->name('product');
+    ->whereNumber(['id'])->name('show-product');
 
 Route::middleware(['auth', 'admin'])->controller(PromoCodeController::class)
     ->group(function () {
@@ -90,6 +90,15 @@ Route::post('/cart', [CartController::class, 'add'])
 Route::get('/cart', [CartController::class, 'show'])
     ->name('cart');
 Route::patch('/cart', [CartController::class, 'update_item_quantity']);
+Route::post('/apply-promo-code',[CartController::class,'apply_promo_code'])
+    ->name('apply-promo-code');
+Route::post('/remove-promo-code',[CartController::class,'remove_promo_code'])
+->name('remove-promo-code');
+Route::post('/remove-promo-code',[CartController::class,'remove_promo_code'])
+->name('remove-promo-code');
+Route::get('/validate-order',[CartController::class,'validate_order'])
+->name('validate-order');
+
 // ->middleware(\App\Http\Middleware\Cors::class);
 Route::delete('/cart', [CartController::class, 'delete_item'])
     ->name('delete-cart-item');
@@ -131,6 +140,8 @@ Route::get('/orders', [OrderController::class, 'index'])
     ->name('orders');
 Route::get('/orders/{id}', [OrderController::class, 'show'])
     ->whereNumber('id')->name('order');
+Route::get('/orders/create', [OrderController::class, 'create'])
+    ->name('create-order');
 Route::get('/orders/{id}/edit', [OrderController::class, 'edit'])
     ->whereNumber('id')->name('edit-order');
 Route::get('/orders/{id}/products/edit', [OrderController::class, 'edit_products'])

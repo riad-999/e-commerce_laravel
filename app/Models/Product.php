@@ -258,6 +258,23 @@ class Product
 
         return $product;
     }
+    public static function get_by_ids($ids, $withColors = false)
+    {
+        $products = DB::table('products')->whereIn('id',$ids)->get();
+        if($withColors) {
+            $rows = DB::table('color_product')
+                ->whereIn('product_id',$ids)->get();
+            foreach($products as $product) {
+                $product->colors = [];
+                foreach($rows as $row) {
+                    if($row->product_id != $product->id)
+                        continue;
+                    array_push($product->colors, $row);
+                }
+            }
+        }
+        return $products;
+    }
     public static function store_color($data, $images)
     {
         DB::table('color_product')->insert($data);

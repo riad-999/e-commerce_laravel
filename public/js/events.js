@@ -28,6 +28,7 @@ const closeAdminbar = document.getElementById('close-adminbar');
 const radios = document.querySelectorAll('input[data-radio="true"]');
 const promoCodeProductsSection = document.getElementById('add-promo-code');
 const cutSelect = document.getElementById('cut-select');
+const shipmentTypeInputs = document.querySelectorAll('input[name="shipment_type"]');
 let checkFlag = false;
 
 const imageSelectionHandler = (event) => {
@@ -184,6 +185,22 @@ const wilayaSelectHandler = event => {
     } else {
         radio.disabled = false;
     }
+    document.getElementById('duration').textContent = wilaya.duration;
+    if(radio.checked)   
+        document.getElementById('cost').textContent = `${wilaya.desk}Da`;
+    else 
+        document.getElementById('cost').textContent = `${wilaya.home}Da`;
+}
+const shipmentTypeChangeHanlder = event => {
+    const value = document.querySelector('select[name="wilaya"]').value;
+    const radio = document.querySelector('input[value="au bureau"]');
+    const radio_ = document.querySelector('input[value="à domicile"]');
+    wilaya = Wilayas.find(item => item.name == value);
+    document.getElementById('duration').textContent = wilaya.duration;
+    if(radio.checked)   
+        document.getElementById('cost').textContent = `${wilaya.desk}Da`;
+    else 
+        document.getElementById('cost').textContent = `${wilaya.home}Da`;
 }
 const colorChangeHandler = (event) => {
     if(event.target.closest('.color-square')) {
@@ -316,7 +333,8 @@ const updateQuantityHandler = async event => {
     const input = document.getElementById(input_id);
     const quantity = flag ==='increase' ? parseInt(input.value) + 1 
     : parseInt(input.value) - 1;
-    if(quantity > max || quantity == 0) 
+    if((quantity > max && flag === 'increase') || 
+        (quantity == 0 && flag === 'decrease'))
         return;
     event.currentTarget.classList.add('opacity-50')
     event.currentTarget.classList.add('pointer-events-none');
@@ -595,6 +613,9 @@ if(promoCodeProductsSection) {
 }
 if(cutSelect) {
     cutSelect.addEventListener('input',cutSelectInputHandler);
+}
+if(shipmentTypeInputs.length) {
+    shipmentTypeInputs.forEach(item => item.addEventListener('change',shipmentTypeChangeHanlder));
 }
 // if(cartFroms.length) {
 //     cartFroms.forEach(item => item.addEventListener('submit',cartFormSubmitHandler)); 

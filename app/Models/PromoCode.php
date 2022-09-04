@@ -34,6 +34,11 @@ class PromoCode
         $promo_code->used = $used;
         return $promo_code;
     }
+    public static function get_by_code($code)
+    {
+        return DB::table('promo_codes')
+            ->where('code','=',$code)->first();
+    }
     public static function get_cut($code_id, $cut)
     {
         return DB::table('product_promo')

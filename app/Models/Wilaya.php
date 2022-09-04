@@ -2,9 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
-class Wilaya extends Model
+class Wilaya
 {
+    public static function all()
+    {
+        return DB::table('wilayas')->get();
+    }
+    public static function get_by_name($name)
+    {
+        return DB::table('wilayas')
+            ->where('name','=',$name)->first();
+    }
 }

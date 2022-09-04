@@ -9,13 +9,13 @@
 </div> --}}
 
 <div {{$attributes->merge([
-    'class' => "fixed inset-0 bg-black bg-opacity-20 invisible opacity-0 transition-opacity duration-300"
+    'class' => "fixed inset-0 bg-black bg-opacity-70 invisible opacity-0 transition-opacity duration-300 z-[1000]"
 ])}}>
     <div class="bg-white p-4 absolute
     border border-solid border-secondary
     w-[95%] mx-auto tablet:max-w-[550px] 
     top-[30%] left-1/2 -translate-x-1/2
-    text-center z-100">
+    text-center">
         {{$slot}}
     </div>
 </div>

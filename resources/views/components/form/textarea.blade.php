@@ -16,7 +16,7 @@
         <x-form.edit class="ml-4" data-id="{{$name}}" />
     @endif
     <textarea {{ $disabled ? 'disabled' : '' }} {{ $attributes->merge([
-        'class' => "block h-[150px] p-1 border border-gray-200 border-solid $dsb",
+        'class' => "block h-[150px] p-1 border border-gray-400 border-solid $dsb",
         'id' => $name]
     ) }} spellcheck="false" >{{$content}}</textarea>
     <x-form.error name={{$name}} />

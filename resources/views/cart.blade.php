@@ -19,7 +19,7 @@
                         oops, vous n'avait aucun produit dans votre panier, allez au boutique pour le remplire.
                     </div>
                     <div>
-                        <x-interactive.btn class="w-max mx-auto mt-4" :link="route('products')">
+                        <x-interactive.btn class="w-full tablet:max-w-[400px] mx-auto mt-4" :link="route('products')">
                             Boutique
                         </x-interactive.btn>
                     </div>
@@ -29,9 +29,12 @@
                     <section class="tablet:col-span-5 desk:col-span-6">
                         <header class="hidden desk:grid grid-cols-4 gap-8 pb-8">
                             <div class="col-span-2">Produit</div>
-                            <div>Prix</div>
+                            <div>Coût</div>
                             <div>Quantité</div>
                         </header>
+                        @php
+                            $sum = 0;
+                        @endphp
                         @foreach($cart as $item)
                             <article class="grid grid-cols-2 desk:grid-cols-4 gap-4 span pb-8 {{$loop->first ? '' : 'pt-8'}} border-b border-solid border-border">
                                 <img class="block" src="{{IMAGES_END_POINT . $item->image}}" />
@@ -47,24 +50,54 @@
                                     <div class="grid desk:hidden grid-cols-2 gap-2 mb-2">
                                         <div>Coût: </div>
                                         @if($item->promo)
-                                            <div class="text-pink">{{$item->promo}}Da</div>
-                                        @else
-                                            <div>{{$item->price}}Da</div>
+                                            @if(($item->cut && ($item->cut * $item->price / 100) < $item->promo))
+                                            {{-- @if($item->cut) --}}
+                                                @php
+                                                    $sum += floor($item->cut * $item->price / 100) * $item->quantity;
+                                                @endphp
+                                                <div>
+                                                    <div class="text-pink line-through">{{$item->promo}}Da</div>
+                                                    <div class="text-green-500">{{floor($item->cut * $item->price / 100)}}Da</div>
+                                                </div>
+                                            @else
+                                                @php
+                                                    $sum += $item->promo * $item->quantity;
+                                                @endphp
+                                                <div class="text-pink">{{$item->promo}}Da</div>
+                                            @endif
+                                        @elseif($item->cut)
+                                                @php
+                                                    $sum += floor($item->cut * $item->price / 100) * $item->quantity;
+                                                @endphp
+                                                <div>
+                                                    <div class="line-through">{{$item->price}}Da</div>
+                                                    <div class="text-green-500">{{floor($item->cut * $item->price / 100)}}Da</div>
+                                                </div>
+                                            @else
+                                                @php
+                                                    $sum += $item->price * $item->quantity;
+                                                @endphp
+                                                <div>{{$item->price}}Da</div>
                                         @endif
                                     </div>
-                                    <div class="grid desk:hidden grid-cols-2 gap-2 mb-2">
+                                    <div class="tablet:grid desk:hidden grid-cols-2 gap-2 mb-2">
                                         <div class="hidden tablet:block">quantité: </div>
                                         <input type="hidden" name="{{$item->product_id}}-{{$item->color_id}}"
                                         value="{{$item->quantity}}" id="{{$item->product_id}}-{{$item->color_id}}"/>
-                                        <div class="flex text-center text-sm update-quantity" data-max="{{$item->max}}"
-                                        data-id="{{$item->product_id}}-{{$item->color_id}}" data-product_id="{{$item->product_id}}" 
-                                        data-color_id="{{$item->color_id}}" id="mob-{{$item->product_id}}-{{$item->color_id}}">
-                                            <button class="bg-black text-white py-1 px-3 update-btn" data-flag="decrease">-</button>
-                                            <div class="px-6 py-2 bg-gray-100 quantity">{{$item->quantity}}</div>
-                                            <button class="bg-black text-white py-1 px-3 update-btn" data-flag="increase">+</button>
+                                        <div>
+                                            <div class="flex text-center text-sm update-quantity" data-max="{{$item->max}}"
+                                            data-id="{{$item->product_id}}-{{$item->color_id}}" data-product_id="{{$item->product_id}}" 
+                                            data-color_id="{{$item->color_id}}" id="mob-{{$item->product_id}}-{{$item->color_id}}">
+                                                <button class="bg-black text-white py-1 px-3 update-btn" data-flag="decrease">-</button>
+                                                <div class="px-6 py-2 bg-gray-100 quantity">{{$item->quantity}}</div>
+                                                <button class="bg-black text-white py-1 px-3 update-btn" data-flag="increase">+</button>
+                                            </div>
+                                        </div>
+                                        <div class="my-2 col-span-2">
+                                            <x-form.error :name="$item->product_id . '-' . $item->color_id" />
                                         </div>
                                     </div>
-                                    <form action="{{route('delete-cart-item')}}" method="POST" class="mt-4">
+                                    {{-- <div class="text-sm text-red-600 font-semibold">Lorem ipsum dolor sit. Lorem ipsum dolor sit amet.</div>                                    <form action="{{route('delete-cart-item')}}" method="POST" class="mt-4"> --}}
                                         @csrf
                                         @method('delete')
                                         <input type="hidden" name="product_id" value="{{$item->product_id}}" />
@@ -87,43 +120,66 @@
                                     </div>
                                     <div>
                                         @if($item->promo)
-                                            <div class="text-pink">{{$item->promo}}Da</div>
-                                        @else
-                                            <div>{{$item->price}}Da</div>
-                                        @endif                     
+                                            @if(($item->cut && ($item->cut * $item->price / 100) < $item->promo))
+                                            {{-- @if($item->cut) --}}
+                                                <div class="text-pink line-through">{{$item->promo}}Da</div>
+                                                <div class="text-green-500">{{floor($item->cut * $item->price / 100)}}Da</div>
+                                            @else
+                                                <div class="text-pink">{{$item->promo}}Da</div>
+                                            @endif
+                                        @elseif($item->cut)
+                                                <div class="line-through">{{$item->price}}Da</div>
+                                                <div class="text-green-500">{{floor($item->cut * $item->price / 100)}}Da</div>
+                                            @else
+                                                <div>{{$item->price}}Da</div>
+                                        @endif                    
                                     </div>
                                     <div>
-                                        <div class="flex text-center text-sm update-quantity" data-max="{{$item->max}}"
+                                        <div class="flex text-center text-sm update-quantity mb-2" data-max="{{$item->max}}"
                                         data-id="{{$item->product_id}}-{{$item->color_id}}" data-product_id="{{$item->product_id}}" 
                                         data-color_id="{{$item->color_id}}" id="desk-{{$item->product_id}}-{{$item->color_id}}">
                                             <button class="bg-black text-white py-1 px-2" data-flag="decrease">-</button>
                                             <div class="px-6 py-1 bg-gray-100 quantity">{{$item->quantity}}</div>
                                             <button class="bg-black text-white py-1 px-2" data-flag="increase">+</button>
                                         </div>
+                                        <x-form.error :name="$item->product_id . '-' . $item->color_id" />
+                                        {{-- <div class="text-sm text-red-600 font-semibold my-2">Lorem ipsum dolor sit. Lorem ipsum dolor sit amet.</div> --}}
                                     </div>
                                 </div>
                             </article>
                         @endforeach
                     </section>
                     <section class="tablet:col-span-5 desk:col-span-4 p-4 border-solid border border-border">
-                        <label for="promo-code" class="font-semibold text-black text-sm">entrer le code promo</label>
-                        <form class="grid grid-cols-6 gap-2 pb-4 border-b border-solid border-border mb-4">
-                            <input name="promo-code" id="promo-code" class="p-2 col-span-4 border border-solid border-border" placeholder="code promo..." />
-                            <x-interactive.btn type="submit" class="col-span-2">
-                                Appliquer
-                            </x-interactive.btn>
-                        </form>
-                        <form action="">
+                        @if(!session('promo_code_id'))
+                            <label for="code" class="font-semibold text-black text-sm">entrer le code promo</label>
+                            <form action="{{route('apply-promo-code')}}" method="POST" class="grid grid-cols-6 gap-2 pb-4 border-b border-solid border-border mb-4">
+                                @csrf
+                                <div class="col-span-4">
+                                    <input name="code" id="code" class="w-full p-2 border border-solid border-border" value="{{old('code')}}" placeholder="code promo..." />
+                                    <x-form.error name="code" />
+                                </div>
+                                <x-interactive.btn type="submit" class="col-span-2">
+                                    Appliquer
+                                </x-interactive.btn>
+                            </form>
+                        @else 
+                            <form action="{{route('remove-promo-code')}}" method="POST" class="grid grid-cols-6 gap-2 pb-4 border-b border-solid border-border mb-4">
+                                @csrf
+                                <div class="col-span-4">
+                                    <div name="code" id="code" class="w-full p-2">TEST</div>
+                                    @if($warning)
+                                        <div class="text-sm text-orange-600 font-semibold mt-2">
+                                            aucun produit dans le panier n'est associé avec ce code promo
+                                        </div>
+                                    @endif
+                                </div>
+                                <x-interactive.btn type="submit" class="col-span-2">
+                                    Enlever
+                                </x-interactive.btn>
+                            </form>
+                        @endif
+                        <form action="{{route('validate-order')}}">
                             <div class="text-xl text-black font-semibold mb-2">
-                                @php
-                                $sum = 0;
-                                foreach($cart as $itm) {
-                                        if($itm->promo)
-                                            $sum += $itm->promo * $itm->quantity;
-                                        else 
-                                            $sum += $itm->price * $itm->quantity;
-                                } 
-                                @endphp
                                 Sous-Total: <span id="sub-total">{{$sum}}Da</span>
                             </div>
                             <x-interactive.btn type="submit" class="w-full">

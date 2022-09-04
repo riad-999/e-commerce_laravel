@@ -1,4 +1,5 @@
-<aside id="sidebar" class="z-50 fixed top-0 bottom-0 right-0 !translate-x-full transition duration-300 w-full max-w-[500px] desk:hidden h-[100vh] max-h-[100vh] overflow-y-hidden bg-white py-2 border-l border-solid border-border">
+<aside id="sidebar" class="fixed top-0 bottom-0 right-0 !translate-x-full transition duration-300 w-full max-w-[500px] desk:hidden 
+h-[100vh] max-h-[100vh] overflow-y-hidden bg-white py-2 border-l border-solid border-border z-[200]">
     <header class="flex items-center pb-2 mb-8 border-b border-solid border-border px-4">
         <h5 class="font-body text-black font-semibold mx-auto">
             {{config('app.name')}}

@@ -1,5 +1,5 @@
 <div class='bg-secondary text-white tracking-2 text-center py-4 px-8 text-xs font-semibold'>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Distinctio, provident!</div>
-<nav class="bg-white border-b border-gray-400 border-solid sticky top-0">
+<nav class="bg-white border-b border-gray-400 border-solid sticky top-0 z-[100]">
     <div class="flex justify-between items-baseline py-2 px-4 max-w-[1400px] desk:mx-auto">
         <a href="{{route('home')}}" class="block desk:hidden"><h3>Logo</h3></a>
         <div>

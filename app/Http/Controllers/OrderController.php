@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Models\User;
+use App\Models\Wilaya;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -63,13 +66,88 @@ class OrderController extends Controller
             'states' => $states
         ]);
     }
+    public function create()
+    {
+        if(!session('cart') || !count(session('cart')))
+            return redirect(route('cart'));
+        $default_wilaya = null;
+        $default_type = 'à domicile';
+        $old_wilaya = old('wilaya');
+        $old_type = old('shipment_type');
+        $wilayas_ = Wilaya::all();
+        foreach($wilayas_ as $item) {
+            $item->home = $item->home_shipment;
+            $item->desk = $item->desk_shipment;
+            if($item->id == 16)
+                $default_wilaya = $item;
+            if($old_wilaya && $old_wilaya == $item->name)
+                $old_wilaya = $item;
+        }
+        $wilayas = $wilayas_->map(fn ($item) => (object) [
+            'name' => "$item->id $item->name",
+            'value' => $item->name
+        ]);
+        $shipment_types = collect(['à domicile', 'au bureau'])->map(
+            fn ($item) => (object) [
+                'name' => $item,
+                'value' => $item,
+            ]
+        );
+        $user = null;
+        if($old_wilaya) {
+            $wilaya = $old_wilaya;
+        }elseif(Auth::check()) {
+            $user = User::get(Auth::user()->id, true);
+            $wilaya = (object) [
+                'id' => $user->code,
+                'name' => $user->wilaya,
+                'duration' => $user->duration,
+                'desk' => $user->desk,
+                'home' => $user->home 
+            ];
+        }else {
+            $wilaya = $default_wilaya;
+        }
+        $sum = 0;
+        foreach (session('cart') as $item) {
+            if ($item->promo) {
+                if(($item->cut && ($item->cut * $item->price / 100) < $item->promo)) {
+                    $sum += floor($item->cut * $item->price / 100) * $item->quantity;
+                } else {
+                    $sum += $item->promo * $item->quantity;
+                }
+            } elseif($item->cut) {
+                $sum += $item->quantity * $item->promo;
+            } else {
+                $sum += $item->quantity * $item->price;
+            }
+        }
+        return view('admin.create-order', [
+            'wilayas' => $wilayas,
+            'wilayas_' => $wilayas_,
+            'shipment_types' => $shipment_types,
+            'default_wilaya' => $default_wilaya,
+            'old_wilaya' => $old_wilaya, 
+            'default_type' => $default_type,
+            'old_type' => $old_type,
+            'wilaya' => $wilaya,
+            'user' => $user,
+            'sub_total' => $sum
+        ]);
+    }
     public function edit($id)
     {
-        $wilayas_ = collect(json_decode(
-            file_get_contents(
-                storage_path() . "/app/wilayas.json"
-            )
-        ));
+        $wilayas_ = Wilaya::all()->map(function ($item) {
+            $item->home = $item->home_shipment;
+            $item->desk = $item->desk_shipment;
+            return $item;
+        });
+
+        // $wilayas_ = collect(json_decode(
+        //     file_get_contents(
+        //         storage_path() . "/app/wilayas.json"
+        //     )
+        // ));
         $wilayas = $wilayas_->map(
             fn ($item) => (object) [
                 'name' => "$item->code $item->name",
