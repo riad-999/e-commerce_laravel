@@ -2,7 +2,7 @@
     <form class="mx-auto px-4 max-w-[1400px] mt-16" autocomplete="off">
         <section class="desk:grid grid-cols-5 items-start gap-12">
              <aside id="side-filters" class="fixed w-[300px] top-0 left-0 bottom-0 max-h-[100vh] overflow-auto
-            translate-x-[-100%] bg-white shadow-md transition py-4 px-4 z-[10]
+            translate-x-[-100%] bg-white shadow-md transition py-4 px-4 z-[150]
             desk:max-h-[unset] desk:overflow-visible desk:relative desk:w-full desk:translate-x-0 
             desk:shadow-none desk:z-0 desk:p-0">
                 <div class="flex justify-between">
@@ -37,7 +37,7 @@
                         <i class="fa-solid fa-angle-up close !hidden"></i>
                     </button>
                     <div class="h-0 overflow-hidden transition-height duration-300">
-                        <div id="desk-category" class="pl-2">
+                        <div id="desk-category" class="pl-2 checks-container">
                             <input type="hidden" name="categories" id="desk-categories" value="{{$categories ? $categories : '[]'}}" />
                             @foreach($Categories as $category)
                                 @php

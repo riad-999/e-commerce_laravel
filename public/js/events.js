@@ -30,7 +30,6 @@ const promoCodeProductsSection = document.getElementById('add-promo-code');
 const cutSelect = document.getElementById('cut-select');
 const shipmentTypeInputs = document.querySelectorAll('input[name="shipment_type"]');
 let checkFlag = false;
-
 const imageSelectionHandler = (event) => {
     const input = event.currentTarget;
     if(input.classList.contains('main-image')) {
@@ -186,21 +185,41 @@ const wilayaSelectHandler = event => {
         radio.disabled = false;
     }
     document.getElementById('duration').textContent = wilaya.duration;
-    if(radio.checked)   
+    if(radio.checked){
         document.getElementById('cost').textContent = `${wilaya.desk}Da`;
-    else 
+        const subTotal = parseInt(document.getElementById('sub-total').dataset.amount);
+        const shipment = wilaya.desk;
+        document.getElementById('top-cost').textContent = `${shipment}Da`;
+        document.getElementById('total').textContent = `${subTotal + shipment}Da`;
+    }
+    else {
         document.getElementById('cost').textContent = `${wilaya.home}Da`;
+        const subTotal = parseInt(document.getElementById('sub-total').dataset.amount);
+        const shipment = wilaya.home;
+        document.getElementById('top-cost').textContent = `${shipment}Da`;
+        document.getElementById('total').textContent = `${subTotal + shipment}Da`;
+    }
 }
-const shipmentTypeChangeHanlder = event => {
+const shipmentTypeChangeHanlder = () => {
     const value = document.querySelector('select[name="wilaya"]').value;
     const radio = document.querySelector('input[value="au bureau"]');
-    const radio_ = document.querySelector('input[value="à domicile"]');
+    // const radio_ = document.querySelector('input[value="à domicile"]');
     wilaya = Wilayas.find(item => item.name == value);
     document.getElementById('duration').textContent = wilaya.duration;
-    if(radio.checked)   
+    if(radio.checked) {
         document.getElementById('cost').textContent = `${wilaya.desk}Da`;
-    else 
+        const subTotal = parseInt(document.getElementById('sub-total').dataset.amount);
+        const shipment = wilaya.desk;
+        document.getElementById('top-cost').textContent = `${shipment}Da`;
+        document.getElementById('total').textContent = `${subTotal + shipment}Da`;
+    }
+    else {
         document.getElementById('cost').textContent = `${wilaya.home}Da`;
+        const subTotal = parseInt(document.getElementById('sub-total').dataset.amount);
+        const shipment = wilaya.home;
+        document.getElementById('top-cost').textContent = `${shipment}Da`;
+        document.getElementById('total').textContent = `${subTotal + shipment}Da`;
+    }
 }
 const colorChangeHandler = (event) => {
     if(event.target.closest('.color-square')) {
@@ -371,7 +390,6 @@ const adminbarToggleHandler = () => {
     document.getElementById('adminbar').classList.toggle('translate-x-full');
 }
 const radiosChangeHandler = event => {
-    console.log('fired');
     const {id,active} = event.currentTarget.dataset;
     const element = document.getElementById(id);
     const customSection = document.getElementById('custom-section');

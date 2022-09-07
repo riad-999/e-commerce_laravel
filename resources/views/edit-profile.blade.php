@@ -26,7 +26,7 @@
                 <x-form.select name="wilaya" title="choix de wilaya" class="w-full" 
                 :list="$wilayas" :selected="old('wilaya') ? old('wilaya') : $user->wilaya"  
                 label="la wilaya"/>
-                <x-interactive.btn :link="route('show-check-password',$user->id)" :white="true">
+                <x-interactive.btn :link="route('show-check-password')" :white="true">
                     Changer le mode de pass
                 </x-interactive.btn>
                 <div class="grid tablet:grid-cols-2 gap-2 mt-8">

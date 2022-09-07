@@ -72,9 +72,9 @@ class User extends Authenticatable
             $query = $query->leftJoin('users_addresses', 'users.id', '=', 'user_id')
                 ->leftJoin('wilayas', 'wilaya_id', '=', 'wilayas.id')
                 ->select([
-                    'users.id as id', 'users.name as name', 'email', 
+                    'users.id as id', 'users.name as name', 'email',
                     'number', 'address', 'wilayas.name as wilaya',
-                    'duration','home_shipment as home', 
+                    'duration', 'home_shipment as home',
                     'desk_shipment as desk', 'wilayas.id as code'
                 ]);
         }
@@ -138,5 +138,9 @@ class User extends Authenticatable
         return DB::table('users')
             ->where('email', '=', $email)
             ->first();
+    }
+    public static function admins()
+    {
+        return DB::table('users')->where('is_admin', '=', 1)->get();
     }
 }

@@ -1,4 +1,4 @@
-@props(['title' => 'rezki e commerce'])
+@props(['title' => 'rezki e commerce', 'fixedw' => true])
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -16,7 +16,9 @@
         <x-ui-elements.navbar/>
         <x-ui-elements.sidebar/>
         <x-interactive.alert />
-        {{ $slot }}
+        <main class="{{$fixedw ? 'max-w-[1400px]' : ''}} mx-auto">
+            {{ $slot }}
+        </main>
     </body>
 </html>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>

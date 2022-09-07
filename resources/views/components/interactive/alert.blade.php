@@ -19,9 +19,9 @@
     
     <div class="bg-black bg-opacity-30 fixed inset-0 flex justify-center items-center 
     transition-opacity opacity-0 !opacity-100 Alert z-[100]">
-        <div class="{{"$class $border"}} shadow-lg p-4 
+        <div class="{{"$border"}} shadow-lg p-4 
         w-[95%] max-w-[500px] m-auto text-center bg-white">
-            <i class="fa-solid fa-circle-exclamation mb-4 text-xl"></i>
+            <i class="fa-solid fa-circle-exclamation {{$class}} mr-2"></i>
             @if(is_array($message))
                 @foreach($message as $msg)
                     <span class="block text-left"> <i class="fa-solid text-[0.5rem] fa-circle mr-2"></i> {{ $msg }}</span>
@@ -29,7 +29,8 @@
             @else
                 <span>{{ $message }}</span>
             @endif
-            <button type="button" class="block mx-auto {{$class}} underline py-2 px-4 mt-4" id="alert-close">
+            <button type="button" class="block w-full tablet:max-w-[300px] mx-auto 
+            border border-solid border-secondary py-2 px-4 mt-12" id="alert-close">
                 Ok
             </button>
             {{-- <x-interactive.btn class="mt-4 block mx-auto" id="alert-close" type="button">

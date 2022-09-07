@@ -7,7 +7,7 @@ const swiper = new Swiper('.swiper', {
   pagination: {
     el: '.swiper-pagination',
     dynamicBullets: true,
-    dynamicMainBullets: 3,
+    dynamicMainBullets: 2,
   },
 
   // Navigation arrows

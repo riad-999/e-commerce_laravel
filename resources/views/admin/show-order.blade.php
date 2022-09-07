@@ -1,9 +1,8 @@
-<x-ui-elements.layout>
+<x-ui-elements.admin-layout>
     <div class="tablet:grid grid-cols-6 gap-8 bg-gray-100">
-        <x-ui-elements.admin-sidebar />
         <x-interactive.modal id="state-form" data-form="true">
             <form action="" method="POST" autocomplete="off">
-                @csrf
+            @csrf
                 @method('PATCH')
                 @php
                    $title = $order->state == $states[0]->name ? "confirmer l'ordre" : "mettre l'ordre comme livré"; 
@@ -88,4 +87,4 @@
             <x-elements.order :order="$order" :states="$states"/>
         </main>
     </div>
-</x-ui-elements.layout>
+</x-ui-elements.admin-layout>

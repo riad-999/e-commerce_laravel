@@ -19,7 +19,8 @@ class Order
             })
             ->select([
                 'order_id', 'order_product_color.product_id', 'order_product_color.color_id',
-                'products.name as pname', 'color_product.quantity as pcquantity', 'order_product_color.price', 'colors.name as cname',
+                'products.name as pname', 'color_product.quantity as pcquantity',
+                'order_product_color.price', 'colors.name as cname',
                 'order_product_color.quantity', 'main_image'
             ])
             ->whereIn('order_id', $orders_ids)->get();
@@ -83,7 +84,9 @@ class Order
     static public function getOrderWithDetails($id)
     {
         $orders = DB::table('orders')
-            ->where('id', '=', $id)->get();
+            ->join('wilayas', 'wilaya_id', '=', 'wilayas.id')
+            ->select(['orders.*', 'wilayas.name as wilaya'])
+            ->where('orders.id', '=', $id)->get();
         if (!$orders->first())
             return null;
         $order = self::addProductsToOrders($orders)
@@ -99,6 +102,11 @@ class Order
             ->orderByDesc('id')->get();
         $orders = self::addProductsToOrders($orders);
         return $orders;
+    }
+    public static function insert($data)
+    {
+        $data['created_at'] = now();
+        return DB::table('orders')->insertGetId($data);
     }
     public static function update_products($id, $products)
     {
@@ -128,5 +136,27 @@ class Order
             ->where('product_id', '=', $product_id)
             ->where('color_id', '=', $color_id)
             ->delete();
+    }
+    public static function associate($id, $products_colors)
+    {
+        foreach ($products_colors as $item) {
+            if ($item->promo)
+                if ($item->cut && ($item->cut * $item->price / 100) < $item->promo)
+                    $unit = floor($item->cut * $item->price / 100);
+                else
+                    $unit =  $item->promo;
+            elseif ($item->cut)
+                $unit = floor($item->cut * $item->price / 100);
+            else
+                $unit = $item->price;
+
+            DB::table('order_product_color')->insert([
+                'order_id' => $id,
+                'product_id' => $item->product_id,
+                'color_id' => $item->color_id,
+                'quantity' => $item->quantity,
+                'price' => $unit
+            ]);
+        }
     }
 }

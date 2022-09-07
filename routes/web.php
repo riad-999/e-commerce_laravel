@@ -8,6 +8,7 @@ use App\Http\Controllers\ColorController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PromoCodeController;
+use App\Http\Controllers\UiController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,9 +23,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('home');
-})->name('home');
+Route::controller(UiController::class)
+    ->group(
+        function () {
+            Route::get('/', 'home')->name('home');
+        }
+    );
 // product
 Route::get('/products/initial-create', [ProductController::class, 'initial_create'])
     ->name('initial-create-product');
@@ -90,14 +94,14 @@ Route::post('/cart', [CartController::class, 'add'])
 Route::get('/cart', [CartController::class, 'show'])
     ->name('cart');
 Route::patch('/cart', [CartController::class, 'update_item_quantity']);
-Route::post('/apply-promo-code',[CartController::class,'apply_promo_code'])
+Route::post('/apply-promo-code', [CartController::class, 'apply_promo_code'])
     ->name('apply-promo-code');
-Route::post('/remove-promo-code',[CartController::class,'remove_promo_code'])
-->name('remove-promo-code');
-Route::post('/remove-promo-code',[CartController::class,'remove_promo_code'])
-->name('remove-promo-code');
-Route::get('/validate-order',[CartController::class,'validate_order'])
-->name('validate-order');
+Route::post('/remove-promo-code', [CartController::class, 'remove_promo_code'])
+    ->name('remove-promo-code');
+Route::post('/remove-promo-code', [CartController::class, 'remove_promo_code'])
+    ->name('remove-promo-code');
+Route::get('/validate-order', [CartController::class, 'validate_order'])
+    ->name('validate-order');
 
 // ->middleware(\App\Http\Middleware\Cors::class);
 Route::delete('/cart', [CartController::class, 'delete_item'])
@@ -142,6 +146,8 @@ Route::get('/orders/{id}', [OrderController::class, 'show'])
     ->whereNumber('id')->name('order');
 Route::get('/orders/create', [OrderController::class, 'create'])
     ->name('create-order');
+Route::post('/orders', [OrderController::class, 'store'])
+    ->name('store-order');
 Route::get('/orders/{id}/edit', [OrderController::class, 'edit'])
     ->whereNumber('id')->name('edit-order');
 Route::get('/orders/{id}/products/edit', [OrderController::class, 'edit_products'])
@@ -159,42 +165,48 @@ Route::delete(
     [OrderController::class, 'delete_product']
 )->whereNumber(['id', 'product_id', 'color_id'])
     ->name('delete-order-product');
-// user 
-Route::get('/register', [UserController::class, 'create'])
-    ->name('create-user');
-Route::post('/register', [UserController::class, 'register'])
-    ->name('register');
-Route::get('/user/{id}', [UserController::class, 'show'])
-    ->name('profile');
-Route::get('/user/{id}/edit', [UserController::class, 'edit'])
-    ->name('edit-profile');
-Route::patch('/user/{id}/update', [UserController::class, 'update'])
-    ->name('update-profile');
-Route::get('/user/{id}/check-password', [UserController::class, 'show_check_password'])
-    ->name('show-check-password');
-Route::post('/user/{id}/check-password', [UserController::class, 'check_password'])
-    ->name('check-password');
-Route::get('/user/{id}/edit-password', [UserController::class, 'edit_password'])
-    ->name('edit-password');
-Route::patch('/user/{id}/update-password', [UserController::class, 'update_password'])
-    ->name('update-password');
+// user
+Route::middleware(['auth'])->controller(UserController::class)
+    ->group(function () {
+        Route::get('/user', 'show')->name('profile');
+        Route::get('/user/orders', 'orders')->name('user-orders');
+        Route::get('/user/order/{id}', 'show_order')->name('show-user-orders');
+        Route::get('/user/edit',  'edit')->name('edit-profile');
+        Route::patch('/user/update', 'update')->name('update-profile');
+        Route::get('/user/check-password', 'show_check_password')
+            ->name('show-check-password');
+        Route::post('/user/check-password', 'check_password')
+            ->name('check-password');
+        Route::get('/user/edit-password', 'edit_password')
+            ->name('edit-password');
+        Route::patch('/user/update-password', 'update_password')
+            ->name('update-password');
+    });
+Route::middleware(['guest'])->controller(UserController::class)
+    ->group(function () {
+        Route::get('/register', [UserController::class, 'create'])
+            ->name('create-user');
+        Route::post('/register', [UserController::class, 'register'])
+            ->name('register');
+    });
 // auth
-Route::get('/login', [AuthController::class, 'show_login'])
-    ->name('show-login');
-Route::post('/login', [AuthController::class, 'login'])
-    ->name('login');
-Route::post('/logout', [AuthController::class, 'logout'])
-    ->name('logout');
-Route::get('/forgot-password', [AuthController::class, 'forgot_password'])
-    ->middleware('guest')->name('password.request');
-Route::post('/forgot-password', [AuthController::class, 'handle_forgot_password'])
-    ->middleware('guest')->name('password.email');
-Route::get('/reset-password/{id}/{hash}', [AuthController::class, 'show_reset_password'])
-    ->middleware('guest')->name('show_reset-password');
-Route::patch('/reset-password/{id}', [AuthController::class, 'reset_password'])
-    ->middleware('guest')->name('reset-password');
-Route::post('/set-session', [AuthController::class, 'set_session'])
-    ->name('set-session');
+Route::middleware(['auth', 'admin'])->controller(AuthController::class)
+    ->group(
+        function () {
+            Route::get('/login', 'show_login')->name('show-login');
+            Route::post('/login', 'login')->name('login');
+            Route::post('/logout', 'logout')->name('logout');
+            Route::post('/set-session', 'set_session')->name('set-session');
+        }
+    );
+Route::middleware(['guest'])->controller(AuthController::class)
+    ->group(
+        function () {
+            Route::get('/forgot-password', 'forgot_password')->name('password.request');
+            Route::get('/reset-password/{id}/{hash}', 'show_reset_password')->name('show_reset-password');
+            Route::patch('/reset-password/{id}', 'reset_password')->name('reset-password');
+        }
+    );
 
 // Route::get('/verify-email-notice', [AuthController::class, 'verify_email_notice'])
 //     ->name('verify-email-notice');

@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\Order as MailOrder;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\User;
 use App\Models\Wilaya;
+use App\Rules\ShipmentType;
+use App\Rules\Wilaya as RulesWilaya;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -68,21 +73,23 @@ class OrderController extends Controller
     }
     public function create()
     {
-        if(!session('cart') || !count(session('cart')))
+        if (!session('cart') || !count(session('cart')))
             return redirect(route('cart'));
         $default_wilaya = null;
+        $old_wilaya = null;
         $default_type = 'à domicile';
-        $old_wilaya = old('wilaya');
+        $old_wilaya_str = old('wilaya');
         $old_type = old('shipment_type');
         $wilayas_ = Wilaya::all();
-        foreach($wilayas_ as $item) {
+        foreach ($wilayas_ as $item) {
             $item->home = $item->home_shipment;
             $item->desk = $item->desk_shipment;
-            if($item->id == 16)
+            if ($item->id == 16)
                 $default_wilaya = $item;
-            if($old_wilaya && $old_wilaya == $item->name)
+            if ($old_wilaya_str && $old_wilaya_str == $item->name)
                 $old_wilaya = $item;
         }
+
         $wilayas = $wilayas_->map(fn ($item) => (object) [
             'name' => "$item->id $item->name",
             'value' => $item->name
@@ -94,30 +101,30 @@ class OrderController extends Controller
             ]
         );
         $user = null;
-        if($old_wilaya) {
+        if ($old_wilaya) {
             $wilaya = $old_wilaya;
-        }elseif(Auth::check()) {
+        } elseif (Auth::check()) {
             $user = User::get(Auth::user()->id, true);
             $wilaya = (object) [
                 'id' => $user->code,
                 'name' => $user->wilaya,
                 'duration' => $user->duration,
                 'desk' => $user->desk,
-                'home' => $user->home 
+                'home' => $user->home
             ];
-        }else {
+        } else {
             $wilaya = $default_wilaya;
         }
         $sum = 0;
         foreach (session('cart') as $item) {
             if ($item->promo) {
-                if(($item->cut && ($item->cut * $item->price / 100) < $item->promo)) {
+                if (($item->cut && ($item->cut * $item->price / 100) < $item->promo)) {
                     $sum += floor($item->cut * $item->price / 100) * $item->quantity;
                 } else {
                     $sum += $item->promo * $item->quantity;
                 }
-            } elseif($item->cut) {
-                $sum += $item->quantity * $item->promo;
+            } elseif ($item->cut) {
+                $sum += $item->quantity * floor($item->cut * $item->price / 100);
             } else {
                 $sum += $item->quantity * $item->price;
             }
@@ -127,12 +134,79 @@ class OrderController extends Controller
             'wilayas_' => $wilayas_,
             'shipment_types' => $shipment_types,
             'default_wilaya' => $default_wilaya,
-            'old_wilaya' => $old_wilaya, 
+            'old_wilaya' => $old_wilaya,
             'default_type' => $default_type,
             'old_type' => $old_type,
             'wilaya' => $wilaya,
             'user' => $user,
             'sub_total' => $sum
+        ]);
+    }
+    public function store(Request $request)
+    {
+        // validation
+        $request->validate([
+            'name' => ['required'],
+            'email' => ['required', 'email'],
+            'address' => ['required'],
+            'number' => ['required'],
+            'wilaya' => [new RulesWilaya],
+            'shipment_type' => ['required', new ShipmentType]
+        ]);
+
+        if (!session('cart'))
+            return redirect(route('cart'));
+        $ids = [];
+        foreach (session('cart') as $item) {
+            array_push($ids, $item->product_id);
+        }
+        $products = Product::get_by_ids($ids, true);
+        $errors = [];
+        foreach (session('cart') as $item) {
+            foreach ($products as $product) {
+                if ($product->id != $item->product_id)
+                    continue;
+                foreach ($product->colors as $color) {
+                    if ($color->color_id != $item->color_id)
+                        continue;
+                    if ($color->quantity < $item->quantity) {
+                        $errors["$item->product_id-$item->color_id"] =
+                            "il ne reste que $color->quantity exemplaires de ce produit de cette couleur";
+                    }
+                    break;
+                }
+            }
+        }
+        if (count($errors))
+            return redirect(route('cart'))->withErrors($errors);
+
+        $data = [];
+        $wilaya = Wilaya::get_by_name(request()->input('wilaya'));
+        $inputs = ['name', 'email', 'number', 'shipment_type', 'address', 'note'];
+        foreach ($inputs as $input) {
+            $data[$input] = request()->input($input);
+        }
+        $data['state'] = 'en traitment';
+        $data['shipment'] = $data['shipment_type'] == 'à domicile'
+            ? $wilaya->home_shipment : $wilaya->desk_shipment;
+        $data['wilaya_id'] = $wilaya->id;
+        if (Auth::check())
+            $data['user_id'] = Auth::user()->id;
+        // $id = Order::insert($data);
+        // Order::associate($id, session('cart'));
+        // $admins = User::admins();
+        // foreach ($admins as $admin) {
+        //     Mail::to($admin->email)
+        //         ->send(new MailOrder(session('cart'), true, (object)$data, $wilaya));
+        // }
+        // Mail::to($data['email'])
+        //     ->send(new MailOrder(session('cart'), false, (object)$data, $wilaya));
+        return redirect(route('home'))->with([
+            'alert' => (object)[
+                'type' => 'success',
+                'message' => 'votre commande a été bien enregistrée, 
+                nous vous appellerons pour la confirmation'
+            ]
         ]);
     }
     public function edit($id)

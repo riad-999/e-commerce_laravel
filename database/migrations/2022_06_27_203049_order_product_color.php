@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('order_product_color', function (Blueprint $table) {
             $table->unsignedInteger('quantity');
             $table->unsignedInteger('price');
-            $table->boolean('deleted')->default(0);
+            // $table->boolean('deleted')->default(0);
         });
     }
 

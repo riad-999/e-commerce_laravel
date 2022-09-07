@@ -1,27 +1,37 @@
 <x-ui-elements.layout>
-    <section class="grid desk:grid-cols-3 items-start gap-8 mx-auto max-w-[900px] p-4 mt-12">
-        <section class="desk:order-1 p-2 border border-solid border-border">
+    <section class="grid items-start desk:grid-cols-3 gap-8 mx-auto tablet:max-w-[600px] desk:max-w-[900px] p-4 mt-12">
+        <section class="desk:order-1 p-2 border border-solid border-border w-full">
             <div class="pb-4 mb-4 border-b border-solid border-border">
                 @foreach(session('cart') as $item)
-                    <article>
-                        <span class="text-black">{{$item->name}}</span>
-                        <span>
-                            ({{$item->color->name}}) X {{$item->quantity}}
+                    <article class="flex justify-between gap-2">
+                        <span class="text-black">{{$item->name}} ({{$item->color->name}})</span>
+                        <span class="inline-block w-max">
+                            X {{$item->quantity}}
                         </span>
                     </article>
                 @endforeach
             </div>
-            <div id="sub-total" data-amount="{{$sub_total}}">Sous-Totale: {{$sub_total}}Da</div>
-            <div id="total">
-                Totale: 
-                @if(old('shipment_type') == 'au bureau')
-                    {{$sub_total + $wilaya->desk}}Da
-                @else 
-                    {{$sub_total + $wilaya->home}}Da
-                @endif
+             @php
+                if(old('shipment_type') == 'au bureau')
+                    $shipment = $wilaya->desk;
+                else 
+                    $shipment = $wilaya->home;
+            @endphp
+            <div class="flex justify-between gap-2">
+                <div>Livraison</div> 
+                <div class="font-semibold text-secondary text-right" id="top-cost">
+                    {{$shipment}}Da
+                </div>
+            </div>
+            <div id="sub-total" data-amount="{{$sub_total}}" class="flex justify-between gap-2">
+                <div>Sous-Totale</div> <div class="font-semibold text-secondary text-right">{{$sub_total}}Da</div>
+            </div>
+            <div class="flex justify-between gap-2">
+                <div>Totale</div>
+                <div class="font-semibold text-secondary text-right" id="total">{{$sub_total + $shipment}}Da</div>
             </div>
         </section>
-        <form action="{{route('create-order')}}" method="POST" class="col-span-2" autocomplete="off">
+        <form action="{{route('store-order')}}" method="POST" class="desk:col-span-2" autocomplete="off">
             @csrf
             <h5 class="font-body font-semibold mb-8">Commander</h5>
             <x-form.input name="name" class="w-full" placeholder="votre nom complet" 
