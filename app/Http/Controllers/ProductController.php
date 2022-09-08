@@ -178,9 +178,8 @@ class ProductController extends Controller
             $request->session()->put("file-count$i", $count_files);
             $rules["color$i"] = ['required', 'exists:colors,id'];
             $rules["quantity$i"] = ['required', 'numeric', "gt:0"];
-            $rules["main-image$i"] = ['required', 'image', 'mimes:jpg,jpeg,png,webp,svg,gif'];
-            // $rules["other-images$i"] = ['required'];
-            $rules["other-images$i.*"] = ['image', 'mimes:jpg,jpeg,png,webp,svg,gif'];
+            $rules["main-image$i"] = ['required', 'image', 'file|max:200', 'mimes:jpg,jpeg,png,webp,svg,gif'];
+            $rules["other-images$i.*"] = ['image', 'file|max:200', 'mimes:jpg,jpeg,png,webp,svg,gif'];
         }
         $validated = $request->validate($rules);
         // return $validated;
@@ -321,12 +320,12 @@ class ProductController extends Controller
             if ($quantity = $request->input("quantity-$color->name")) {
                 $object->data['quantity'] = $quantity;
             }
-            if ($request->file("main-image-$color->name")) {
+            if ($request->hasFile("main-image-$color->name")) {
                 $path = $request->file("main-image-$color->name")->store('public/uploads');
                 $object->data['main_image'] = basename($path);
                 Storage::delete("public/uploads/$color->main_image");
             }
-            if ($request->file("other-images-$color->name")) {
+            if ($request->hasFile("other-images-$color->name")) {
                 $object->images = [];
                 foreach ($request->file("other-images-$color->name") as $file) {
                     $path = $file->store('public/uploads');
@@ -385,7 +384,7 @@ class ProductController extends Controller
         ]);
         $name = basename($request->file('main-image')->store('public/uploads'));
         $images = null;
-        if ($request->file('other-images')) {
+        if ($request->hasFile('other-images')) {
             $images = [];
             foreach ($request->file('other-images') as $file) {
                 array_push($images, basename($file->store('public/uploads')));

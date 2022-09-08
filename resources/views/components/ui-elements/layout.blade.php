@@ -16,6 +16,7 @@
         <x-ui-elements.navbar/>
         <x-ui-elements.sidebar/>
         <x-interactive.alert />
+        {{-- <x-ui-elements.loading /> --}}
         <main class="{{$fixedw ? 'max-w-[1400px]' : ''}} mx-auto">
             {{ $slot }}
         </main>

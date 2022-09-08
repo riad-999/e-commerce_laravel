@@ -29,7 +29,7 @@
                 @for ($j = 0;$j < session()->get("file-count$i"); $j++)
                     @error("other-images$i.$j")
                         <x-form.error name="other-images{{$i}}.{{$j}}" 
-                        msg="assurez que toutes les fichier sont des images."/>
+                        msg="assurez que toutes les fichier sont des images et ne dépassent pas 200KB."/>
                         @break
                     @enderror
                 @endfor

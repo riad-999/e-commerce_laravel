@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class UiController extends Controller
 {
@@ -73,5 +75,47 @@ class UiController extends Controller
             'cats_g1' => $cats_g1,
             'cats_g2' => $cats_g2
         ]);
+    }
+    public function edit()
+    {
+        $ui = json_decode(
+            file_get_contents(
+                storage_path('app/admin.json')
+            )
+        );
+        return view('admin.edit-home', [
+            'ui' => $ui,
+            'categories' => Category::all(),
+        ]);
+    }
+    public function update(Request $request)
+    {
+        if (request()->hasFile('images')) {
+            session()->flash('file-count', count(request()->file('images')));
+        } else {
+            session()->flash('file-count', 0);
+        }
+        // if (request()->hasFile('images'))
+        request()->validate([
+            'images.*' => ['image', 'file|max:400', 'mimes:jpg,jpeg,png,webp,svg,gif']
+        ]);
+        $ui = json_decode(
+            file_get_contents(
+                storage_path('app/admin.json')
+            )
+        );
+        $ui->top_note = request('top-note');
+        $ui->categories = json_decode(request('categories'));
+        if (request()->hasFile('images')) {
+            foreach ($ui->images as $image)
+                Storage::delete("/ui-images/$image");
+            $ui->images = [];
+            foreach (request()->file('images') as $file) {
+                $file_name = basename($file->store('public/ui-images'));
+                array_push($ui->images, $file_name);
+            }
+        }
+        Storage::disk('local')->put('admin.json', json_encode($ui));
+        return back();
     }
 }

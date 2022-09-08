@@ -27,6 +27,10 @@ Route::controller(UiController::class)
     ->group(
         function () {
             Route::get('/', 'home')->name('home');
+            Route::get('/home/edit', 'edit')
+                ->middleware(['auth', 'admin'])->name('edit-home');
+            Route::patch('/home/update', 'update')
+                ->middleware(['auth', 'admin'])->name('update-home');
         }
     );
 // product
@@ -193,15 +197,15 @@ Route::middleware(['guest'])->controller(UserController::class)
 Route::middleware(['auth', 'admin'])->controller(AuthController::class)
     ->group(
         function () {
-            Route::get('/login', 'show_login')->name('show-login');
-            Route::post('/login', 'login')->name('login');
             Route::post('/logout', 'logout')->name('logout');
-            Route::post('/set-session', 'set_session')->name('set-session');
         }
     );
 Route::middleware(['guest'])->controller(AuthController::class)
     ->group(
         function () {
+            Route::get('/login', 'show_login')->name('show-login');
+            Route::post('/login', 'login')->name('login');
+            Route::post('/set-session', 'set_session')->name('set-session');
             Route::get('/forgot-password', 'forgot_password')->name('password.request');
             Route::get('/reset-password/{id}/{hash}', 'show_reset_password')->name('show_reset-password');
             Route::patch('/reset-password/{id}', 'reset_password')->name('reset-password');

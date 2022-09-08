@@ -38,7 +38,7 @@ desk:translate-x-0 transition duration-300" id="adminbar">
             </x-slot>
             Commandes
         </x-elements.admin-sidebar-item> 
-        <x-elements.admin-sidebar-item url="#">
+        <x-elements.admin-sidebar-item :url="route('edit-home')">
             <x-slot:icone>
                 <i class="fa-solid fa-display"></i>
             </x-slot>

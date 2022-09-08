@@ -29,6 +29,7 @@ const radios = document.querySelectorAll('input[data-radio="true"]');
 const promoCodeProductsSection = document.getElementById('add-promo-code');
 const cutSelect = document.getElementById('cut-select');
 const shipmentTypeInputs = document.querySelectorAll('input[name="shipment_type"]');
+// const loadingBtns = document.querySelector('button[data-loading="true"]');
 let checkFlag = false;
 const imageSelectionHandler = (event) => {
     const input = event.currentTarget;
@@ -49,14 +50,17 @@ const imageSelectionHandler = (event) => {
     else {
         const input = event.currentTarget;
         const len = input.files.length;
+        const oldContainer = input.parentElement.nextElementSibling;
         const images = Array(len).fill(0).map((_,index) => {
             const image = document.createElement('img');
             image.src = URL.createObjectURL(input.files[index]);
-            image.width = '100';
+            if(oldContainer.dataset.full)
+                image.classList.add('w-full');
+            else
+                image.width = '100';
             image.classList.add('block');
             return image;
         });
-        const oldContainer = input.parentElement.nextElementSibling;
         if(oldContainer && oldContainer.classList.contains('container'))
             oldContainer.remove();
         const container = document.createElement('div');
@@ -287,9 +291,11 @@ const singleProductColorChangeHandler = (event) => {
 //     price.textContent = `${event.currentTarget.value}Da`;
 // }
 const checkHandler = (event) => {
-    checkFlag = !checkFlag;
-    if(!checkFlag)
+    if(event.target.tagName === "INPUT") 
         return;
+    // if(!checkFlag && event.target.tagName === "LABEL")
+    //     return;
+    console.log(event.target.tagName);
     const check = event.target.closest('.check');
     if(!check)
         return;
@@ -461,6 +467,9 @@ const addPromoCodeToProductHandler = async event => {
     btn.classList.remove('opacity-50');
     btn.classList.remove('pointer-events-none');
 }
+// const loadingBtnHandler = () => {
+//     document.getElementById('loading').classList.remove('invisible');
+// }
 // const addColor_image = (event) => {
 //     const LIST = ['amd','msi','asus'];
 //     color_imageCount++;
@@ -635,6 +644,10 @@ if(cutSelect) {
 if(shipmentTypeInputs.length) {
     shipmentTypeInputs.forEach(item => item.addEventListener('change',shipmentTypeChangeHanlder));
 }
+// if(loadingBtns.length) {
+//     loadingBtns.forEach(btn => btn.addEventListener('click', loadingBtnHandler));
+// }
+// console.log(loadingBtns);
 // if(cartFroms.length) {
 //     cartFroms.forEach(item => item.addEventListener('submit',cartFormSubmitHandler)); 
 // }

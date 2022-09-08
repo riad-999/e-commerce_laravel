@@ -16,6 +16,7 @@
         <div class="desk:flex">
             <x-ui-elements.admin-sidebar />
             <x-ui-elements.sidebar/>
+            {{-- <x-ui-elements.loading /> --}}
             <main class="w-full">
                 <x-ui-elements.admin-navbar />
                 <div class="desk:ml-4">

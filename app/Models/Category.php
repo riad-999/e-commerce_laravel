@@ -17,6 +17,12 @@ class Category
             ->where('id', '=', $id)->get()->first();
         return $category;
     }
+    static public function get_all($ids)
+    {
+        $category = DB::table('categories')
+            ->whereIn('id', $ids)->get();
+        return $category;
+    }
     static public function store($data)
     {
         DB::table('categories')->insert($data);
