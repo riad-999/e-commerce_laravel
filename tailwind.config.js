@@ -55,6 +55,7 @@ module.exports = {
        gridTemplateColumns: {
         'color': 'repeat( auto-fit, 25px)',
         'admin1' : '50px repeat(5,1fr)',
+        'wilayas' : '50px 2fr repeat(4,1fr)',
         'product-images': '50px 1fr',
         'product-promo': '100px 1fr',
         'promo-code-products': '3fr 2fr 1fr'

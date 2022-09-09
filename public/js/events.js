@@ -295,7 +295,6 @@ const checkHandler = (event) => {
         return;
     // if(!checkFlag && event.target.tagName === "LABEL")
     //     return;
-    console.log(event.target.tagName);
     const check = event.target.closest('.check');
     if(!check)
         return;

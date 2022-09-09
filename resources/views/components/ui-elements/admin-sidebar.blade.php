@@ -1,7 +1,7 @@
 <div class="hidden desk:block desk:w-[30%] max-w-[270px]"></div>
 <aside class="fixed right-0 desk:right-auto top-0 desk:left-0 bottom-0
-h-[100vh] max-h-[100vh] w-full  desk:w-[30%] max-w-[270px] overflow-y-auto py-8 px-2 
-bg-white shadow-md  border-r border-solid border-border z-50 desk:z-auto translate-x-full 
+h-[100vh] max-h-[100vh] w-full  desk:w-[30%] max-w-[270px] overflow-y-auto py-8
+bg-gray-100 shadow-md  border-r border-solid border-border z-[200] desk:z-auto translate-x-full 
 desk:translate-x-0 transition duration-300" id="adminbar">
     <header class="flex justify-between desk:justify-start items-center mb-12 px-4">
         <div class="flex items-center">
@@ -50,11 +50,17 @@ desk:translate-x-0 transition duration-300" id="adminbar">
             </x-slot>
             Catégories
         </x-elements.admin-sidebar-item>
-        <x-elements.admin-sidebar-item :url="route('orders')">
+        <x-elements.admin-sidebar-item :url="route('brands')">
             <x-slot:icone>
                 <i class="fa-solid fa-shop"></i>
             </x-slot>
             Marques
+        </x-elements.admin-sidebar-item>
+        <x-elements.admin-sidebar-item :url="route('wilayas')">
+            <x-slot:icone>
+                <i class="fa-solid fa-location-dot"></i>
+            </x-slot>
+            Wilayas
         </x-elements.admin-sidebar-item>
         <x-elements.admin-sidebar-item :url="route('orders')">
             <x-slot:icone>

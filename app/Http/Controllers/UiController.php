@@ -88,7 +88,7 @@ class UiController extends Controller
             'categories' => Category::all(),
         ]);
     }
-    public function update(Request $request)
+    public function update()
     {
         if (request()->hasFile('images')) {
             session()->flash('file-count', count(request()->file('images')));

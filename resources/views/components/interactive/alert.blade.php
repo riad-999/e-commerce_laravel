@@ -18,8 +18,8 @@
     @endphp
     
     <div class="bg-black bg-opacity-30 fixed inset-0 flex justify-center items-center 
-    transition-opacity opacity-0 !opacity-100 Alert z-[100]">
-        <div class="{{"$border"}} shadow-lg p-4 
+    transition-opacity opacity-0 !opacity-100 Alert z-[1000]">
+        <div class="border-secondary border-solid border shadow-lg p-4 
         w-[95%] max-w-[500px] m-auto text-center bg-white">
             <i class="fa-solid fa-circle-exclamation {{$class}} mr-2"></i>
             @if(is_array($message))

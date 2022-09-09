@@ -10,6 +10,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PromoCodeController;
 use App\Http\Controllers\UiController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WilayaController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -72,25 +73,38 @@ Route::get('/products', [ProductController::class, 'index'])
     ->name('products');
 Route::get('/products/{id}', [ProductController::class, 'show'])
     ->whereNumber(['id'])->name('show-product');
-
+// wilayas 
+Route::middleware(['auth', 'admin'])->controller(WilayaController::class)
+    ->group(
+        function () {
+            Route::get('/wilayas', 'index')->name('wilayas');
+            Route::post('/wilayas', 'store')->name('store-wilaya');
+            Route::get('/wilayas/{id}/edit', 'edit')->name('edit-wilaya');
+            Route::patch('/wilayas/{id}', 'update')->name('update-wilaya');
+            Route::delete('/wilayas/{id}', 'delete')->name('delete-wilaya');
+        }
+    );
+// promo codes 
 Route::middleware(['auth', 'admin'])->controller(PromoCodeController::class)
-    ->group(function () {
-        Route::get('/promo-codes', 'index')->name('promo-codes');
-        Route::post('/promo-codes', 'store')->name('store-promo-code');
-        Route::get('/promo-codes/{id}/edit', 'edit')->name('edit-promo-code');
-        Route::patch('/promo-codes/{id}', 'update')->name('update-promo-code');
-        Route::delete('/promo-codes/{id}', 'delete')->name('delete-promo-code');
-        Route::get('promo-codes/{id}/assocations', 'promo_code_assocations')
-            ->name('promo-code-assocations');
-        Route::get('promo-codes/{id}/assocations/create', 'create_promo_code_assocation')
-            ->name('create-promo-code-assocations');
-        Route::post('promo-codes/{id}/assocations', 'store_promo_code_assocation')
-            ->name('store-promo-code-assocations');
-        Route::patch('promo-codes/{id}/products/{product_id}', 'update_promo_code_assocation')
-            ->name('update-promo-code-assocations');
-        Route::delete('promo-codes/{id}/products/{product_id}', 'delete_promo_code_assocation')
-            ->name('delete-promo-code-assocations');
-    });
+    ->group(
+        function () {
+            Route::get('/promo-codes', 'index')->name('promo-codes');
+            Route::post('/promo-codes', 'store')->name('store-promo-code');
+            Route::get('/promo-codes/{id}/edit', 'edit')->name('edit-promo-code');
+            Route::patch('/promo-codes/{id}', 'update')->name('update-promo-code');
+            Route::delete('/promo-codes/{id}', 'delete')->name('delete-promo-code');
+            Route::get('promo-codes/{id}/assocations', 'promo_code_assocations')
+                ->name('promo-code-assocations');
+            Route::get('promo-codes/{id}/assocations/create', 'create_promo_code_assocation')
+                ->name('create-promo-code-assocations');
+            Route::post('promo-codes/{id}/assocations', 'store_promo_code_assocation')
+                ->name('store-promo-code-assocations');
+            Route::patch('promo-codes/{id}/products/{product_id}', 'update_promo_code_assocation')
+                ->name('update-promo-code-assocations');
+            Route::delete('promo-codes/{id}/products/{product_id}', 'delete_promo_code_assocation')
+                ->name('delete-promo-code-assocations');
+        }
+    );
 
 //cart 
 Route::post('/cart', [CartController::class, 'add'])

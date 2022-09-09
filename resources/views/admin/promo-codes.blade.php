@@ -8,10 +8,10 @@
                     <i class="fa-solid fa-circle-exclamation mr-2 text-secondary"></i> 
                     vous voulez vraiment supprimer ce code promo ?
                 </div>
-                <x-interactive.btn type="button" class="close-modal" data-id="delete" :white="true">
+                <x-interactive.btn type="button" class="close-modal w-full max-w-[100px]" data-id="delete" :white="true">
                     Annuler
                 </x-interactive.btn>
-                <x-interactive.btn type="submit" class="ml-2">
+                <x-interactive.btn type="submit" class="ml-2 w-full max-w-[100px]">
                     Oui
                 </x-interactive.btn>
             </div>

@@ -11,18 +11,18 @@
         <link href="{{ asset('css/app.css') }}" rel="stylesheet">
         <script src="https://kit.fontawesome.com/1ef1b3e9cf.js" crossorigin="anonymous"></script>
     </head>
-    <body {{$attributes->merge(['class' => 'font-body text-gray-600 relative bg-gray-100'])}}>
+    <body {{$attributes->merge(['class' => 'font-body text-gray-600 relative'])}}>
         <x-interactive.alert />
         <div class="desk:flex">
             <x-ui-elements.admin-sidebar />
             <x-ui-elements.sidebar/>
             {{-- <x-ui-elements.loading /> --}}
-            <main class="w-full">
+            <section class="w-full">
                 <x-ui-elements.admin-navbar />
-                <div class="desk:ml-4">
+                <main class="px-4 max-w-[1600px] mx-auto">
                     {{$slot}}
-                </div> 
-            </main>
+                </main> 
+            </section>
         </div>
     </body>
 </html>

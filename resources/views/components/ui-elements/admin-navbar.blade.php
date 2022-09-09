@@ -1,4 +1,4 @@
-<nav class="bg-white border-b border-gray-400 border-solid sticky top-0 mb-12 py-2 z-[100]">
+<nav class="bg-gray-100 border-b border-gray-400 border-solid sticky top-0 mb-12 py-2 z-[100]">
     <div class="flex justify-between items-baseline max-w-[1600px] mx-auto px-4">
         <a href="{{route('home')}}" class="block desk:hidden"><h3 class="font-body font-semibold">Logo</h3></a>
         <div>
