@@ -22,6 +22,7 @@ return new class extends Migration
             $table->timestamp('password_reset_hash_created_at')->nullable();
             $table->string('password');
             $table->boolean('is_admin')->default(0);
+            $table->boolean('is_privileged')->default(0);
             $table->rememberToken();
             $table->timestamps();
         });

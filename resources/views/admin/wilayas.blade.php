@@ -6,7 +6,7 @@
             <div class="text-center">
                 <div class="mb-4">
                     <i class="fa-solid fa-circle-exclamation mr-2 text-secondary"></i> 
-                    vous voulez vraiment supprimer ce code promo ?
+                    vous voulez vraiment supprimer cette wilaya ?
                 </div>
                 <x-interactive.btn type="button" class="close-modal w-full max-w-[100px]" data-id="delete" :white="true">
                     Annuler

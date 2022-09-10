@@ -141,6 +141,31 @@ class User extends Authenticatable
     }
     public static function admins()
     {
-        return DB::table('users')->where('is_admin', '=', 1)->get();
+        return DB::table('users')
+            ->where('is_admin', '=', 1)->get();
+    }
+    public static function insert($data)
+    {
+        DB::table('users')->insert($data);
+    }
+    public static function delete_user($id)
+    {
+        DB::table('users')->where('id', '=', $id)
+            ->delete();
+    }
+    public static function all_users()
+    {
+        $pagination = DB::table("users")->select('name', 'email')
+            ->paginate(20);
+        $curr = $pagination->currentPage();
+        $last = $pagination->lastPage();
+        return (object)[
+            'products' => $pagination->items(),
+            'currentPage' => $curr,
+            'lastPage' => $last,
+            'nextPage' => $curr >= $last ? $last : $curr + 1,
+            'previousPage' => $curr <= 1 ? 1 : $curr - 1,
+            'total' => $pagination->total()
+        ];
     }
 }

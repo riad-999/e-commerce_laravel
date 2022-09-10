@@ -80,12 +80,14 @@ desk:translate-x-0 transition duration-300" id="adminbar">
             </x-slot>
             Séléction
         </x-elements.admin-sidebar-item> --}}
-        <x-elements.admin-sidebar-item :url="route('orders')">
-            <x-slot:icone>
-                <i class="fa-solid fa-user-group"></i>
-            </x-slot>
-            Admins
-        </x-elements.admin-sidebar-item>
+        @can('isPrivileged')
+            <x-elements.admin-sidebar-item :url="route('admins')">
+                <x-slot:icone>
+                    <i class="fa-solid fa-user-group"></i>
+                </x-slot>
+                Admins
+            </x-elements.admin-sidebar-item>
+        @endcan
         <x-elements.admin-sidebar-item :url="route('orders')">
             <x-slot:icone>
                 <i class="fa-solid fa-gear"></i>

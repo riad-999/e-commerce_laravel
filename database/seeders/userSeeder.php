@@ -60,6 +60,7 @@ class userSeeder extends Seeder
             'password' => bcrypt('admin147'),
             'email' => 'felihriad4@gmail.com',
             'is_admin' => true,
+            'is_privileged' => true,
             'created_at' => $now,
             'updated_at' => $now
         ]);

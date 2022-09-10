@@ -27,8 +27,8 @@ class UserController extends Controller
     public function register(Request $request)
     {
         $creds = $request->validate([
-            'name' => ['required'],
-            'email' => ['required', 'email'],
+            'name' => ['required', 'unique:users,name'],
+            'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'confirmed', 'min:6'],
             'number' => [new PhoneNumber]
         ]);
@@ -86,8 +86,8 @@ class UserController extends Controller
     {
         $id = Auth::user()->id;
         $request->validate([
-            'name' => ['required'],
-            'email' => ['required', 'email'],
+            'name' => ['required', "unique:users,name,$id"],
+            'email' => ['required', 'email', "unique:users,email,$id"],
             'number' => [new PhoneNumber]
         ]);
         $wilayas = Wilaya::all();
@@ -167,6 +167,58 @@ class UserController extends Controller
             'order' => Order::getOrderWithDetails($id),
             'states' => $states,
             'user' => Auth::user()
+        ]);
+    }
+    public function admins()
+    {
+        return view('admin.admins', [
+            'admins' => User::admins()
+        ]);
+    }
+    public function store_admin()
+    {
+        request()->validate([
+            'name' => ['required', 'unique:users,name'],
+            'email' => ['required', 'email', 'unique:users,email'],
+            'password' => ['required', 'confirmed', 'min:6']
+        ]);
+        User::insert([
+            'name' => request('name'),
+            'email' => request('email'),
+            'password' => bcrypt(request('password')),
+            'is_admin' => true
+        ]);
+        return back()->with([
+            'alert' => (object) [
+                'type' => 'success',
+                'message' => "l'admin a été ajouté"
+            ]
+        ]);
+    }
+    public function delete($id)
+    {
+        User::delete_user($id);
+        return back()->with([
+            'alert' => (object) [
+                'type' => 'success',
+                'message' => "l'admin a été supprimé"
+            ]
+        ]);
+    }
+    public function index()
+    {
+        $paginatation = User::all_users();
+        $query = request()->query();
+        $query['page'] = $paginatation->nextPage;
+        $nextUrl = request()->fullUrlWithQuery($query);
+        $query['page'] = $paginatation->previousPage;
+        $prevUrl = request()->fullUrlWithQuery($query);
+        return view('admin.users', [
+            'users' => $paginatation->products,
+            'currentPage' => $paginatation->currentPage,
+            'lastPage' => $paginatation->lastPage,
+            'nextUrl' => $nextUrl,
+            'prevUrl' => $prevUrl,
         ]);
     }
 }

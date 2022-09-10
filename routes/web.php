@@ -199,6 +199,14 @@ Route::middleware(['auth'])->controller(UserController::class)
             ->name('edit-password');
         Route::patch('/user/update-password', 'update_password')
             ->name('update-password');
+        Route::get('/users', 'index')
+            ->middleware(['admin'])->name('users');
+    });
+Route::middleware(['auth', 'admin', 'privileged'])->controller(UserController::class)
+    ->group(function () {
+        Route::get('/admins', 'admins')->name('admins');
+        Route::post('/admins', 'store_admin')->name('store-admin');
+        Route::delete('/admins/{id}', 'delete')->name('delete-user');
     });
 Route::middleware(['guest'])->controller(UserController::class)
     ->group(function () {
@@ -208,7 +216,7 @@ Route::middleware(['guest'])->controller(UserController::class)
             ->name('register');
     });
 // auth
-Route::middleware(['auth', 'admin'])->controller(AuthController::class)
+Route::middleware(['auth'])->controller(AuthController::class)
     ->group(
         function () {
             Route::post('/logout', 'logout')->name('logout');
