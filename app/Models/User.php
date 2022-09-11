@@ -168,4 +168,36 @@ class User extends Authenticatable
             'total' => $pagination->total()
         ];
     }
+    public static function save_product($product_id, $user_id)
+    {
+        $exists = DB::table('products')
+            ->where('id', '=', $product_id)
+            ->where('deleted', '=', 0)->first();
+        if (!$exists)
+            return null;
+        DB::table('saves')->insert([
+            'product_id' => $product_id,
+            'user_id' => $user_id
+        ]);
+        return true;
+    }
+    public static function unsave_product($product_id, $user_id)
+    {
+        $exists = DB::table('products')
+            ->where('id', '=', $product_id)
+            ->where('deleted', '=', 0)->first();
+        if (!$exists)
+            return null;
+        DB::table('saves')->where('product_id', '=', $product_id)
+            ->where('user_id', '=', $user_id)->delete();
+        return true;
+    }
+    public static function saved_products($id)
+    {
+        return DB::table('saves')
+            ->join('products', 'product_id', '=', 'products.id')
+            ->select(['id', 'name', 'price', 'promo'])
+            ->selectRaw('(select main_image from color_product where products.id = color_product.product_id limit 1) as image')
+            ->where('user_id', '=', $id)->get();
+    }
 }

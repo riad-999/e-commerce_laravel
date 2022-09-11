@@ -201,6 +201,9 @@ Route::middleware(['auth'])->controller(UserController::class)
             ->name('update-password');
         Route::get('/users', 'index')
             ->middleware(['admin'])->name('users');
+        Route::post('/saves', 'save_product')->name('save-product');
+        Route::get('/saves', 'saved_products')->name('saved-products');
+        // Route::delete('/saves', 'unsave_product')->name('unsave-product');
     });
 Route::middleware(['auth', 'admin', 'privileged'])->controller(UserController::class)
     ->group(function () {

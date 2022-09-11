@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
@@ -22,10 +23,19 @@ class AuthController extends Controller
     }
     public function login(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => ['required'],
             'password' => ['required']
         ]);
+        // $request->validate([
+        //     'name' => ['required'],
+        //     'password' => ['required']
+        // ]);
+        if ($validator->fails()) {
+            return redirect(route('login'))
+                ->withErrors($validator)
+                ->withInput();
+        }
         $user = User::get_by_name($request->input('name'));
         if (!$user)
             return back()->withErrors([
@@ -34,6 +44,8 @@ class AuthController extends Controller
         if (Hash::check($request->input('password'), $user->password)) {
             Auth::loginUsingId($user->id, $request->has('remember_me'));
             $request->session()->regenerate();
+            if (request()->has('redirect'))
+                return redirect(request('redirect'));
             return redirect()->intended(route('home'));
         } else
             return back()->withErrors([

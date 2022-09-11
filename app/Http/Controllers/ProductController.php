@@ -8,6 +8,7 @@ use App\Models\Color;
 use App\Models\Product;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -129,9 +130,15 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request, $id)
+    public function show($id)
     {
-        $product =  Product::get($id, true, true, true);
+        $product =  Product::get(
+            $id,
+            true,
+            true,
+            true,
+            Auth::check() ? Auth::user()->id : null
+        );
         return view('show-product', [
             'product' => $product
         ]);

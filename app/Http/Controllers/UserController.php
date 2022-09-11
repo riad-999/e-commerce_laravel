@@ -221,4 +221,27 @@ class UserController extends Controller
             'prevUrl' => $prevUrl,
         ]);
     }
+    public function save_product()
+    {
+        $state = request()->all()['state'];
+        $product_id = request()->all()['product_id'];
+        if ($state == 'saved') {
+            if (User::unsave_product($product_id, Auth::user()->id))
+                return response(status: 200);
+            else
+                return response('not found', 404);
+        } elseif ($state == 'unsaved') {
+            User::save_product($product_id, Auth::user()->id);
+            return response(status: 201);
+        } else
+            return response('not found', 404);
+    }
+    public function saved_products()
+    {
+        $user = Auth::user();
+        return view('admin.saves', [
+            'user' => $user,
+            'products' => User::saved_products($user->id)
+        ]);
+    }
 }

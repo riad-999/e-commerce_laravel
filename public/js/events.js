@@ -29,6 +29,8 @@ const radios = document.querySelectorAll('input[data-radio="true"]');
 const promoCodeProductsSection = document.getElementById('add-promo-code');
 const cutSelect = document.getElementById('cut-select');
 const shipmentTypeInputs = document.querySelectorAll('input[name="shipment_type"]');
+const saveBtn = document.getElementById('save-btn');
+const saveBtns = document.querySelectorAll('button[data-save="true"]');
 // const loadingBtns = document.querySelector('button[data-loading="true"]');
 let checkFlag = false;
 const imageSelectionHandler = (event) => {
@@ -466,6 +468,59 @@ const addPromoCodeToProductHandler = async event => {
     btn.classList.remove('opacity-50');
     btn.classList.remove('pointer-events-none');
 }
+let clearId = null;
+const saveHandler = async event => {
+    const btn = event.currentTarget;
+    const {state, product} = btn.dataset;
+    btn.classList.add('opacity-40');
+    btn.classList.add('pointer-events-none');
+    if(!product)
+        return;
+    const url = `${serverEndPoint}/saves`;
+    let content = '';
+    try {
+        if(state === 'saved') {
+            await axios.post(url, {
+                state,
+                product_id: product
+            });
+
+            document.querySelector(`#${btn.id} i[data-icone="saved-icone"]`).classList.add('!hidden');
+            document.querySelector(`#${btn.id} i[data-icone="unsaved-icone"]`).classList.remove('!hidden');
+            content = 'enlevé';
+        }
+        else {
+            await axios.post(url, {
+                state,
+                product_id: product
+            });
+            document.querySelector(`#${btn.id} i[data-icone="saved-icone"]`).classList.remove('!hidden');
+            document.querySelector(`#${btn.id} i[data-icone="unsaved-icone"]`).classList.add('!hidden');
+            content = 'eregistré';
+        }
+    } catch(error) {
+        console.log(error);
+        if(error.response && error.response.status > 400 && error.response.status < 500) {
+            // auth error
+        }
+        else if(error.request) {
+            // no response received 
+        }
+        else {
+            // redirect to error page
+        }
+    }
+    btn.dataset.state = state === 'saved' ? 'unsaved' : 'saved';
+    btn.classList.remove('opacity-40');
+    btn.classList.remove('pointer-events-none');
+    const notice = document.getElementById('save-notice');
+    notice.classList.add('scale-100');
+    notice.textContent = content;
+    clearTimeout(clearId);
+    clearId = setTimeout(() => {
+        notice.classList.remove('scale-100');
+    }, 1000);
+}
 // const loadingBtnHandler = () => {
 //     document.getElementById('loading').classList.remove('invisible');
 // }
@@ -642,6 +697,13 @@ if(cutSelect) {
 }
 if(shipmentTypeInputs.length) {
     shipmentTypeInputs.forEach(item => item.addEventListener('change',shipmentTypeChangeHanlder));
+}
+if(saveBtn) {
+    saveBtn.addEventListener('click',saveHandler);
+}
+console.log(saveBtns);
+if(saveBtns.length) {
+    saveBtns.forEach(btn => btn.addEventListener('click', saveHandler));
 }
 // if(loadingBtns.length) {
 //     loadingBtns.forEach(btn => btn.addEventListener('click', loadingBtnHandler));

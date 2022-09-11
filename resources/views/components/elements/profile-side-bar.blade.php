@@ -20,7 +20,7 @@
         </a>
     </li>
     <li>
-        <a href="#" class="py-2 px-4 hover:bg-gray-200 block 
+        <a href="{{route('saved-products')}}" class="py-2 px-4 hover:bg-gray-200 block 
         {{$current == 'saves' ? 'bg-gray-200' : '' }}">
             enregistrements.
         </a>

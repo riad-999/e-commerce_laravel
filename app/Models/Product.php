@@ -186,7 +186,7 @@ class Product
         ];
     }
 
-    public static function get($id, $withColors = false, $withReviews = false, $withCount = false)
+    public static function get($id, $withColors = false, $withReviews = false, $withCount = false, $user_id = null)
     {
         $product = DB::table('products')
             ->join('brands', 'brand_id', '=', 'brands.id')
@@ -197,8 +197,12 @@ class Product
                     'categories.name as category'
                 ]
             )
+            ->when($user_id, function ($query, $user_id) use ($id) {
+                $query->selectRaw('(select count(*) from saves where product_id = ? and user_id = ?) as saved', [$id, $user_id]);
+            })
             ->where('deleted', '=', 0)
-            ->where('products.id', '=', $id)->get()->first();
+            ->where('products.id', '=', $id)
+            ->get()->first();
         if (!$product)
             return null;
         // product colors.
@@ -260,14 +264,14 @@ class Product
     }
     public static function get_by_ids($ids, $withColors = false)
     {
-        $products = DB::table('products')->whereIn('id',$ids)->get();
-        if($withColors) {
+        $products = DB::table('products')->whereIn('id', $ids)->get();
+        if ($withColors) {
             $rows = DB::table('color_product')
-                ->whereIn('product_id',$ids)->get();
-            foreach($products as $product) {
+                ->whereIn('product_id', $ids)->get();
+            foreach ($products as $product) {
                 $product->colors = [];
-                foreach($rows as $row) {
-                    if($row->product_id != $product->id)
+                foreach ($rows as $row) {
+                    if ($row->product_id != $product->id)
                         continue;
                     array_push($product->colors, $row);
                 }
@@ -335,6 +339,10 @@ class Product
                     self::delete_color($id, $color->id, $color);
             }
         }
+        DB::table('saves')->where('product_id', '=', $id)
+            ->delete();
+        DB::table('reviews')->where('product_id', '=', $id)
+            ->delete();
     }
     public static function delete_color($product_id, $color_id, $color)
     {

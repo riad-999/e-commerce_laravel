@@ -2519,6 +2519,18 @@ body[dir="rtl"] .checkbox:checked,
 .top-\[50\%\]{
   top: 50%;
 }
+.right-2{
+  right: 0.5rem;
+}
+.top-\[-16px\]{
+  top: -16px;
+}
+.top-\[-32px\]{
+  top: -32px;
+}
+.top-\[-48px\]{
+  top: -48px;
+}
 .z-\[5\]{
   z-index: 5;
 }
@@ -2914,6 +2926,16 @@ body[dir="rtl"] .checkbox:checked,
 }
 .translate-x-0{
   --tw-translate-x: 0px;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.scale-0{
+  --tw-scale-x: 0;
+  --tw-scale-y: 0;
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+.scale-100{
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 .transform{
@@ -3931,6 +3953,10 @@ body {
 
   .desk\:grid-cols-3{
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .desk\:grid-cols-2{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .desk\:flex-row{

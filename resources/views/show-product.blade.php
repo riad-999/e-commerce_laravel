@@ -35,6 +35,37 @@
             </div>
         </form>
     </x-interactive.modal>
+    @guest
+        <x-interactive.modal id="auth-alert" class="bg-gray-100">
+            <form action="{{route('login')}}" method="POST" class="text-left p-4">
+                @csrf
+                <input type="hidden" name="redirect" value="{{route('show-product',$product->id)}}" />
+                <button type="button" class="absolute top-0 right-2 text-xl text-secondary p-2 close-modal" data-id="auth-alert">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                {{-- <h5 class="text-center text-black font-body font-semibold mb-8">se connecter</h5> --}}
+                <p class="mb-4">
+                    connectez vous pour réaliser cette action, ou 
+                    <a href="{{route('register')}}" class="underline">inscrivez vous</a> 
+                </p>
+                @if(session('registered'))
+                    <p class="mb-4">votre compte a été bien enregistré, connectez vous</p>
+                @endif
+                <x-form.input name="name" label="nom *" value="{{old('name')}}" 
+                    class="w-full" placeholder="votre nom" />
+                <x-form.input type="password" name="password" label="mot de pass *" 
+                    class="w-full text-sm" />
+                <div class="mb-2">
+                    <input type="checkbox" id="remember_me" name="remember_me" value="true" {{old('remember_me') ? 'checked' : ''}} id="remember_me" class="accent-black cursor-pointer" />
+                    <label for="remember_me" class="pl-2 cursor-pointer">
+                        souvenez moi
+                    </label>
+                </div>
+                <small class="text-sm underline"><a href="{{route('password.request')}}">mot de pass oublié ?</a></small>
+                <x-interactive.btn class="w-full mt-4">se connecter</x-interactive.btn>
+            </form>
+        </x-interactive.modal>
+    @endguest
     <main class="mx-auto max-w-[1600px] mb-12">
         <a href="{{route('products')}}" class="mt-4 pl-4 desk:pl-12 inline-block">
             <i class="fa-solid fa-arrow-left mr-2"></i> 
@@ -65,12 +96,29 @@
                             <x-elements.score :score="$product->score" :count="count($product->reviews)" class="mb-8" />
                         @endif
                     </div>
-                    <div class="mr-4 text-secondary text-xl">
-                        <button>
-                            <i class="fa-regular fa-bookmark"></i>
-                            <i class="fa-solid fa-bookmark !hidden"></i>
-                        </button>
-                    </div>
+                    @php
+                        if(auth()->check())
+                            $auth = true;
+                        else 
+                            $auth = false;
+                    @endphp
+                    @cannot('isAdmin')
+                        <div class="mr-4 text-secondary text-xl relative">
+                            <button data-id="auth-alert" class="{{$auth ? '' : 'open-modal'}}" 
+                            id="save-btn" data-state="{{isset($product->saved) && $product->saved ? 'saved' : 'unsaved'}}" 
+                            data-product="{{$auth ? $product->id : ''}}">
+                                <div class="absolute right-0 top-[-48px] transition scale-0 duration-300 
+                                overflow-hidden text-sm z-[5] bg-secondary text-white py-2 px-4" id="save-notice"></div>
+                                @if(isset($product->saved) && $product->saved)
+                                    <i class="fa-solid fa-bookmark" data-icone="saved-icone"></i>
+                                    <i class="fa-regular fa-bookmark !hidden" data-icone="unsaved-icone"></i>
+                                @else
+                                    <i class="fa-solid fa-bookmark !hidden" data-icone="saved-icone"></i>
+                                    <i class="fa-regular fa-bookmark" data-icone="unsaved-icone"></i>
+                                @endif
+                            </button>
+                        </div>
+                    @endcannot
                 </div>
                 <div class="text-sm mb-2 text-pink left-quantity">{{$product->colors[0]->quantity}} diponible</div>
                 <div class="grid grid-cols-color gap-4 mb-4 colors-container" id="colors-container">
@@ -104,23 +152,24 @@
                         @endif
                     @endif
                 </div>
-                <div class="grid grid-cols-2 gap-2 mb-4">
-                    <form action="{{route('cart')}}" method="POST" 
+                <div class="grid desk:grid-cols-2 mb-8">
+                    {{-- <form action="{{route('cart')}}" method="POST" 
                     class="cart-form" id="cart-form2" data-buy="true">
                         @csrf
                         <x-interactive.btn class="w-full" 
                         name="cart" value="">
                             Commander
-                        </x-interactive.btn>
-                    </form>
+                        </x-interactive.btn> --}}
+                    {{-- </form> --}}
                     <x-interactive.btn class="add-to-cart open-modal" id="add-to-cart"
                     data-color="{{$product->colors[0]->id}}" data-product="{{$product->id}}" 
                     data-id="cart-alert" data-image="{{$main_image[0]}}" :white="true">
                         Ajouter <span class="inline-block ml-2">+</span><i class="fa-solid fa-cart-shopping"></i>
                     </x-interactive.btn>
+                    <div></div>
                 </div>
                 @if($product->description)
-                    <h5 class="font-body">description</h5>
+                    <h5 class="font-body font-semibold">description</h5>
                     <p>
                         {{$product->description}}
                     </p>
