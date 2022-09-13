@@ -3,7 +3,7 @@
         <section class="tablet:col-span-3 desk:col-span-2 
         order-last tablet:order-first tablet:border-r border-t 
         tablet:border-t-0 border-solid border-border pl-4 pt-4 tablet:pt-0">
-            <x-elements.profile-side-bar current="profile" :id="$user->id"/>
+            <x-elements.profile-side-bar current="saves" :id="$user->id"/>
         </section>
         <section class="tablet:col-span-5 desk:col-span-6 p-4">
            <h5 class="font-body font-semibold mb-8 normal-case">produits enregistrés</h5>
@@ -23,8 +23,8 @@
                                 </div>
                                 <div class="mr-4 text-secondary text-xl relative">
                                     <button data-save="true" id="{{'save-' . $product->id}}" data-state="saved" data-product="{{$product->id}}">
-                                        <div class="absolute right-0 top-[-48px] transition scale-0 bg-secondary text-white py-2 px-4
-                                        duration-300 overflow-hidden text-sm z-[5]" id="save-notice"></div>
+                                        <div  class="absolute right-0 top-[-48px] transition scale-0 bg-secondary text-white py-2 px-4
+                                        duration-300 overflow-hidden text-sm z-[5] save-notice"></div>
                                         <i class="fa-solid fa-bookmark" data-icone="saved-icone"></i>
                                         <i class="fa-regular fa-bookmark !hidden" data-icone="unsaved-icone"></i>
                                     </button>

@@ -3,7 +3,7 @@
         <section class="tablet:col-span-3 desk:col-span-2 
         order-last tablet:order-first tablet:border-r border-t 
         tablet:border-t-0 border-solid border-border pl-4 pt-4 tablet:pt-0">
-            <x-elements.profile-side-bar current="profile" :id="$user->id"/>
+            <x-elements.profile-side-bar current="user-orders" :id="$user->id"/>
         </section>
         <section class="tablet:col-span-5 desk:col-span-6 p-4">
            <h5 class="font-body font-semibold mb-2 normal-case">Historique des Commandes</h5>

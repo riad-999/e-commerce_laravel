@@ -45,6 +45,8 @@ class Order
                 ->where('id', '=', $id)->get();
 
         $pagination = DB::table('orders')
+            ->join('wilayas', 'wilaya_id', '=', 'wilayas.id')
+            ->selectRaw('orders.*, wilayas.name as wilaya')
             ->when($request->input('name'), function ($query, $name) {
                 $query->where('name', 'like', "%$name%");
             })

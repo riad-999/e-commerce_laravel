@@ -75,18 +75,18 @@ class userSeeder extends Seeder
                     ]
                 );
             }
-            foreach ($products->random(random_int(2, 20)) as $product) {
-                DB::table('reviews')->insert(
-                    [
-                        'user_id' => $user->id,
-                        'product_id' => $product->id,
-                        'score' => random_int(1, 5),
-                        'feedback' => $faker->text(),
-                        'created_at' => $faker->dateTimeBetween('-1 year', now())
-                            ->format('Y-m-d H:i:s')
-                    ]
-                );
-            }
+            // foreach ($products->random(random_int(2, 20)) as $product) {
+            //     DB::table('reviews')->insert(
+            //         [
+            //             'user_id' => $user->id,
+            //             'product_id' => $product->id,
+            //             'score' => random_int(1, 5),
+            //             'feedback' => $faker->text(),
+            //             'created_at' => $faker->dateTimeBetween('-1 year', now())
+            //                 ->format('Y-m-d H:i:s')
+            //         ]
+            //     );
+            // }
         }
     }
 }

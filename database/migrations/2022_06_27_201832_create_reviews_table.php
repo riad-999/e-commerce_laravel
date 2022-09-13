@@ -14,10 +14,10 @@ return new class extends Migration
     public function up()
     {
         Schema::create('reviews', function (Blueprint $table) {
-            $table->id();
+            // $table->id();
             $table->unsignedTinyInteger('score')->index();
             $table->text('feedback')->nullable();
-            $table->timestamps();
+            $table->timestamp('created_at');
         });
     }
 

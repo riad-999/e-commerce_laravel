@@ -31,6 +31,7 @@ const cutSelect = document.getElementById('cut-select');
 const shipmentTypeInputs = document.querySelectorAll('input[name="shipment_type"]');
 const saveBtn = document.getElementById('save-btn');
 const saveBtns = document.querySelectorAll('button[data-save="true"]');
+const stars = document.querySelectorAll('div[data-star="true"]');
 // const loadingBtns = document.querySelector('button[data-loading="true"]');
 let checkFlag = false;
 const imageSelectionHandler = (event) => {
@@ -513,13 +514,28 @@ const saveHandler = async event => {
     btn.dataset.state = state === 'saved' ? 'unsaved' : 'saved';
     btn.classList.remove('opacity-40');
     btn.classList.remove('pointer-events-none');
-    const notice = document.getElementById('save-notice');
+    const notice = document.querySelector(`#${btn.id} .save-notice`);
     notice.classList.add('scale-100');
     notice.textContent = content;
     clearTimeout(clearId);
     clearId = setTimeout(() => {
         notice.classList.remove('scale-100');
     }, 1000);
+}
+const reviewChangeHandler = event => {
+    const input = document.getElementById('review');
+    const rate = parseInt(event.currentTarget.dataset.rate);
+    input.value = rate;
+    stars.forEach(star => {
+        if(parseInt(star.dataset.rate) > rate) {
+            document.querySelector(`#${star.id} i[data-type="solid"]`).classList.add('!hidden');
+            document.querySelector(`#${star.id} i[data-type="empty"]`).classList.remove('!hidden');
+        } else {
+            document.querySelector(`#${star.id} i[data-type="solid"]`).classList.remove('!hidden');
+            document.querySelector(`#${star.id} i[data-type="empty"]`).classList.add('!hidden');
+        }
+    });
+    document.getElementById('review-value').textContent = `(${rate})`;
 }
 // const loadingBtnHandler = () => {
 //     document.getElementById('loading').classList.remove('invisible');
@@ -701,9 +717,11 @@ if(shipmentTypeInputs.length) {
 if(saveBtn) {
     saveBtn.addEventListener('click',saveHandler);
 }
-console.log(saveBtns);
 if(saveBtns.length) {
     saveBtns.forEach(btn => btn.addEventListener('click', saveHandler));
+}
+if(stars.length) {
+    stars.forEach(star => star.addEventListener('click', reviewChangeHandler));
 }
 // if(loadingBtns.length) {
 //     loadingBtns.forEach(btn => btn.addEventListener('click', loadingBtnHandler));

@@ -48,8 +48,8 @@ class ProductController extends Controller
         else
             $order = 'solds';
         $request->session()->put('order', $order);
-
         $paginate = Product::index($request, $order);
+        // dd($paginate);
         $query = $request->query();
         $query['page'] = $paginate->nextPage;
         $nextUrl = $request->fullUrlWithQuery($query);

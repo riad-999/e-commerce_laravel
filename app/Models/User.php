@@ -200,4 +200,35 @@ class User extends Authenticatable
             ->selectRaw('(select main_image from color_product where products.id = color_product.product_id limit 1) as image')
             ->where('user_id', '=', $id)->get();
     }
+    public static function products_to_review($id)
+    {
+        return DB::table('orders')
+            ->join('order_product_color', 'orders.id', '=', 'order_product_color.order_id')
+            ->join('products', 'order_product_color.product_id', '=', 'products.id')
+            ->leftJoin('reviews', function ($join) {
+                $join->on('products.id', '=', 'reviews.product_id');
+                $join->on('orders.user_id', '=', 'reviews.user_id');
+            })
+            // ->leftJoin('reviews', 'products.id', '=', 'reviews.product_id')
+            ->select(['products.id', 'products.name'])
+            ->selectRaw('max(orders.created_at) as latest_order')
+            ->selectRaw('(select main_image from color_product where products.id = color_product.product_id limit 1) as image')
+            ->where('orders.user_id', '=', $id)
+            ->whereNull('reviews.product_id')
+            ->groupBy(['products.id', 'products.name', 'image'])->orderByDesc('latest_order')->get();
+    }
+    public static function insert_review($data)
+    {
+        $exists = DB::table('products')
+            ->where('id', '=', $data['product_id'])
+            ->where('deleted', '=', 0)->first();
+        if (!$exists)
+            return;
+        DB::table('reviews')->insert($data);
+    }
+    public static function update_review($product_id, $user_id, $data)
+    {
+        DB::table('reviews')->where('product_id', '=', $product_id)
+            ->where('user_id', '=', $user_id)->update($data);
+    }
 }

@@ -124,7 +124,7 @@ class Product
             ->groupBy('products.id')->having('sum', '>', 0);
         if ($order == 'solds') {
             $query = DB::table('order_product_color')
-                ->joinSub($query, 'sub_query', function ($join) {
+                ->rightJoinSub($query, 'sub_query', function ($join) {
                     $join->on('order_product_color.product_id', '=', 'sub_query.id');
                 })
                 ->selectRaw('sub_query.*,sum(order_product_color.quantity) as sort_sum')
@@ -153,6 +153,7 @@ class Product
         $nextPage = $currentPage >= $lastPage ? $lastPage : $currentPage + 1;
         $previousPage = $currentPage <= 1 ? 1 : $currentPage - 1;
         $products = collect($pagination->items());
+        // dd($pagination);
         $total = $pagination->total();
         // getting products colors.
         $ids = [];
@@ -240,9 +241,9 @@ class Product
             $score = null;
             $reviews = DB::table('reviews')
                 ->join('users', 'user_id', '=', 'users.id')
-                ->select(['users.name as name', 'score', 'feedback', 'reviews.created_at as date'])
+                ->select(['users.name as name', 'score', 'feedback', 'reviews.created_at as date', 'user_id', 'product_id'])
                 ->where('product_id', '=', $id)->orderByDesc('score')->get();
-            $product->reviews = $reviews;
+            $product->reviews = $reviews->filter(fn ($review) => $review->feedback);
             if (count($reviews)) {
                 $sum = 0;
                 foreach ($reviews as $item)

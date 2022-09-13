@@ -70,5 +70,27 @@ class orderSeeder extends Seeder
             }
             // }
         }
+        // reviews
+        foreach ($users as $user) {
+            $ordered_products_ids = DB::table('orders')
+                ->join('order_product_color', 'orders.id', '=', 'order_product_color.order_id')
+                ->select(['product_id'])->groupBy('product_id')
+                ->where('orders.user_id', '=', $user->id)->get();
+            if (!count($ordered_products_ids))
+                break;
+            $producuts_ids = $ordered_products_ids->random(random_int(0, 1));
+            foreach ($producuts_ids as $item) {
+                DB::table('reviews')->insert(
+                    [
+                        'user_id' => $user->id,
+                        'product_id' => $item->product_id,
+                        'score' => random_int(1, 5),
+                        'feedback' => $faker->text(),
+                        'created_at' => $faker->dateTimeBetween('-1 year', now())
+                            ->format('Y-m-d H:i:s')
+                    ]
+                );
+            }
+        }
     }
 }

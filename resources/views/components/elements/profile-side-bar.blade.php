@@ -25,4 +25,10 @@
             enregistrements.
         </a>
     </li>
+    <li>
+        <a href="{{route('pending-reviews')}}" class="py-2 px-4 hover:bg-gray-200 block 
+        {{$current == 'review' ? 'bg-gray-200' : '' }}">
+            en attend d'avis.
+        </a>
+    </li>
 </ul>

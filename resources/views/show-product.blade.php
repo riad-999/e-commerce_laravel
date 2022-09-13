@@ -43,7 +43,6 @@
                 <button type="button" class="absolute top-0 right-2 text-xl text-secondary p-2 close-modal" data-id="auth-alert">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
-                {{-- <h5 class="text-center text-black font-body font-semibold mb-8">se connecter</h5> --}}
                 <p class="mb-4">
                     connectez vous pour réaliser cette action, ou 
                     <a href="{{route('register')}}" class="underline">inscrivez vous</a> 
@@ -108,7 +107,7 @@
                             id="save-btn" data-state="{{isset($product->saved) && $product->saved ? 'saved' : 'unsaved'}}" 
                             data-product="{{$auth ? $product->id : ''}}">
                                 <div class="absolute right-0 top-[-48px] transition scale-0 duration-300 
-                                overflow-hidden text-sm z-[5] bg-secondary text-white py-2 px-4" id="save-notice"></div>
+                                overflow-hidden text-sm z-[5] bg-secondary text-white py-2 px-4 save-notice"></div>
                                 @if(isset($product->saved) && $product->saved)
                                     <i class="fa-solid fa-bookmark" data-icone="saved-icone"></i>
                                     <i class="fa-regular fa-bookmark !hidden" data-icone="unsaved-icone"></i>

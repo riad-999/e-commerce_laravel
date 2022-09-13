@@ -244,4 +244,42 @@ class UserController extends Controller
             'products' => User::saved_products($user->id)
         ]);
     }
+    public function pending_reviews()
+    {
+        $user = Auth::user();
+        return view('wait-for-review', [
+            'user' => $user,
+            'products' => User::products_to_review($user->id)
+        ]);
+    }
+    public function store_review($id)
+    {
+        request()->validate([
+            'feedback' => ['max:65535']
+        ]);
+        $user_id = Auth::user()->id;
+        User::insert_review([
+            'product_id' => $id,
+            'user_id' => $user_id,
+            'score' => request()->input('score'),
+            'feedback' => request()->input('feedback'),
+            'created_at' => now()
+        ]);
+        return back()->with([
+            'alert' => (object) [
+                'type' => 'success',
+                'message' => 'votre feedback a été bien enregistré, merci'
+            ]
+        ]);
+    }
+    public function delete_feedback($product_id, $user_id)
+    {
+        User::update_review($product_id, $user_id, ['feedback' => null]);
+        return back()->with([
+            'alert' => (object) [
+                'type' => 'success',
+                'message' => 'le commentaire a été supprimé'
+            ]
+        ]);
+    }
 }

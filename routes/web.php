@@ -32,6 +32,8 @@ Route::controller(UiController::class)
                 ->middleware(['auth', 'admin'])->name('edit-home');
             Route::patch('/home/update', 'update')
                 ->middleware(['auth', 'admin'])->name('update-home');
+            Route::get('/dashboard', 'dashboard')
+                ->middleware(['auth', 'admin'])->name('dashboard');
         }
     );
 // product
@@ -203,6 +205,9 @@ Route::middleware(['auth'])->controller(UserController::class)
             ->middleware(['admin'])->name('users');
         Route::post('/saves', 'save_product')->name('save-product');
         Route::get('/saves', 'saved_products')->name('saved-products');
+        Route::get('/wait-to-review', 'pending_reviews')->name('pending-reviews');
+        Route::post('/reviews/{id}', 'store_review')->name('store-review');
+        Route::patch('/reviews/{product_id}/{user_id}', 'delete_feedback')->name('delete-feeback');
         // Route::delete('/saves', 'unsave_product')->name('unsave-product');
     });
 Route::middleware(['auth', 'admin', 'privileged'])->controller(UserController::class)

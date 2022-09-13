@@ -118,4 +118,50 @@ class UiController extends Controller
         Storage::disk('local')->put('admin.json', json_encode($ui));
         return back();
     }
+    public function dashboard()
+    {
+        $year = request('year') ? request('year') : now()->format('Y');
+        $orders = DB::table('orders')
+            ->join('wilayas', 'wilaya_id', '=', 'wilayas.id')
+            ->selectRaw('orders.*, wilayas.name as wilaya')
+            ->where('state', '=', 'en traitment')
+            ->orderBy('created_at')->get();
+        $products = DB::table('products')
+            ->selectRaw('count(*) as count')
+            ->where('deleted', '=', 0)->first()->count;
+        $orders_count = DB::table('orders')
+            ->selectRaw('count(*) as count')->first()->count;
+        $sales = DB::table('order_product_color')
+            ->join('orders', 'order_id', '=', 'id')
+            ->selectRaw('sum(price) as sum')->first()->sum;
+        $orders_per_month = DB::table('orders')
+            ->selectRaw('count(*) as orders, month(created_at) as month')
+            ->whereYear('created_at', '=', $year)
+            ->groupByRaw('month')->get();
+        $months = ['janv', 'fév', 'mar', 'avr', 'may', 'jun', 'jl', 'aout', 'sept', 'oct', 'nov', 'déc'];
+        $orders_ = [];
+        foreach ($months as $key => $_) {
+            $found = false;
+            foreach ($orders_per_month as $order) {
+                if ($key + 1 == $order->month) {
+                    array_push($orders_, $order->orders);
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                array_push($orders_, 0);
+            }
+        }
+        return view('admin.dashboard', [
+            'products' => $products,
+            'orders_count' => $orders_count,
+            'sales' => $sales,
+            'orders' => $orders,
+            'graph' => (object) [
+                'months' => $months,
+                'orders' => $orders_
+            ]
+        ]);
+    }
 }

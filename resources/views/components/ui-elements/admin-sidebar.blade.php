@@ -20,7 +20,7 @@ desk:translate-x-0 transition duration-300" id="adminbar">
         </button>
     </header>
     <ul class="list-none">
-        <x-elements.admin-sidebar-item url="#">
+        <x-elements.admin-sidebar-item url="{{route('dashboard')}}">
             <x-slot:icone>
                 <i class="fa-solid fa-house"></i>
             </x-slot>

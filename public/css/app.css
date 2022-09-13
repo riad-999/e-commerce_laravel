@@ -2679,6 +2679,9 @@ body[dir="rtl"] .checkbox:checked,
 .ml-8{
   margin-left: 2rem;
 }
+.mb-32{
+  margin-bottom: 8rem;
+}
 .block{
   display: block;
 }
@@ -2831,6 +2834,9 @@ body[dir="rtl"] .checkbox:checked,
 .w-\[30vw\]{
   width: 30vw;
 }
+.w-\[150px\]{
+  width: 150px;
+}
 .min-w-\[300px\]{
   min-width: 300px;
 }
@@ -2899,6 +2905,15 @@ body[dir="rtl"] .checkbox:checked,
 }
 .max-w-xs{
   max-width: 20rem;
+}
+.max-w-\[120px\]{
+  max-width: 120px;
+}
+.max-w-\[1200px\]{
+  max-width: 1200px;
+}
+.max-w-\[1000px\]{
+  max-width: 1000px;
 }
 .translate-x-\[-50\%\]{
   --tw-translate-x: -50%;

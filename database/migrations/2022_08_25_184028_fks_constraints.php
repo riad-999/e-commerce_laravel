@@ -35,10 +35,11 @@ return new class extends Migration
 
         Schema::table('reviews', function (Blueprint $table) {
             $table->foreignId('user_id')
-                ->after('id')->constrained('users')
+                ->first()->constrained('users')
                 ->cascadeOnDelete();
             $table->foreignId('product_id')
-                ->after('id')->constrained('products');
+                ->after('user_id')->constrained('products');
+            $table->primary(['product_id', 'user_id']);
         });
 
         Schema::table('color_product', function (Blueprint $table) {
@@ -105,9 +106,9 @@ return new class extends Migration
         });
 
         Schema::table('users_addresses', function (Blueprint $table) {
-            $table->foreignId('user_id')->after('id')
+            $table->foreignId('user_id')->after('id')->nullable()
                 ->constrained('users')->cascadeOnDelete();
-            $table->unsignedInteger('wilaya_id');
+            $table->unsignedInteger('wilaya_id')->nullable();
             $table->foreign('wilaya_id')->references('id')
                 ->on('wilayas')->nullOnDelete();
         });
