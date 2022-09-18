@@ -5,7 +5,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
+        <meta name="description" content="acheter des sacs pour femmes de haute qualité à prix abordable.">
         <title>{{ $title }}</title>
         <link rel="stylesheet" 
         href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css"/>

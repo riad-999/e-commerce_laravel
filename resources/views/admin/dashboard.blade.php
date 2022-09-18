@@ -1,5 +1,5 @@
 <x-ui-elements.admin-layout>
-    <section class="max-w-[1000px] mx-auto mb-32">
+    <section class="max-w-[1200px] mx-auto mb-32">
         <section class="mb-16">
             <h5 class="font-body font-semibold mb-4">statistiques</h5>
             <section class="grid tablet:grid-cols-3 gap-4">
@@ -65,73 +65,75 @@
             </section>
             <canvas id="myChart" class="w-full"></canvas>
         </section>
-        <section>
-            <h5 class="font-body font-semibold mb-4">en traitment ({{count($orders)}})</h5>
-            <section class="px-4 border border-solid border-border">
-                <header class="grid grid-cols-admin1 gap-4 mb-2 py-2">
-                <div>id</div>
-                <div>le client</div>
-                <div>le coût</div>
-                <div>l'état & wilaya</div>
-                <div>la date</div>
-                <div></div>
-            </header>
-            @foreach($orders as $order)
-                <article class="grid grid-cols-admin1 gap-4 justify-between items-center py-4 border-b border-solid border-gray-400">
-                    <div>
-                        {{$order->id}}
-                    </div>
-                    <div>
-                        {{$order->name}} <br/>
-                        {{$order->number}} <br/>
-                        {{-- <span class="text-sm">{{$order->email}}</span> --}}
-                    </div>
-                    <div>
-                        total: {{'total'}}Da <br/>
-                        livarison: {{$order->shipment}}Da
-                    </div>
-                    <div>
-                        @php
-                            $class = '';
-                            if($order->state === 'en traitment')
-                                $class = 'bg-orange-400 text-orange-800';
-                            if($order->state === 'en route')
-                                $class = 'bg-cyan-400 text-cyan-800';
-                            if($order->state === 'livré')
-                                $class = 'bg-green-400 text-green-800';
-                        @endphp
-                        <span class="block mb-2">{{$order->wilaya}}</span>
-                        <span class="badge block w-[128px] ml-0 text-center {{$class}}">{{$order->state}}</span>
-                    </div>
-                    <div>
-                        @php
-                            $order_date = new DateTime($order->created_at);
-                            $order_date = $order_date->format('d-m-Y');
-                        @endphp
-                        {{$order_date}}
-                    </div>
-                    <div>
-                        <div class="dropdown dropdown-top">
-                            <x-interactive.btn tabindex="0" class="!border-none" :white="true">
-                                ...
-                            </x-interactive.btn>
-                            <ul tabindex="0" class="dropdown-content menu shadow bg-white rounded-box w-52">
-                                <li class="hover:bg-gray-200"><a class="p-2" href="{{route('order',$order->id)}}">détails</a></li>
-                                <li class="hover:bg-gray-200"><a class="p-2" href="{{route('edit-order',$order->id)}}">moudifier</a></li>
-                                <li class="hover:bg-gray-200 p-2 cursor-pointer open-modal" data-id="delete" data-route="{{route('delete-order',$order->id)}}">
-                                    supprimer  
-                                </li>
-                            </ul>
+        <section class="overflow-auto">
+            <section class="min-w-[1000px]">
+                <h5 class="font-body font-semibold mb-4">en traitment ({{count($orders)}})</h5>
+                <section class="border border-solid border-border px-4">
+                    <header class="grid grid-cols-admin1 gap-4 mb-2 py-2">
+                    <div>id</div>
+                    <div>le client</div>
+                    <div>le coût</div>
+                    <div>l'état & wilaya</div>
+                    <div>la date</div>
+                    <div></div>
+                </header>
+                @foreach($orders as $order)
+                    <article class="grid grid-cols-admin1 gap-4 justify-between items-center py-4 border-b border-solid border-gray-400">
+                        <div>
+                            {{$order->id}}
                         </div>
-                    </div>
+                        <div>
+                            {{$order->name}} <br/>
+                            {{$order->number}} <br/>
+                            {{-- <span class="text-sm">{{$order->email}}</span> --}}
+                        </div>
+                        <div>
+                            total: {{'total'}}Da <br/>
+                            livarison: {{$order->shipment}}Da
+                        </div>
+                        <div>
+                            @php
+                                $class = '';
+                                if($order->state === 'en traitment')
+                                    $class = 'bg-orange-400 text-orange-800';
+                                if($order->state === 'en route')
+                                    $class = 'bg-cyan-400 text-cyan-800';
+                                if($order->state === 'livré')
+                                    $class = 'bg-green-400 text-green-800';
+                            @endphp
+                            <span class="block mb-2">{{$order->wilaya}}</span>
+                            <span class="badge block w-[128px] ml-0 text-center {{$class}}">{{$order->state}}</span>
+                        </div>
+                        <div>
+                            @php
+                                $order_date = new DateTime($order->created_at);
+                                $order_date = $order_date->format('d-m-Y');
+                            @endphp
+                            {{$order_date}}
+                        </div>
+                        <div>
+                            <div class="dropdown dropdown-top">
+                                <x-interactive.btn tabindex="0" class="!border-none" :white="true">
+                                    ...
+                                </x-interactive.btn>
+                                <ul tabindex="0" class="dropdown-content menu shadow bg-white rounded-box w-52">
+                                    <li class="hover:bg-gray-200"><a class="p-2" href="{{route('order',$order->id)}}">détails</a></li>
+                                    <li class="hover:bg-gray-200"><a class="p-2" href="{{route('edit-order',$order->id)}}">moudifier</a></li>
+                                    <li class="hover:bg-gray-200 p-2 cursor-pointer open-modal" data-id="delete" data-route="{{route('delete-order',$order->id)}}">
+                                        supprimer  
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </article>
+                    @if($loop->index == 9)
+                        @break
+                    @endif
+                @endforeach
+                <article class="flex justify-center">
+                    <x-interactive.btn :link="route('orders')" class="w-[200px] my-4">Plus</x-interactive.btn>
                 </article>
-                @if($loop->index == 9)
-                    @break
-                @endif
-            @endforeach
-            <article class="flex justify-center">
-                <x-interactive.btn :link="route('orders')" class="w-[200px] my-4">Plus</x-interactive.btn>
-            </article>
+            </section>
         </section>
     </section>
 </x-ui-elements.admin-layout>

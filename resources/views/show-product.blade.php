@@ -8,7 +8,7 @@
             <button type="button" data-id="cart-alert" class="close-modal absolute top-2 right-4 text-xl text-black">
                 <i class="fa-solid fa-xmark"></i>
             </button>
-            <img class="block w-full mt-6 mb-4 tablet:my-0  col-span-3" id="cart-image" 
+            <img class="block w-full mt-6 mb-4 tablet:my-0  col-span-3" id="cart-image" alt="image d'un sac"
             src="{{config('globals.images_end_point') . $product->colors[0]->main_image}}"/>
             <div class="text-left col-span-3">
                 <h6 class="font-semibold tracking-wide font-body pr-4">
@@ -73,10 +73,10 @@
         <section class="flex flex-col tablet:flex-row items-start gap-4 tablet:gap-8 px-4 mt-4 mb-12">
             <section class="swiper mx-0 mb-4 desk:mb-0 tablet:w-[40%] max-w-[600px]">
                 <div class="swiper-wrapper" id="images-container">
-                    <img class="swiper-slide block desk:px-12" 
+                    <img class="swiper-slide block desk:px-12" alt="image d'un sac"
                     src="{{config('globals.images_end_point') . $product->colors[0]->main_image}}">
                     @foreach($product->colors[0]->images as $image) 
-                        <img class="swiper-slide block desk:px-12" 
+                        <img class="swiper-slide block desk:px-12" alt="image d'un sac"
                         src="{{config('globals.images_end_point') . $image->image}}">
                     @endforeach
                 </div>

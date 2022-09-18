@@ -4,7 +4,7 @@
     <a href="{{route('show-product',$product->id)}}" class="block min-h-[100px]">
         <img class="w-full object-cover border-b border-solid border-gray-400 mb-4" 
         src="{{config('globals.images_end_point') . $product->colors[0]->main_image}}" 
-        id='{{"img-$product->id"}}' alt="product image" loading="lazy" />
+        id='{{"img-$product->id"}}' alt="image d'un sac" loading="lazy" />
     </a>
     <div class="font-semibold capitalize text-secondary">{{$product->name}}</div>
     <div class="capitalize">{{$product->category}}, {{$product->brand}}</div>

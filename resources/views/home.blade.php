@@ -8,9 +8,7 @@
                 <div class="swiper-wrapper" id="images-container">
                     @foreach($ui->images as $image) 
                         <img class="block desk:px-[50px] min-h-[300px] max-h-[600px] swiper-slide"
-                        {{-- src="{{asset('storage/ui-images') . '/' . $image}}" /> --}}
-                        src="{{config('globals.ui_images_end_point') . $image}}" loading="lazy"/>
-                        {{-- src="c:\Users\riadp\Desktop\folders\laravel\rezki-e-commerce\storage\app\public\ui-images\wide1.jpg"/> --}}
+                        src="{{config('globals.ui_images_end_point') . $image}}" alt="image d'un evènement" loading="lazy"/>
                     @endforeach
                 </div>
                 <div class="swiper-pagination text-secondary absolute top-[90%] left-[50%] translate-x-[-50%] z-[5]"></div>
@@ -37,7 +35,7 @@
                                         <article class="border border-solid shadow-sm border-gray-300 bg-white">
                                             <a class="block mb-4" href="{{route('show-product',$product->id)}}">
                                                 <img src="{{config('globals.images_end_point') . $product->image}}" 
-                                                alt="image du produit" class="w-full min-h-[200px]" loading="lazy"/>
+                                                alt="image du produit" class="w-full min-h-[200px]" alt="image d'un sac" loading="lazy"/>
                                             </a>
                                             <div class="px-2 py-4">
                                                 <div class="text-secondary font-semibold mb-2">{{$product->name}}</div>
@@ -66,7 +64,7 @@
                                         <article class="border border-solid shadow-sm border-gray-300 bg-white my-2">
                                             <a class="block mb-4" href="{{route('show-product',$product->id)}}">
                                                 <img src="{{config('globals.images_end_point') . $product->image}}" 
-                                                alt="image du produit" class="w-full min-h-[200px]" loading="lazy"/>
+                                                alt="image d'un sac" class="w-full min-h-[200px]" loading="lazy"/>
                                             </a>
                                             <div class="px-2 py-4">
                                                 <div class="text-secondary font-semibold mb-2">{{$product->name}}</div>
