@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -21,29 +20,19 @@ class Cart extends Model
             ->unique()->toArray();
         $query = DB::table('products')
             ->join('brands', 'brand_id', '=', 'brands.id')
-            // ->when($code && !$code->for_all, function ($query) {
-            //     $query->leftJoin('product_promo','products.id','=','product_promo.product_id');
-            //     $query->leftJoin('promo_codes', 'product_promo','=','promo_codes.id');
-            // })
             ->select(['products.*', 'brands.name as brand']);
-            if(!$code) {
-                $query->selectRaw('NULL as cut');
-            } elseif($code->for_all) {
-                $query->selectRaw('? as cut',[$code->for_all_cut]);
-            } else {
-                $query->selectRaw(
-                    '(select cut from product_promo where product_id = products.id and promo_code_id = ?) as cut',
-                    [$code->id]
-                );
-                // $query->leftJoin('product_promo',function ($qry) use($code) {
-                //     $qry->on('products.id','=','product_promo.product_id');
-                //     $qry->on('promo_code_id','=',$code->id);
-                // });
-            }
-            // ->when($promo_code, function ($query, $code) {
-            //     $id = PromoCode::get();
-            // })    
-        $products = $query->whereIn('products.id', $product_ids)->get();
+        if (!$code) {
+            $query->selectRaw('NULL as cut');
+        } elseif ($code->for_all) {
+            $query->selectRaw('? as cut', [$code->for_all_cut]);
+        } else {
+            $query->selectRaw(
+                '(select cut from product_promo where product_id = products.id and promo_code_id = ?) as cut',
+                [$code->id]
+            );
+        }
+        $products = $query->whereIn('products.id', $product_ids)
+            ->where('deleted', '=', 0)->get();
         $colors = DB::table('color_product')
             ->join('colors', 'color_id', '=', 'colors.id')
             ->select(['main_image', 'color_product.quantity as max', 'product_id', 'colors.*'])

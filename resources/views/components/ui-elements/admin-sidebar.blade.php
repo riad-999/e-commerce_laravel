@@ -44,7 +44,7 @@ desk:translate-x-0 transition duration-300" id="adminbar">
             </x-slot>
             accuille
         </x-elements.admin-sidebar-item>
-        <x-elements.admin-sidebar-item :url="route('orders')">
+        <x-elements.admin-sidebar-item :url="route('categories')">
             <x-slot:icone>
                 <i class="fa-solid fa-list-check"></i>
             </x-slot>
@@ -62,11 +62,11 @@ desk:translate-x-0 transition duration-300" id="adminbar">
             </x-slot>
             Wilayas
         </x-elements.admin-sidebar-item>
-        <x-elements.admin-sidebar-item :url="route('orders')">
+        <x-elements.admin-sidebar-item :url="route('colors')">
             <x-slot:icone>
                 <i class="fa-solid fa-fill"></i>
             </x-slot>
-            Couleurs
+            Coleurs
         </x-elements.admin-sidebar-item>
         <x-elements.admin-sidebar-item :url="route('promo-codes')">
             <x-slot:icone>
@@ -74,12 +74,6 @@ desk:translate-x-0 transition duration-300" id="adminbar">
             </x-slot>
             Codes promo
         </x-elements.admin-sidebar-item>
-        {{-- <x-elements.admin-sidebar-item :url="route('orders')">
-            <x-slot:icone>
-                <i class="fa-solid fa-square-check"></i>
-            </x-slot>
-            Séléction
-        </x-elements.admin-sidebar-item> --}}
         @can('isPrivileged')
             <x-elements.admin-sidebar-item :url="route('admins')">
                 <x-slot:icone>
@@ -88,11 +82,5 @@ desk:translate-x-0 transition duration-300" id="adminbar">
                 Admins
             </x-elements.admin-sidebar-item>
         @endcan
-        <x-elements.admin-sidebar-item :url="route('orders')">
-            <x-slot:icone>
-                <i class="fa-solid fa-gear"></i>
-            </x-slot>
-            parametères
-        </x-elements.admin-sidebar-item>
     </ul>
 </aside>

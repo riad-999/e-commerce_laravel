@@ -1,19 +1,18 @@
-<x-ui-elements.layout>
-    <form action="/products/initial-store" method="POST"
-    class="mt-8 bg-gray-100 p-4 mx-auto max-w-screen-md">
+<x-ui-elements.admin-layout>
+    <form action="{{route('initial-store-product')}}" method="POST" class="max-w-[500px] mx-auto" autocomplete="off">
         @csrf
-        <x-form.input name="name" label="name" value="{{ old('name',session()->get('name')) }}" />
-        <x-form.textarea name="description" content="{{ old('description',session()->get('description')) }}"/>
-        <div class="flex gap-8 mb-8">
-            <x-form.select name="category" title="choose the category" label='category' :list="$categories" />
-            <x-form.select name="brand" title="choose the brand" label='brand' :list="$brands" />
+        <x-form.input name="name" label="name" class="w-full" value="{{ old('name',session()->get('name')) }}" />
+        <x-form.textarea name="description" class="w-full" label="description" content="{{ old('description',session()->get('description')) }}"/>
+        <div class="grid grid-cols-2 gap-2">
+            <x-form.select name="category" :selected="old('category')" title="choisir la category" class="w-full" label='category' :list="$categories" />
+            <x-form.select name="brand" :selected="old('brand')" title="choisir la marque" class="w-full" label='brand' :list="$brands" />
         </div>
-        <div class="flex gap-8 mb-8">
+        <div class="grid grid-cols-2 gap-2 mb-4">
             <x-form.input type='number' class="w-100p" name="price"
-             label="prix" value="{{ old('price', session()->get('price')) }}"/>
+            label="prix" class="w-full" value="{{ old('price', session()->get('price')) }}"/>
             <x-form.input type='number' class="w-100p" name="count"
-             label="nombre des coleur" value="{{ old('count',session()->get('count')) }}" />
+            label="nombre des coleurs" class="w-full" value="{{ old('count',session()->get('count')) }}" />
         </div>
-        <button class="btn capitalize bg-black text-white" name="first-submit" value='true' type="submit">suivant</button>
+        <x-interactive.btn class="w-full" type="submit">Suivant</x-interactive.btn>
     </form>
-</x-ui-elements.layout>
+</x-ui-elements.admin-layout>

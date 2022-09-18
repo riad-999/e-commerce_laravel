@@ -9,7 +9,7 @@ class Brand
     static public function all()
     {
         $brands = DB::table('brands')
-            ->get();
+            ->orderBy('id')->get();
         return $brands;
     }
     static public function get($id)
@@ -29,7 +29,14 @@ class Brand
     }
     static public function delete($id)
     {
+        $exists = DB::table('products')
+            ->where('brand_id', '=', $id)
+            ->where('deleted', '=', 0)
+            ->first();
+        if ($exists)
+            return false;
         DB::table('brands')->where('id', '=', $id)
             ->delete();
+        return true;
     }
 }

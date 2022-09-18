@@ -1,83 +1,62 @@
-<x-ui-elements.layout>
-    <x-interactive.alert />
+<x-ui-elements.admin-layout>
     <x-interactive.modal id="delete" data-form="true">
         <form action="" method="POST">
             @csrf
             @method('delete')
             <div class="text-center">
                 <div class="mb-4">
-                    <i class="fa-solid fa-circle-exclamation mr-2"></i> 
+                    <i class="fa-solid fa-circle-exclamation mr-2 text-secondary"></i> 
                     vous voulez vraiment supprimer cette catégorie
                 </div>
-                <button class="btn capitalize close-modal" 
-                type="button" data-id="delete">annuler</button>
-                <button class="btn capitalize" type="sumbit">oui</button>
+                <x-interactive.btn class="w-[150px] mr-2 close-modal" :white="true" type="button" data-id="delete">
+                    Annuler
+                </x-interactive.btn>
+                <x-interactive.btn class="w-[150px]" type="sumbit">
+                    Oui
+                </x-interactive.btn>
             </div>
         </form>
     </x-interactive.modal>
-    <div class="desk:grid grid-cols-6 gap-8 bg-gray-100">
-        <aside class="hidden desk:block h-100vh py-8 px-4 bg-white shadow-md">
-            <ul class="list-none">
-                <li class="text-xl font-semibold hover:bg-gray-300">
-                    <a href="" class="inline-block py-2 px-4">
-                        <i class="fa-solid fa-bag-shopping mr-2"></i> produits
-                    </a>
-                </li>
-                <li class="text-xl font-semibold hover:bg-gray-300">
-                    <a href="" class="inline-block py-2 px-4">
-                        <i class="fa-solid fa-bag-shopping mr-2 hover:bg-gray-300"></i> produits
-                    </a>
-                </li>
-            </ul>
-        </aside>
-        <main class="col-span-5 pt-8 px-4">
-            <h4 class="font-body font-semibold mb-8">categories</h4>
-            <section class="tablet:grid tablet:grid-cols-5 gap-12 p-4 bg-white tablet:mr-8 mb-12 shadow-md">
-                <form class="col-span-2 py-4" action="{{route('store-category')}}" method="POST">
-                    @csrf 
-                    <h4 class="font-body font-semibold mb-8">ajouter</h4>
-                    <x-form.input placeholder="nom de categorie ..." 
-                    name="name" label="name" class="w-full" />
-                    <x-form.textarea name="description" placeholder="description..." 
-                    label="description" class="w-full" />
-                    <button type="submit" class="btn capitalize w-full mb-8">
-                        créer
-                    </button>
-                </form>
-                <section class="col-span-3">                        
-                    @if(!count($categories))
-                        <div class="text-center">oops..., aucune categorie est disponible</div>
-                    @else 
-                        <h4 class="font-body font-semibold mb-8">liste</h3>
-                        <main class="max-h-[400px] tablet:max-h-700p overflow-auto">
-                            <header class="grid grid-cols-6 gap-4 py-4 pl-4 border-b border-solid border-gray-400 min-w-[600px]">
-                                <div>Id</div>
-                                <div>nom</div>
-                                <div class="col-span-3">description</div>
-                            </header>
-                            @foreach($categories as $category)
-                                <article class="grid grid-cols-6 gap-4 py-4 px-4 border-b border-solid border-gray-400 min-w-[600px]">
-                                    <div>{{ $category->id }}</div>
-                                    <div>{{ $category->name }}</div>
-                                    <div class="col-span-3">{{ $category->description }}</div>
-                                    <div>
-                                        <button>
-                                            <a href="{{route('edit-category',$category->id)}}" class="btn">
-                                                <i class="fa-regular fa-pen-to-square"></i>
-                                            </a>
-                                        </button>
-                                        <button class="btn ml-2 open-modal" 
-                                        data-route="{{route('delete-category',$category->id)}}" 
-                                        data-id="delete">
-                                                <i class="fa-regular fa-trash-can"></i>
-                                        </button>
-                                    </div>
-                                </article>
-                            @endforeach
-                        </main>
-                    @endif                          
-                </section>
+    <main class="max-w-[900px] mx-auto mb-12">
+        <section class="grid desk:tablet:grid-cols-2 gap-12 bg-white tablet:mr-8 mb-12">
+            <form action="{{route('store-category')}}" method="POST" class="max-w-[400px]">
+                @csrf 
+                <h5 class="font-body font-semibold mb-8">ajouter</h5>
+                <x-form.input placeholder="nom de categorie ..." 
+                name="name" label="name" class="w-full" />
+                <x-interactive.btn type="submit" class="w-full">
+                    Ajouter
+                </x-interactive.btn>
+            </form>
+            <section>                        
+                @if(!count($categories))
+                    <div class="text-center">oops..., aucune categorie est disponible</div>
+                @else 
+                    <h5 class="font-body font-semibold mb-8">categories</h5>
+                    <main class="max-h-[400px] tablet:max-h-[700px] overflow-auto">
+                        <header class="grid grid-cols-3 gap-4 py-4 pl-4 border-b border-solid border-gray-400">
+                            <div>Id</div>
+                            <div>nom</div>
+                        </header>
+                        @foreach($categories as $category)
+                            <article class="grid grid-cols-3 gap-4 items-center p-4 border-b border-solid border-gray-400">
+                                <div>{{ $category->id }}</div>
+                                <div>{{ $category->name }}</div>
+                                <div>
+                                    <a href="{{route('edit-category',$category->id)}}" class="p-2 text-xl text-secondary">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+                                    <button class="ml-2 p-2 text-xl btn open-modal border-none text-secondary" 
+                                    data-route="{{route('delete-category',$category->id)}}" 
+                                    data-id="delete">
+                                            <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </article>
+                        @endforeach
+                    </main>
+                @endif                          
             </section>
-        </main>
-    </div>
-</x-ui-elements.layout>
+        </section>
+    </main>
+</x-ui-elements.admin-layout>

@@ -40,7 +40,7 @@
                             if($order->state === 'livré')
                                 $class = 'bg-green-400 text-green-800';
                         @endphp
-                        code de suivi: 
+                        code de suivi Yalidine: 
                         <span class="font-semibold block">
                             {{$order->track_code ? $order->track_code : 'indisponible!'}}
                         </span>
@@ -82,7 +82,7 @@
                         @foreach($order->products as $product)
                             <article class="grid grid-cols-2 gap-4 desk:grid-cols-6 items-center p-2 border-b border-solid border-gray-400 hover:bg-gray-200">
                                 <div class="flex gap-2 desk:col-span-3 items-center">
-                                    <img class="block w-[50px] desk:w-[100px] mr-2" src="{{$product->main_image}}" alt="product image" />
+                                    <img class="block w-[50px] desk:w-[100px] mr-2" src="{{config('globals.images_end_point') . $product->main_image}}" alt="product image" />
                                     <div>{{$product->pname}}, {{$product->cname}}</div>
                                 </div>
                                 <div class="desk:hidden">

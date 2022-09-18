@@ -9,7 +9,7 @@ use Illuminate\Validation\Rule;
 
 class BrandController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
         $brands = Brand::all();
         return view('admin.brands', [
@@ -27,7 +27,7 @@ class BrandController extends Controller
         return redirect()->route('brands')->with([
             'alert' => (object)[
                 'type' => 'success',
-                'message' => 'nouvelle marke est crée!'
+                'message' => 'nouvelle marque est ajoutée'
             ]
         ]);
     }
@@ -55,28 +55,26 @@ class BrandController extends Controller
         return back()->with([
             'alert' => (object)[
                 'type' => 'success',
-                'message' => 'la marke est modifiée!'
+                'message' => 'la marque est modifiée!'
             ]
         ]);
     }
     public function delete($id)
     {
-        try {
-            Brand::delete($id);
+        if (Brand::delete($id))
             return back()->with([
                 'alert' => (object)[
                     'type' => 'success',
-                    'message' => 'la marke est supprimé!'
+                    'message' => 'la marque est supprimé!'
                 ]
             ]);
-        } catch (QueryException $_) {
+        else
             return back()->with([
                 'alert' => (object)[
                     'type' => 'error',
-                    'message' => "impossible de supprimer la marke,
-                    il y a autres produits qui l'utilise"
+                    'message' => "impossible de supprimer la marque,
+                        il y a autres produits qui l'utilise"
                 ]
             ]);
-        }
     }
 }

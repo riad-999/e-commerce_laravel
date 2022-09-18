@@ -1,5 +1,5 @@
 <x-ui-elements.admin-layout>
-    <div class="tablet:grid grid-cols-6 gap-8 bg-gray-100">
+    <div class="tablet:grid grid-cols-6 gap-8">
         <x-interactive.modal id="state-form" data-form="true">
             <form action="" method="POST" autocomplete="off">
             @csrf
@@ -78,12 +78,12 @@
             <h4 class="font-body font-semibold mb-8">
                 ordre #{{$order->id}} 
             </h4>
-            <x-interactive.btn :link="route('orders')" class="mr-2 mb-8" :white="true">
+            <a href={{route('orders')}} class="inline-block underline mr-2">
                 <i class="fa-solid fa-left-long mr-2"></i> liste
-            </x-interactive.btn>
-            <x-interactive.btn :link="route('edit-order',$order->id)" class="mb-8" :white="true">
+            </a>
+            <a href={{route('edit-order', $order->id)}} class="inline-block underline">
                 modifier
-            </x-interactive.btn>
+            </a>
             <x-elements.order :order="$order" :states="$states"/>
         </main>
     </div>

@@ -1,4 +1,34 @@
 <x-ui-elements.layout>
+    @guest
+        <x-interactive.modal id="auth-alert" class="bg-gray-100">
+            <form action="{{route('login')}}" method="POST" class="text-left p-4">
+                @csrf
+                <input type="hidden" name="redirect" value="{{route('cart')}}" />
+                <button type="button" class="absolute top-0 right-2 text-xl text-secondary p-2 close-modal" data-id="auth-alert">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <p class="mb-4">
+                    connectez vous pour utiliser un code promo. <br/> ou 
+                    <a href="{{route('register')}}" class="underline">inscrivez vous</a> 
+                </p>
+                @if(session('registered'))
+                    <p class="mb-4">votre compte a été bien enregistré, connectez vous</p>
+                @endif
+                <x-form.input name="name" label="nom *" value="{{old('name')}}" 
+                    class="w-full" placeholder="votre nom" />
+                <x-form.input type="password" name="password" label="mot de pass *" 
+                    class="w-full text-sm" />
+                <div class="mb-2">
+                    <input type="checkbox" id="remember_me" name="remember_me" value="true" {{old('remember_me') ? 'checked' : ''}} id="remember_me" class="accent-black cursor-pointer" />
+                    <label for="remember_me" class="pl-2 cursor-pointer">
+                        souvenez moi
+                    </label>
+                </div>
+                <small class="text-sm underline"><a href="{{route('password.request')}}">mot de pass oublié ?</a></small>
+                <x-interactive.btn class="w-full mt-4">se connecter</x-interactive.btn>
+            </form>
+        </x-interactive.modal>
+    @endguest
     <main class="max-w-[1400px] mx-auto pt-8 px-4"> 
         <header class="pb-8 border-b border-solid border-border mb-8">
             <div class="mb-2">
@@ -37,7 +67,7 @@
                         @endphp
                         @foreach($cart as $item)
                             <article class="grid grid-cols-2 desk:grid-cols-4 gap-4 span pb-8 {{$loop->first ? '' : 'pt-8'}} border-b border-solid border-border">
-                                <img class="block" src="{{IMAGES_END_POINT . $item->image}}" />
+                                <img class="block" src="{{config('globals.images_end_point') . $item->image}}" />
                                 <div class="desk:hidden">
                                     <div class="mb-4">
                                         <div class="font-semibold text-black">{{$item->brand}}</div>
@@ -97,7 +127,6 @@
                                             <x-form.error :name="$item->product_id . '-' . $item->color_id" />
                                         </div>
                                     </div>
-                                    {{-- <div class="text-sm text-red-600 font-semibold">Lorem ipsum dolor sit. Lorem ipsum dolor sit amet.</div>                                    <form action="{{route('delete-cart-item')}}" method="POST" class="mt-4"> --}}
                                         @csrf
                                         @method('delete')
                                         <input type="hidden" name="product_id" value="{{$item->product_id}}" />
@@ -143,7 +172,6 @@
                                             <button class="bg-black text-white py-1 px-2" data-flag="increase">+</button>
                                         </div>
                                         <x-form.error :name="$item->product_id . '-' . $item->color_id" />
-                                        {{-- <div class="text-sm text-red-600 font-semibold my-2">Lorem ipsum dolor sit. Lorem ipsum dolor sit amet.</div> --}}
                                     </div>
                                 </div>
                             </article>
@@ -157,21 +185,27 @@
                                 <div class="col-span-4">
                                     <input name="code" id="code" class="w-full p-2 border border-solid border-border" value="{{old('code')}}" placeholder="code promo..." />
                                     <x-form.error name="code" />
+                                    @if(session('warning'))
+                                        <div class="text-sm text-orange-600 font-semibold mt-2">
+                                            aucun produit dans le panier n'est associé avec ce code promo
+                                        </div>
+                                    @endif
                                 </div>
-                                <x-interactive.btn type="submit" class="col-span-2">
-                                    Appliquer
-                                </x-interactive.btn>
+                                @auth
+                                    <x-interactive.btn type="submit" class="col-span-2">
+                                        Appliquer
+                                    </x-interactive.btn>
+                                @else
+                                    <x-interactive.btn type="button" class="col-span-2 open-modal" data-id="auth-alert">
+                                        Appliquer
+                                    </x-interactive.btn>
+                                @endauth
                             </form>
                         @else 
                             <form action="{{route('remove-promo-code')}}" method="POST" class="grid grid-cols-6 gap-2 pb-4 border-b border-solid border-border mb-4">
                                 @csrf
                                 <div class="col-span-4">
                                     <div name="code" id="code" class="w-full p-2">TEST</div>
-                                    @if($warning)
-                                        <div class="text-sm text-orange-600 font-semibold mt-2">
-                                            aucun produit dans le panier n'est associé avec ce code promo
-                                        </div>
-                                    @endif
                                 </div>
                                 <x-interactive.btn type="submit" class="col-span-2">
                                     Enlever

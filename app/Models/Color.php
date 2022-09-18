@@ -32,7 +32,14 @@ class Color
     }
     static public function delete($id)
     {
+        $order_exists = DB::table('order_product_color')
+            ->where('color_id', '=', $id)->first();
+        $product_exists = DB::table('color_product')
+            ->where('color_id', '=', $id)->first();
+        if ($order_exists || $product_exists)
+            return false;
         DB::table('colors')->where('id', '=', $id)
             ->delete();
+        return true;
     }
 }

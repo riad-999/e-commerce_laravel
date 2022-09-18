@@ -1,11 +1,11 @@
 <x-ui-elements.layout>
-    <section class="grid items-start desk:grid-cols-3 gap-8 mx-auto tablet:max-w-[600px] desk:max-w-[900px] p-4 mt-12">
+    <section class="grid items-start desk:grid-cols-3 gap-8 mx-auto tablet:max-w-[600px] desk:max-w-[1000px] p-4 mt-12">
         <section class="desk:order-1 p-2 border border-solid border-border w-full">
             <div class="pb-4 mb-4 border-b border-solid border-border">
                 @foreach(session('cart') as $item)
-                    <article class="flex justify-between gap-2">
+                    <article class="flex justify-between gap-2 py-2">
                         <span class="text-black">{{$item->name}} ({{$item->color->name}})</span>
-                        <span class="inline-block w-max">
+                        <span class="inline-block w-[35px]">
                             X {{$item->quantity}}
                         </span>
                     </article>

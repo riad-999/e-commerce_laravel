@@ -22,7 +22,7 @@ class productSeeder extends Seeder
             DB::table('categories')->insert(
                 [
                     'name' => $faker->unique()->word(),
-                    'description' => $faker->text()
+                    // 'description' => $faker->text()
                 ]
             );
         }

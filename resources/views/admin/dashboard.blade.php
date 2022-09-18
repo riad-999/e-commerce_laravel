@@ -149,8 +149,8 @@
             datasets: [{
             fill: false,
             lineTension: 0,
-            backgroundColor: "rgba(0,0,255,1.0)",
-            borderColor: "rgba(0,0,255,0.1)",
+            backgroundColor: "rgb(23, 21, 20)",
+            borderColor: "rgb(255, 156, 140, 0.3)",
             data: yValues
             }]
         },

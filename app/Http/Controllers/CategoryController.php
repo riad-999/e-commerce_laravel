@@ -6,6 +6,7 @@ use App\Models\Category;
 use Illuminate\Database\QueryException;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CategoryController extends Controller
 {
@@ -19,11 +20,11 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => ['required', 'unique:categories']
+            'name' => ['required', 'unique:categories,name']
         ]);
         Category::store([
             'name' => $request->input('name'),
-            'description' => $request->input('description')
+            // 'description' => $request->input('description')
         ]);
         return redirect()->route('categories')->with([
             'alert' => (object)[
@@ -40,19 +41,18 @@ class CategoryController extends Controller
     }
     public function update(Request $request, $id)
     {
-        $fields = [];
-        $inputs = ['name', 'description'];
+        // $inputs = ['name', 'description'];
         $request->validate([
             'name' => [Rule::unique('categories')->ignore($id)]
         ]);
-        foreach ($inputs as $input) {
-            if ($request->input($input)) {
-                $fields[$input] = $request->input($input);
-            }
-        }
-        if (!count($fields))
-            return back();
-        Category::update($fields, $id);
+        // foreach ($inputs as $input) {
+        //     if ($request->input($input)) {
+        //         $fields[$input] = $request->input($input);
+        //     }
+        // }
+        // if (!count($fields))
+        //     return back();
+        Category::update(['name' => $request->input('name')], $id);
         return back()->with([
             'alert' => (object)[
                 'type' => 'success',
@@ -62,15 +62,14 @@ class CategoryController extends Controller
     }
     public function delete($id)
     {
-        try {
-            Category::delete($id);
+        if (Category::delete($id))
             return back()->with([
                 'alert' => (object)[
                     'type' => 'success',
                     'message' => 'la catégorie est supprimé!'
                 ]
             ]);
-        } catch (QueryException $_) {
+        else
             return back()->with([
                 'alert' => (object)[
                     'type' => 'error',
@@ -78,6 +77,5 @@ class CategoryController extends Controller
                     il y a autres produits qui l'utilise"
                 ]
             ]);
-        }
     }
 }

@@ -16,7 +16,7 @@ const closeSideFilters = document.getElementById('close-side-filters');
 const colorsContainer = document.getElementById('colors-container');
 const toggleDropDowns = document.querySelectorAll('.toggle-drop-down');
 const addToCartBtn = document.getElementById('add-to-cart');
-const cartFroms = document.querySelectorAll('.cart-form');
+const cartFrom = document.getElementById('cart-form');
 const qteInput = document.getElementById('quantity');
 const sideCart = document.getElementById('side-cart');
 const closeSideCartBtn = document.getElementById('close-side-cart');
@@ -287,6 +287,8 @@ const singleProductColorChangeHandler = (event) => {
     cart.dataset.product = product;
     cart.dataset.image = images[0];
     qteInput.max = quantity;
+    const buyInput = document.getElementById('color_id_buy');
+    buyInput.value = color;
 }
 // const priceChangeHandler = (event) => {
 //     const id = event.currentTarget.dataset.id;

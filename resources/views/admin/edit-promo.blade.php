@@ -7,6 +7,9 @@
         name="promo" value="{{$product->promo}}" :remove="true" min="0"/>
         <x-form.input type="date" class="w-full" label="date d'expiration" 
         name="expires" value="{{$product->expires}}" :remove="true"/>
-        <x-interactive.btn type="submit" class="w-full mt-4">Terminer</x-interactive.btn>
+        <x-interactive.btn type="submit" class="w-full mt-4 mb-2">Terminer</x-interactive.btn>
+        <x-interactive.btn type="reset" :white="true" class="w-full">
+            Réinitialiser
+        </x-interactive.btn>
     </form>
 </x-ui-elements.admin-layout>

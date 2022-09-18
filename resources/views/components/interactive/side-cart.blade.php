@@ -19,7 +19,7 @@ translate-x-full" id="side-cart">
         @foreach($cart as $item)
             <article class="grid tablet:grid-cols-2 gap-4 {{!$loop->last ? 'border-b border-solid border-border' : ''}} py-4">
                 <a href="{{route('show-product',$item->product_id)}}" class="block">
-                    <img src="{{$item->image}}" class="block"/>
+                    <img src="{{config('globals.images_end_point') . $item->image}}" class="block"/>
                 </a>
                 <div>
                     <div class="text-black font-semibold">{{$item->name}}</div>

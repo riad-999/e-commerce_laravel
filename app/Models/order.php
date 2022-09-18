@@ -79,7 +79,9 @@ class Order
     static public function get($id)
     {
         $order = DB::table('orders')
-            ->where('id', '=', $id)->get()->first();
+            ->join('wilayas', 'wilaya_id', '=', 'wilayas.id')
+            ->select(['orders.*', 'wilayas.name as wilaya'])
+            ->where('orders.id', '=', $id)->get()->first();
         return $order;
     }
 

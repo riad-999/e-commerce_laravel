@@ -231,4 +231,11 @@ class User extends Authenticatable
         DB::table('reviews')->where('product_id', '=', $product_id)
             ->where('user_id', '=', $user_id)->update($data);
     }
+    public static function use_promo_code($code_id, $user_id)
+    {
+        DB::table('promo_user')->insert([
+            'user_id' => $user_id,
+            'promo_code_id' => $code_id
+        ]);
+    }
 }

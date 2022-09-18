@@ -34,7 +34,13 @@ class Category
     }
     static public function delete($id)
     {
+        $exists = DB::table('products')
+            ->where('category_id', '=', $id)
+            ->where('deleted', '=', 0)->first();
+        if ($exists)
+            return null;
         DB::table('categories')->where('id', '=', $id)
             ->delete();
+        return true;
     }
 }

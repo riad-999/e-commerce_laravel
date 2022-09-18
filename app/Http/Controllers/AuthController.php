@@ -46,6 +46,8 @@ class AuthController extends Controller
             $request->session()->regenerate();
             if (request()->has('redirect'))
                 return redirect(request('redirect'));
+            elseif ($user->is_admin)
+                return redirect(route('dashboard'));
             return redirect()->intended(route('home'));
         } else
             return back()->withErrors([

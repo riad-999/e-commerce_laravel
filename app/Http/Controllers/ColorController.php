@@ -23,7 +23,7 @@ class ColorController extends Controller
             'name' => ['required', 'unique:colors']
         ]);
         if ($request->input('color1') == '#010101') {
-            return back()->withErrors(['color1' => 'ce champ ne dois pas etre vide']);
+            return back()->withInput()->withErrors(['color1' => 'ce champ ne dois pas etre vide']);
         }
 
         $colors = Color::all();
@@ -210,22 +210,21 @@ class ColorController extends Controller
     }
     public function delete($id)
     {
-        try {
-            Color::delete($id);
+        if (Color::delete($id))
             return back()->with([
                 'alert' => (object)[
                     'type' => 'success',
                     'message' => 'la couleur est supprimé!'
                 ]
             ]);
-        } catch (QueryException $_) {
+        else
             return back()->with([
                 'alert' => (object)[
                     'type' => 'error',
-                    'message' => "impossible de supprimer la couleur,
-                    il y a autres produits qui l'utilise"
+                    'message' => "impossible de supprimer la coleur car
+                    il y a d'autres produits qui l'utilise, ou pour préserver 
+                    l'historique des commandes."
                 ]
             ]);
-        }
     }
 }

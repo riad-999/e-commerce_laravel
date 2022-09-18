@@ -4,11 +4,11 @@
     $dsb = $disabled ? '!cursor-not-allowed opacity-50 pointer-events-none' : '';    
 @endphp
 
-<div {{$attributes->merge(['class' => 'dropdown'])}}>
+<div {{$attributes->merge(['class' => 'dropdown w-full'])}}>
     <input type="hidden" class="color" id="{{$name}}" name="{{$name}}"
      value="{{ $selected ? $selected->id : null }}" {{ $disabled ? 'disabled' : null }}/>
 
-    <label tabindex="0" class="btn color-label capitalize 
+    <label tabindex="0" class="btn color-label capitalize w-full
     {{$dsb}}" >
         @if($selected === null) 
             séléctioner la coleur  <i class="fa-solid fa-angle-down ml-2"></i>
@@ -22,9 +22,9 @@
         <x-form.edit class="ml-4" data-id="{{$name}}" data-dropdown='on' />
     @endif
 
-    <div tabindex="0" class="dropdown-content menu shadow bg-white rounded-box w-52 max-h-72 overflow-y-scroll !invisible">
+    <div tabindex="0" class="dropdown-content menu shadow bg-white rounded-box w-full max-h-72 overflow-y-scroll !invisible">
         @foreach($colors as $color)
-            <button type="button" data-id="{{ $color->id }}" class="color-item flex justify-between px-4 py-2 hover:bg-gray-300">
+            <button type="button" data-id="{{ $color->id }}" class="color-item flex justify-between gap-2 px-4 py-2 hover:bg-gray-300">
                 <span>{{ $color->name }}</span>
                 <x-elements.color-square class="ml-2 inline-block" :color="$color" />
             </button>

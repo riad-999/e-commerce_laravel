@@ -32,7 +32,7 @@
                 </div>
                 <div class="border-b border-border border-solid py-2">
                     <button type="button" class="flex justify-between w-full py-2 toggle-drop-down" id="toggle-categories" data-id="desk-category">
-                        <span class="inline-block">Types</span>
+                        <span class="inline-block">Catégories</span>
                         <i class="fa-solid fa-angle-down show"></i>
                         <i class="fa-solid fa-angle-up close !hidden"></i>
                     </button>
@@ -165,7 +165,7 @@
                         <br/>oops, aucun produit disponible pour ces filtres
                     </div>
                 @else
-                    <section class="products-container grid grid-cols-2 tablet:grid-cols-3 gap-2 desk:gap-4 mb-12 mt-12 pb-8 border-b border-border border-solid">
+                    <section class="products-container grid grid-cols-2 tablet:grid-cols-3 gap-x-2 desk:gap-x-4 gap-y-8 mb-12 mt-12 pb-8 border-b border-border border-solid">
                         @foreach ($products as $product)
                             <x-elements.product :product="$product" />
                         @endforeach
@@ -185,7 +185,7 @@
             </main>
         </section>
     </form>
-    @if(count($products))
+    {{-- @if(count($products))
         <x-ui-elements.footer />
-    @endif
+    @endif --}}
 </x-ui-elements.layout>

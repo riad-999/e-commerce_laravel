@@ -4,14 +4,14 @@
         @csrf
         @method('PATCH')
         <h4 class="font-body font-semibold mb-12">produit #({{$product->id}})</h4>
-        <div class="mb-4">
+        {{-- <div class="mb-4">
             <a href="{{route('edit-product-colors',$product->id)}}" class="inline-block underline font-semibold">
                 Couleurs
             </a>
             <a href="{{route('edit-promo',$product->id)}}" class="inline-block underline font-semibold ml-2">
                 promo
             </a>
-        </div>
+        </div> --}}
         <x-form.input name="name" label="nom" class="w-full" 
         value="{{ $product->name }}" />
         <x-form.textarea name="description" class="w-full" 
@@ -24,12 +24,20 @@
         </div>
         <x-form.input type='number' name="price" class="w-full"
         label="prix" value="{{$product->price}}" />
-        <div class="grid tablet:grid-cols-2 gap-4 mt-8">
+        <div class="grid tablet:grid-cols-2 tablet:gap-2">
+            <x-interactive.btn :link="route('edit-product-colors',$product->id)" :white="true" class="w-full mb-2">
+                Coleurs
+            </x-interactive.btn>
+            <x-interactive.btn :link="route('edit-promo',$product->id)" :white="true" class="w-full mb-2">
+                Promotion
+            </x-interactive.btn>
+        </div>
+        <div class="mt-8">
+            <x-interactive.btn type="submit" class="w-full mb-2">
+                Modifier
+            </x-interactive.btn>
             <x-interactive.btn type="reset" :white="true" class="w-full">
                 Réinitialiser
-            </x-interactive.btn>
-            <x-interactive.btn type="submit" class="w-full">
-                Moudifier
             </x-interactive.btn>
         </div>
     </form>

@@ -94,33 +94,15 @@ class ProductController extends Controller
         return view('initial-products-create', [
             'brands' => $brands,
             'categories' => $categories,
-            // 'session' => $request->session()
         ]);
     }
     public function create(Request $request)
     {
         if (!$request->session()->get('first-submit'))
             return back();
-        $request->session()->forget('first-submit');
-        $colors = Color::all()->map(
-            function ($color) {
-                $cols = [$color->value1];
-                if ($color->value2)
-                    array_push($cols, $color->value2);
-                if ($color->value3)
-                    array_push($cols, $color->value3);
-                return
-                    (object)[
-                        'id' => $color->id,
-                        'name' => $color->name,
-                        'colors' => $cols,
-                    ];
-            }
-        );
-        return view('products-create', [
-            'colors' => $colors,
+        return view('admin.create-product', [
+            'colors' => Color::all(),
             'count' => $request->session()->get('count'),
-            // 'session' => $request->session()
         ]);
     }
 
@@ -157,17 +139,14 @@ class ProductController extends Controller
             'category' => ['required', 'numeric', 'exists:categories,id'],
             'brand' => ['required', 'numeric', 'exists:brands,id'],
             'price' => ['required', 'numeric'],
-            'count' => ['required', 'numeric', 'max:8']
+            'count' => ['required', 'numeric']
         ]);
         $arr = ['name', 'description', 'category', 'brand', 'price', 'count'];
         foreach ($arr as $item) {
             $request->session()->put($item, $validated[$item]);
         }
-        $request->session()->put(
-            'first-submit',
-            $request->input('first-submit'),
-        );
-        return redirect('/products/create');
+        $request->session()->put('first-submit', true);
+        return redirect(route('create-product'));
     }
     public function store(Request $request)
     {
@@ -180,16 +159,15 @@ class ProductController extends Controller
                     'content' => 'something went wrong'
                 ]]);
         for ($i = 1; $i <= $count; $i++) {
-            $count_files = $request->file("other-images$i")
-                ? count($request->file("other-images$i")) : 0;
-            $request->session()->put("file-count$i", $count_files);
+            // $count_files = $request->file("other-images$i")
+            //     ? count($request->file("other-images$i")) : 0;
+            // $request->session()->put("file-count$i", $count_files);
             $rules["color$i"] = ['required', 'exists:colors,id'];
             $rules["quantity$i"] = ['required', 'numeric', "gt:0"];
-            $rules["main-image$i"] = ['required', 'image', 'file|max:200', 'mimes:jpg,jpeg,png,webp,svg,gif'];
-            $rules["other-images$i.*"] = ['image', 'file|max:200', 'mimes:jpg,jpeg,png,webp,svg,gif'];
+            $rules["main-image$i"] = ['required', 'image', 'max:200', 'mimes:jpg,jpeg,png,webp,svg,gif'];
+            $rules["other-images$i"] = ['image', 'max:200', 'mimes:jpg,jpeg,png,webp,svg,gif'];
         }
         $validated = $request->validate($rules);
-        // return $validated;
         // store the product
         $product_id = DB::table('products')->insertGetId([
             'category_id' => $request->session()->get('category'),
@@ -223,13 +201,13 @@ class ProductController extends Controller
             }
         }
         // cleaning session.
-        $arr = ['name', 'description', 'category', 'brand', 'price', 'count'];
-        for ($i = 1; $i <= $count; $i++) {
-            array_push($arr, "file-count$i");
-        }
-        foreach ($arr as $item) {
-            $request->session()->forget($item);
-        }
+        $arr = ['name', 'description', 'category', 'brand', 'price', 'count', 'first-submit'];
+        // for ($i = 1; $i <= $count; $i++) {
+        //     array_push($arr, "file-count$i");
+        // }
+        // foreach ($arr as $item) {
+        //     $request->session()->forget($item);
+        // }
         return redirect(route('initial-create-product'));
     }
 
@@ -304,9 +282,13 @@ class ProductController extends Controller
         $product = Product::get($id, true);
         $data = [];
         $ids = [];
+        $rules = [];
         foreach ($product->colors as $color) {
             array_push($ids, $request->input("$color->name"));
+            $rules["main-image-$color->name"] = ['image', 'max:200', 'mimes:jpg,jpeg,png,webp,svg,gif'];
+            $rules["other-images-$color->name"] = ['image', 'max:200', 'mimes:jpg,jpeg,png,webp,svg,gif'];
         }
+        $request->validate($rules);
         $counts = array_count_values($ids);
         foreach ($counts as $item) {
             if ($item > 1) {
@@ -345,6 +327,9 @@ class ProductController extends Controller
             array_push($data, $object);
         }
         Product::update_colors($id, $data);
+        // foreach ($product->colors as $color) {
+        //     session()->forget("file-count-$color->name");
+        // }
         return back()->with([
             'alert' => (object)[
                 'type' => 'success',

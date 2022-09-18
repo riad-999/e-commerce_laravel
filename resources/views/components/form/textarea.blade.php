@@ -8,7 +8,7 @@
 
 <div class="{{$mrg}}">
     @if($label)
-        <label class="inline-block mb-2 font-semibold text-sm" for={{ $name }}>
+        <label class="inline-block mb-2 font-semibold text-sm text-secondary" for={{ $name }}>
             {{$label}}
         </label>
     @endif

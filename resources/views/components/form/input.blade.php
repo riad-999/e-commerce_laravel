@@ -2,6 +2,7 @@
 @php
     $name = $attributes['name'];
     $dsb = $disabled ? 'cursor-not-allowed opacity-50' : '';
+    $padding = $attributes['type'] == 'color' ? 'p-1' : 'p-2'
 @endphp
 <div class="{{ $margin }}">
     @if($label)
@@ -16,7 +17,7 @@
         </label>
     @endif
     <input {{ $disabled ? 'disabled' : '' }} {{ $attributes->merge([
-        'class' => "p-2 border border-gray-400 border-solid $dsb",
+        'class' => "$padding border border-gray-400 border-solid $dsb",
         'id' => $name]
     ) }}/>
     <x-form.error name={{$name}} />

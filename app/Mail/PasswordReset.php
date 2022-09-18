@@ -24,7 +24,7 @@ class PasswordReset extends Mailable
      */
     public function build()
     {
-        return $this->subject("vérificatoin d'email")
+        return $this->subject("changement de mot de pass")
             ->view('email.reset-password', ['url' => $this->url]);
     }
 }

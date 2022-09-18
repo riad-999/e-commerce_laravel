@@ -18,7 +18,11 @@ h-[100vh] max-h-[100vh] overflow-y-hidden bg-white py-2 border-l border-solid bo
         <ul class="list-none p-0 mb-12 flex flex-col">
             <x-interactive.list-item :url="route('home')" class="border-y border-solid border-secondary w-full">accueil</x-interactive.list-item>
             <x-interactive.list-item :url="route('products')" class="border-b border-solid border-secondary w-full">boutique</x-interactive.list-item>
-            <x-interactive.list-item url="#" class="border-b border-solid border-secondary w-full">à propos</x-interactive.list-item>
+            {{-- <x-interactive.list-item url="#" class="border-b border-solid border-secondary w-full">à propos</x-interactive.list-item> --}}
+            @can('isAdmin')
+                <x-interactive.list-item :url="route('dashboard')" class="border-b border-solid border-secondary w-full">dashboard</x-interactive.list-item>
+            @endcan
+
         </ul>
         <div class="grid grid-cols-2 gap-2 mb-12">
             @guest
@@ -35,9 +39,9 @@ h-[100vh] max-h-[100vh] overflow-y-hidden bg-white py-2 border-l border-solid bo
                 </x-interactive.btn>
             @endauth
         </div>
-        <div class="flex justify-center gap-6">
+        {{-- <div class="flex justify-center gap-6">
             <x-interactive.simple-btn :big="true"><i class="fa-brands fa-instagram"></i></x-interactive.simple-btn>
             <x-interactive.simple-btn :big="true"><i class="fa-brands fa-facebook"></i></x-interactive.simple-btn>
-        </div>
+        </div> --}}
     </div>
 </aside>

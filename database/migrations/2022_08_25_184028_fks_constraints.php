@@ -15,14 +15,9 @@ return new class extends Migration
     {
         Schema::table('products', function (Blueprint $table) {
             $table->foreignId('category_id')->after('id')
-                ->constrained('categories')->restrictOnDelete()
-                ->cascadeOnUpdate();
-        });
-
-        Schema::table('products', function (Blueprint $table) {
+                ->constrained('categories')->nullOnDelete();
             $table->foreignId('brand_id')->after('id')
-                ->constrained('brands')->restrictOnDelete()
-                ->cascadeOnUpdate();
+                ->constrained('brands')->nullOnDelete();
         });
 
         Schema::table('orders', function (Blueprint $table) {

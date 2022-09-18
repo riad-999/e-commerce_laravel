@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
 use App\Models\Wilaya;
+use App\Rules\PhoneNumber;
 use App\Rules\ShipmentType;
 use App\Rules\Wilaya as RulesWilaya;
 use Illuminate\Http\Request;
@@ -17,14 +18,10 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $wilayas = json_decode(
-            file_get_contents(
-                storage_path() . "/app/wilayas.json"
-            )
-        );
+        $wilayas = Wilaya::all();
         $wilayas = collect($wilayas)->map(
             fn ($item) => (object) [
-                'name' => "$item->code $item->name",
+                'name' => "$item->id $item->name",
                 'value' => $item->name
             ]
         );
@@ -105,13 +102,16 @@ class OrderController extends Controller
             $wilaya = $old_wilaya;
         } elseif (Auth::check()) {
             $user = User::get(Auth::user()->id, true);
-            $wilaya = (object) [
-                'id' => $user->code,
-                'name' => $user->wilaya,
-                'duration' => $user->duration,
-                'desk' => $user->desk,
-                'home' => $user->home
-            ];
+            if (!$user->wilaya)
+                $wilaya = $default_wilaya;
+            else
+                $wilaya = (object) [
+                    'id' => $user->code,
+                    'name' => $user->wilaya,
+                    'duration' => $user->duration,
+                    'desk' => $user->desk,
+                    'home' => $user->home
+                ];
         } else {
             $wilaya = $default_wilaya;
         }
@@ -144,21 +144,22 @@ class OrderController extends Controller
     }
     public function store(Request $request)
     {
-        // validation
         $request->validate([
             'name' => ['required'],
             'email' => ['required', 'email'],
             'address' => ['required'],
-            'number' => ['required'],
+            'number' => ['required', new PhoneNumber],
             'wilaya' => [new RulesWilaya],
             'shipment_type' => ['required', new ShipmentType]
         ]);
 
         if (!session('cart'))
             return redirect(route('cart'));
+        // check quantities
         $ids = [];
         foreach (session('cart') as $item) {
-            array_push($ids, $item->product_id);
+            if (!in_array($item->product_id, $ids))
+                array_push($ids, $item->product_id);
         }
         $products = Product::get_by_ids($ids, true);
         $errors = [];
@@ -179,9 +180,53 @@ class OrderController extends Controller
         }
         if (count($errors))
             return redirect(route('cart'))->withErrors($errors);
-
+        // check if session data is up to date (promo, price and deleted)
+        foreach (session('cart') as $item) {
+            foreach ($products as $product) {
+                if ($item->product_id != $product->id)
+                    continue;
+                if (
+                    $item->price != $product->price ||
+                    $item->promo != $product->promo ||
+                    $product->deleted
+                ) {
+                    return redirect(route('cart'))->with([
+                        'alert' => (object)[
+                            'type' => 'warning',
+                            'message' => "votre panier n'est pas à jour, il faut refaire la commande."
+                        ]
+                    ]);
+                }
+            }
+        }
+        // check if promo code data is depricated
+        if (session('code')) {
+            // if (now()->format('Y-m-d') >= session('code')->expires)
+            //     return redirect()->with([
+            //         'alert' => (object)[
+            //             'type' => 'warning',
+            //             'message' => "le code promo vien d'expirer, il faut refaire la commande."
+            //         ]
+            //     ]);
+            $products_cut = Product::get_products_with_cut($ids, session('promo_code_id'));
+            foreach (session('cart') as $item) {
+                foreach ($products_cut as $product) {
+                    if ($product->id != $item->product_id)
+                        continue;
+                    if ($product->cut != $item->cut)
+                        return redirect(route('cart'))->with([
+                            'alert' => (object)[
+                                'type' => 'warning',
+                                'message' => "votre panier n'est pas à jour, il faut refaire la commande."
+                            ]
+                        ]);
+                }
+            }
+        }
         $data = [];
         $wilaya = Wilaya::get_by_name(request()->input('wilaya'));
+        if (!$wilaya)
+            return back();
         $inputs = ['name', 'email', 'number', 'shipment_type', 'address', 'note'];
         foreach ($inputs as $input) {
             $data[$input] = request()->input($input);
@@ -192,15 +237,19 @@ class OrderController extends Controller
         $data['wilaya_id'] = $wilaya->id;
         if (Auth::check())
             $data['user_id'] = Auth::user()->id;
-        // $id = Order::insert($data);
-        // Order::associate($id, session('cart'));
-        // $admins = User::admins();
-        // foreach ($admins as $admin) {
-        //     Mail::to($admin->email)
-        //         ->send(new MailOrder(session('cart'), true, (object)$data, $wilaya));
-        // }
-        // Mail::to($data['email'])
-        //     ->send(new MailOrder(session('cart'), false, (object)$data, $wilaya));
+        $id = Order::insert($data);
+        Order::associate($id, session('cart'));
+        if (Auth::check() && session('code'))
+            User::use_promo_code(session('promo_code_id'), Auth::user()->id);
+        $admins = User::admins();
+        foreach ($admins as $admin) {
+            Mail::to($admin->email)
+                ->send(new MailOrder(session('cart'), true, (object)$data, $wilaya));
+        }
+        Mail::to($data['email'])
+            ->send(new MailOrder(session('cart'), false, (object)$data, $wilaya));
+        session()->forget(['code', 'promo_code_id']);
+        session()->put('cart', []);
         return redirect(route('home'))->with([
             'alert' => (object)[
                 'type' => 'success',
@@ -216,15 +265,9 @@ class OrderController extends Controller
             $item->desk = $item->desk_shipment;
             return $item;
         });
-
-        // $wilayas_ = collect(json_decode(
-        //     file_get_contents(
-        //         storage_path() . "/app/wilayas.json"
-        //     )
-        // ));
         $wilayas = $wilayas_->map(
             fn ($item) => (object) [
-                'name' => "$item->code $item->name",
+                'name' => "$item->id $item->name",
                 'value' => $item->name
             ]
         );

@@ -9,7 +9,7 @@
                 <i class="fa-solid fa-xmark"></i>
             </button>
             <img class="block w-full mt-6 mb-4 tablet:my-0  col-span-3" id="cart-image" 
-            src="{{IMAGES_END_POINT . $product->colors[0]->main_image}}"/>
+            src="{{config('globals.images_end_point') . $product->colors[0]->main_image}}"/>
             <div class="text-left col-span-3">
                 <h6 class="font-semibold tracking-wide font-body pr-4">
                     {{$product->name}}
@@ -44,7 +44,7 @@
                     <i class="fa-solid fa-xmark"></i>
                 </button>
                 <p class="mb-4">
-                    connectez vous pour réaliser cette action, ou 
+                    connectez vous pour réaliser cette action. <br /> ou 
                     <a href="{{route('register')}}" class="underline">inscrivez vous</a> 
                 </p>
                 @if(session('registered'))
@@ -74,10 +74,10 @@
             <section class="swiper mx-0 mb-4 desk:mb-0 tablet:w-[40%] max-w-[600px]">
                 <div class="swiper-wrapper" id="images-container">
                     <img class="swiper-slide block desk:px-12" 
-                    src="{{IMAGES_END_POINT . $product->colors[0]->main_image}}">
+                    src="{{config('globals.images_end_point') . $product->colors[0]->main_image}}">
                     @foreach($product->colors[0]->images as $image) 
                         <img class="swiper-slide block desk:px-12" 
-                        src="{{IMAGES_END_POINT . $image->image}}">
+                        src="{{config('globals.images_end_point') . $image->image}}">
                     @endforeach
                 </div>
                 <div class="swiper-pagination text-secondary"></div>
@@ -119,23 +119,27 @@
                         </div>
                     @endcannot
                 </div>
-                <div class="text-sm mb-2 text-pink left-quantity">{{$product->colors[0]->quantity}} diponible</div>
-                <div class="grid grid-cols-color gap-4 mb-4 colors-container" id="colors-container">
-                    @foreach($product->colors as $color)
-                            @php
-                                $main_image = [IMAGES_END_POINT . $color->main_image];
-                                $others = [];
-                                foreach($color->images as $image) {
-                                    array_push($others, IMAGES_END_POINT . $image->image);
-                                }
-                                $images = json_encode(array_merge($main_image, $others));
-                            @endphp
-                            <x-elements.color-square :color="$color" data-color="{{$color->id}}" 
-                            data-product="{{$product->id}}" class="cursor-pointer color-square
-                            {{$loop->index == 0 ? 'outline-secondary outline-2 outline' : ''}}"
-                            data-images="{{$images}}" data-id="images-container" data-quantity="{{$color->quantity}}"/>
-                    @endforeach
-                </div>
+                @if($product->quantity == 0 || $product->deleted)
+                    <div class="text-orange-600 text-semibold">ce produit n'est plus disponible</div>
+                @else
+                    <div class="text-sm mb-2 text-pink left-quantity">{{$product->colors[0]->quantity}} diponible</div>
+                    <div class="grid grid-cols-color gap-4 mb-4 colors-container" id="colors-container">
+                        @foreach($product->colors as $color)
+                                @php
+                                    $main_image = [config('globals.images_end_point') . $color->main_image];
+                                    $others = [];
+                                    foreach($color->images as $image) {
+                                        array_push($others, config('globals.images_end_point') . $image->image);
+                                    }
+                                    $images = json_encode(array_merge($main_image, $others));
+                                @endphp
+                                <x-elements.color-square :color="$color" data-color="{{$color->id}}" 
+                                data-product="{{$product->id}}" class="cursor-pointer color-square
+                                {{$loop->index == 0 ? 'outline-secondary outline-2 outline' : ''}}"
+                                data-images="{{$images}}" data-id="images-container" data-quantity="{{$color->quantity}}"/>
+                        @endforeach
+                    </div>
+                @endif
                 @if($product->solds)
                     <div class="text-sm">{{$product->solds}} commandé(s)</div>
                 @endif
@@ -151,22 +155,24 @@
                         @endif
                     @endif
                 </div>
-                <div class="grid desk:grid-cols-2 mb-8">
-                    {{-- <form action="{{route('cart')}}" method="POST" 
-                    class="cart-form" id="cart-form2" data-buy="true">
-                        @csrf
-                        <x-interactive.btn class="w-full" 
-                        name="cart" value="">
-                            Commander
-                        </x-interactive.btn> --}}
-                    {{-- </form> --}}
-                    <x-interactive.btn class="add-to-cart open-modal" id="add-to-cart"
-                    data-color="{{$product->colors[0]->id}}" data-product="{{$product->id}}" 
-                    data-id="cart-alert" data-image="{{$main_image[0]}}" :white="true">
-                        Ajouter <span class="inline-block ml-2">+</span><i class="fa-solid fa-cart-shopping"></i>
-                    </x-interactive.btn>
-                    <div></div>
-                </div>
+                @cannot('isAdmin')
+                    <div class="grid desk:grid-cols-2 gap-2 mb-8">
+                        <form action="{{route('order-product')}}" method="POST" 
+                        id="cart-form" data-buy="true">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{$product->id}}">
+                            <input type="hidden" name="color_id" id="color_id_buy" value="{{$product->colors[0]->id}}}">
+                            <x-interactive.btn type="submit" class="w-full" name="cart" value="">
+                                Commander
+                            </x-interactive.btn>
+                        </form> 
+                        <x-interactive.btn class="add-to-cart open-modal" id="add-to-cart"
+                        data-color="{{$product->colors[0]->id}}" data-product="{{$product->id}}" 
+                        data-id="cart-alert" data-image="{{config('globals.images_end_point') . $product->colors[0]->main_image}}" :white="true">
+                            Ajouter <span class="inline-block ml-2">+</span><i class="fa-solid fa-cart-shopping"></i>
+                        </x-interactive.btn>
+                    </div>
+                @endcannot
                 @if($product->description)
                     <h5 class="font-body font-semibold">description</h5>
                     <p>

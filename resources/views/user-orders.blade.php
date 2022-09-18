@@ -29,7 +29,7 @@
                                     <article>
                                         <a href="{{route('show-user-orders',$order->id)}}" class="flex gap-2 justify-between p-2">
                                             <div class="w-[20%]">
-                                                <img src="{{IMAGES_END_POINT . $product->main_image}}" alt="l'image du prouit">
+                                                <img src="{{config('globals.images_end_point') . $product->main_image}}" alt="l'image du prouit">
                                             </div>
                                             <div class="w-[75%]">
                                                 <div>{{$product->pname}}</div>

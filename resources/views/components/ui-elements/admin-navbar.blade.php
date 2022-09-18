@@ -8,7 +8,7 @@
                 <x-interactive.list-item url="#">à Propos</x-interactive.list-item>
             </ul>
         </div>
-        <div class="flex gap-4">
+        <div class="flex gap-4 items-center">
             <div class="flex items-center gap-2">
                 <div class="hidden desk:block">
                     <div class="dropdown inline-block ml-2 relative"> 
@@ -16,7 +16,7 @@
                             <i class="fa-solid fa-user"></i>
                         </label>
                         <ul tabindex="0" class="dropdown-content menu bg-white shadow z-50 w-max">
-                            <a href="#" class="block">
+                            <a href="{{route('profile')}}" class="block">
                                 <li class="py-2 px-4 hover:bg-gray-100 cursor-pointer">Compte</li>
                             </a> 
                             <form action="{{route('logout')}}" method="POST" class="py-2 px-4 hover:bg-gray-100 cursor-pointer">
@@ -28,9 +28,6 @@
                         </ul>
                     </div>           
                 </div>
-                {{-- <a href="{{route('orders')}}" class="block p-2 text-xl desk:text-2xl text-secondary">
-                    <button><i class="fa-solid fa-bell"></i></button>
-                </a> --}}
                 <button id="open-adminbar" class="text-xl text-secondary ml-2 desk:hidden">
                     <i class="fa-solid fa-angles-left"></i>
                 </button>
@@ -38,11 +35,12 @@
                     <i class="fa-solid fa-bars"></i>
                 </button>
             </div>
-            <form action="{{route('admin-products')}}" class="hidden desk:flex justify-center w-[30vw] desk:w-[40vw] max-w-[600px] border border-solid border-border">
-                <input type="search" name="search" class="block focus:outline-none w-full placeholder-gray-400 px-2 py-2" autofocus placeholder="chercher un produit ...">
-                <x-interactive.simple-btn class="ml-2 px-4 border-l border-solid border-border" type="submit">
+            <form class="hidden desk:flex" action="{{route('admin-products')}}" autocomplete="off">
+                <input type="search" name="name" placeholder="chercher un produit..." 
+                    class="px-2 border border-solid border-gray-400" />
+                <x-interactive.btn type="submit" class="hover:border-secondary">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                </x-interactive.simple-btn>
+                </x-interactive.btn>
             </form>
         </div>
     </div>

@@ -198,15 +198,13 @@ class Product
                     'categories.name as category'
                 ]
             )
+            ->selectRaw('(select sum(quantity) from color_product where color_product.product_id = products.id) as quantity')
             ->when($user_id, function ($query, $user_id) use ($id) {
                 $query->selectRaw('(select count(*) from saves where product_id = ? and user_id = ?) as saved', [$id, $user_id]);
             })
-            ->where('deleted', '=', 0)
+            // ->where('deleted', '=', 0)
             ->where('products.id', '=', $id)
             ->get()->first();
-        if (!$product)
-            return null;
-        // product colors.
         if ($withColors) {
             $colors = DB::table('color_product')
                 ->join('colors', 'color_id', '=', 'colors.id')
@@ -265,7 +263,9 @@ class Product
     }
     public static function get_by_ids($ids, $withColors = false)
     {
-        $products = DB::table('products')->whereIn('id', $ids)->get();
+        $products = DB::table('products')
+            ->select(['products.*'])
+            ->whereIn('id', $ids)->get();
         if ($withColors) {
             $rows = DB::table('color_product')
                 ->whereIn('product_id', $ids)->get();
@@ -279,6 +279,13 @@ class Product
             }
         }
         return $products;
+    }
+    public static function get_products_with_cut($ids, $code_id)
+    {
+        return DB::table('products')
+            ->selectRaw('products.*, (select cut from product_promo where products.id = product_id and promo_code_id = ?) as cut', [$code_id])
+            ->whereIn('products.id', $ids)
+            ->get();
     }
     public static function store_color($data, $images)
     {
