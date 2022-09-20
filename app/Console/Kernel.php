@@ -17,11 +17,11 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->call(function () {
-            DB::table('products')->where('expires', '=', now()->format('Y-m-d'))
+            DB::table('products')->where('expires', '<=', now()->format('Y-m-d'))
                 ->update(['expires' => null, 'promo' => null]);
-            DB::table('promo_codes')->where('expires', '=', now()->format('Y-m-d'))
+            DB::table('promo_codes')->where('expires', '<=', now()->format('Y-m-d'))
                 ->delete();
-        })->everyFourHours();
+        })->everyMinute();
     }
 
     /**

@@ -58,7 +58,7 @@
                 </div>
                 <div class="border-b border-border border-solid py-2">
                     <button type="button" class="flex justify-between w-full py-2 toggle-drop-down" id="toggle-brands" data-id="desk-brand">
-                        <span class="inline-block">Markes</span>
+                        <span class="inline-block">Marques</span>
                         <i class="fa-solid fa-angle-down show"></i>
                         <i class="fa-solid fa-angle-up close !hidden"></i>
                     </button>

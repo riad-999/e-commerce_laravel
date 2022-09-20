@@ -149,8 +149,8 @@
                     </div>
                     @if($product->promo)
                         <div class="text-pink font-semibold" id="promo">promo!: {{$product->promo}}Da</div>
-                        <div class="text-black font-semibold">l'offre se termine dans:</div>
                         @if($product->expires)
+                            <div class="text-black font-semibold">l'offre se termine dans:</div>
                             <x-elements.countdown :date="$product->expires" />
                         @endif
                     @endif
@@ -161,7 +161,7 @@
                         id="cart-form" data-buy="true">
                             @csrf
                             <input type="hidden" name="product_id" value="{{$product->id}}">
-                            <input type="hidden" name="color_id" id="color_id_buy" value="{{$product->colors[0]->id}}}">
+                            <input type="hidden" name="color_id" id="color_id_buy" value="{{$product->colors[0]->id}}">
                             <x-interactive.btn type="submit" class="w-full" name="cart" value="">
                                 Commander
                             </x-interactive.btn>
