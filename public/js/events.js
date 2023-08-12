@@ -255,7 +255,9 @@ const singleProductColorChangeHandler = (event) => {
     const square = event.target.closest('.color-square');
     let {id,images,quantity,color,product} = square.dataset;
     const imagesContainer = document.getElementById(id);
-    const imageElements = imagesContainer.children;
+    // const imageElements = imagesContainer.children;
+    const imageElements = document.querySelectorAll(`#${id} img`);
+    imageElements.forEach(item => item.remove());
     for (let i = 0; i < imageElements.length; i++) {
         imageElements[i].remove();
     }
@@ -268,6 +270,7 @@ const singleProductColorChangeHandler = (event) => {
         img.classList.add('desk:px-12')
         imagesContainer.append(img);
     });
+    swiper.slideTo(1);
     const container = square.closest('.colors-container');
     square.classList.add('outline-secondary');
     square.classList.add('outline-2');

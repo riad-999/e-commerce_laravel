@@ -182,6 +182,11 @@ class CartController extends Controller
             ]
         ]);
         $code = PromoCode::get_by_code($inputs['code']);
+        if ($code->for_all) {
+            $request->session()->put('promo_code_id', $code->id);
+            $request->session()->put('code', $code);
+            return redirect(route('cart'))->withFragment('code');
+        }
         $ids = [];
         foreach (session('cart') as $item) {
             if (!in_array($item->product_id, $ids)) {

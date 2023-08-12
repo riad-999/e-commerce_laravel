@@ -52,6 +52,9 @@ module.exports = {
       maxWidth: {
         'admin-content': 'calc(1600px - 2rem)',
       },
+      width: {
+        'admin-layout-content': 'max(calc(100% - 270px), 70%)'
+      },
        gridTemplateColumns: {
         'color': 'repeat( auto-fit, 25px)',
         'admin1' : '50px repeat(5,1fr)',

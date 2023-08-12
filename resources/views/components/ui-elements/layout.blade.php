@@ -1,4 +1,4 @@
-@props(['title' => 'rezki e commerce', 'fixedw' => true])
+@props(['title' => 'E-Comm', 'fixedw' => true])
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -22,8 +22,8 @@
         </main>
     </body>
 </html>
+<script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+<script src="/js/swiper.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="/js/utils.js"></script>
 <script src="/js/events.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
-<script src="/js/swiper.js"></script>

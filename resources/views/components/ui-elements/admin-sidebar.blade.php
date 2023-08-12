@@ -68,12 +68,12 @@ desk:translate-x-0 transition duration-300" id="adminbar">
             </x-slot>
             Coleurs
         </x-elements.admin-sidebar-item>
-        <x-elements.admin-sidebar-item :url="route('promo-codes')">
+        {{-- <x-elements.admin-sidebar-item :url="route('promo-codes')">
             <x-slot:icone>
                 <i class="fa-solid fa-rectangle-ad"></i>
             </x-slot>
             Codes promo
-        </x-elements.admin-sidebar-item>
+        </x-elements.admin-sidebar-item> --}}
         @can('isPrivileged')
             <x-elements.admin-sidebar-item :url="route('admins')">
                 <x-slot:icone>

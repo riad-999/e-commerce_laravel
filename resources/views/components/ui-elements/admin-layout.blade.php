@@ -1,4 +1,4 @@
-@props(['title' => 'rezki e commerce'])
+@props(['title' => 'E-comm Admin'])
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -17,7 +17,7 @@
             <x-ui-elements.admin-sidebar />
             <x-ui-elements.sidebar/>
             {{-- <x-ui-elements.loading /> --}}
-            <section class="w-full">
+            <section class="w-full desk:w-admin-layout-content">
                 <x-ui-elements.admin-navbar />
                 <main class="px-4 max-w-[1600px] mx-auto">
                     {{$slot}}

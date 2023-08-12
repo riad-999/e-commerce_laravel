@@ -63,7 +63,7 @@
                         <i class="fa-solid fa-angle-up close !hidden"></i>
                     </button>
                     <div class="h-0 overflow-hidden transition-height duration-300">
-                        <div id="desk-brand" class="pl-2">
+                        <div id="desk-brand" class="pl-2 checks-container">
                             <input type="hidden" name="brands" id="desk-brands" value="{{$brands ? $brands : '[]'}}" />
                             @foreach($Brands as $brand)
                                 @php

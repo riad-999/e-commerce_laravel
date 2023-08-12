@@ -27,7 +27,7 @@
                     <x-form.input type="number" name="quantity{{$i}}" label="quantité" class="w-full" />
                     <x-form.input type='file' name="main-image{{$i}}" class="w-full main-image"/>
                     <x-form.input type="file" name="other-images{{$i}}[]" class="w-full other-images" :margin="false" multiple />
-                    <x-form.error name="other-images{{$i}}" 
+                    <x-form.error name="other-images{{$i}}.*" 
                     msg="assurez que toutes les fichier sont des images et ne dépassent pas 200KB."/>
                     <div class="container flex gap-4 flex-wrap"></div>  
                     {{-- @for ($j = 0;$j < session()->get("file-count$i"); $j++)

@@ -127,6 +127,7 @@
                                             <x-form.error :name="$item->product_id . '-' . $item->color_id" />
                                         </div>
                                     </div>
+                                    <form action="{{route('delete-cart-item')}}" class="mt-2" method="POST">
                                         @csrf
                                         @method('delete')
                                         <input type="hidden" name="product_id" value="{{$item->product_id}}" />
@@ -178,12 +179,12 @@
                         @endforeach
                     </section>
                     <section class="tablet:col-span-5 desk:col-span-4 p-4 border-solid border border-border">
-                        @if(!session('promo_code_id'))
+                        {{-- @if(!session('promo_code_id'))
                             <label for="code" class="font-semibold text-black text-sm">entrer le code promo</label>
                             <form action="{{route('apply-promo-code')}}" method="POST" class="grid grid-cols-6 gap-2 pb-4 border-b border-solid border-border mb-4">
                                 @csrf
                                 <div class="col-span-4">
-                                    <input name="code" id="code" class="w-full p-2 border border-solid border-border" value="{{old('code')}}" placeholder="code promo..." />
+                                    <input name="code" id="code" class="w-full p-2 border border-solid border-border" value="" placeholder="code promo..." />
                                     <x-form.error name="code" />
                                     @if(session('warning'))
                                         <div class="text-sm text-orange-600 font-semibold mt-2">
@@ -205,13 +206,13 @@
                             <form action="{{route('remove-promo-code')}}" method="POST" class="grid grid-cols-6 gap-2 pb-4 border-b border-solid border-border mb-4">
                                 @csrf
                                 <div class="col-span-4">
-                                    <div name="code" id="code" class="w-full p-2">TEST</div>
+                                    <div name="code" id="code" class="w-full p-2">{{old('code')}}</div>
                                 </div>
                                 <x-interactive.btn type="submit" class="col-span-2">
                                     Enlever
                                 </x-interactive.btn>
                             </form>
-                        @endif
+                        @endif --}}
                         <form action="{{route('validate-order')}}">
                             <div class="text-xl text-black font-semibold mb-2">
                                 Sous-Total: <span id="sub-total">{{$sum}}Da</span>

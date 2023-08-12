@@ -241,13 +241,13 @@ class OrderController extends Controller
         Order::associate($id, session('cart'));
         if (Auth::check() && session('code'))
             User::use_promo_code(session('promo_code_id'), Auth::user()->id);
-        $admins = User::admins();
-        foreach ($admins as $admin) {
-            Mail::to($admin->email)
-                ->send(new MailOrder(session('cart'), true, (object)$data, $wilaya));
-        }
-        Mail::to($data['email'])
-            ->send(new MailOrder(session('cart'), false, (object)$data, $wilaya));
+        // $admins = User::admins();
+        // foreach ($admins as $admin) {
+        //     Mail::to($admin->email)
+        //         ->send(new MailOrder(session('cart'), true, (object)$data, $wilaya));
+        // }
+        // Mail::to($data['email'])
+        //     ->send(new MailOrder(session('cart'), false, (object)$data, $wilaya));
         session()->forget(['code', 'promo_code_id']);
         session()->put('cart', []);
         return redirect(route('home'))->with([

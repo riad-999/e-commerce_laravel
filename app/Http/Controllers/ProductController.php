@@ -165,7 +165,7 @@ class ProductController extends Controller
             $rules["color$i"] = ['required', 'exists:colors,id'];
             $rules["quantity$i"] = ['required', 'numeric', "gt:0"];
             $rules["main-image$i"] = ['required', 'image', 'max:200', 'mimes:jpg,jpeg,png,webp,svg,gif'];
-            $rules["other-images$i"] = ['image', 'max:200', 'mimes:jpg,jpeg,png,webp,svg,gif'];
+            $rules["other-images$i.*"] = ['image', 'max:200', 'mimes:jpg,jpeg,png,webp,svg,gif'];
         }
         $validated = $request->validate($rules);
         // store the product
@@ -176,7 +176,6 @@ class ProductController extends Controller
             'description' => $request->session()->get('description'),
             'price' => $request->session()->get('price'),
             'created_at' => now(),
-            'updated_at' => now()
         ]);
         for ($i = 1; $i <= $count; $i++) {
             // loop over the colors.
@@ -208,7 +207,13 @@ class ProductController extends Controller
         // foreach ($arr as $item) {
         //     $request->session()->forget($item);
         // }
-        return redirect(route('initial-create-product'));
+        return redirect(route('initial-create-product'))
+            ->with([
+                'alert' => (object) [
+                    'type' => 'success',
+                    'le produit a été creé'
+                ]
+            ]);
     }
 
     /**
